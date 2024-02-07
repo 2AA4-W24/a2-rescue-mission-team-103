@@ -6,8 +6,6 @@ enum Biome{
 	DESERT,
 	EMERGENCYSITE
 }
-
-
 public class Tile {
 	private int x;
 	private int y;

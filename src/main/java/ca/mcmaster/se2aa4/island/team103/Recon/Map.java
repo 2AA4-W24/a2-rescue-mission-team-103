@@ -2,17 +2,18 @@ package ca.mcmaster.se2aa4.island.team103.Recon;
 
 import java.util.ArrayList;
 
-enum Tile{
-	None,
-	Ocean,
-	Land,
-}
-// Expand later based on what is available (may need to expand to full Tile class later on
-// if more info needed)
+import ca.mcmaster.se2aa4.island.team103.Storage.Tile;
 
 public class Map {
 	// Storing info about map.
 	ArrayList<Tile> tiles = new ArrayList<Tile>();
+
+	/*
+	 * add tile to map
+	 */
+	private void addTile(Tile t) {
+		tiles.add(t);
+	}
 
 	public void populateMap(){
 		// Methods for flying to fill in map
