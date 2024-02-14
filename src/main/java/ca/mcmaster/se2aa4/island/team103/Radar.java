@@ -8,7 +8,7 @@ public class Radar {
 		WEST,
 		SOUTH,
 		EAST
-	}
+	} // Maybe incorporate turning within this to have easy return vals, no need for 4 switch statements?
 
 	public JSONObject scanForward(Direction current_heading){
 		/*  Returns JSON required for scanning forwards - requires current heading as argument */
