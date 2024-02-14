@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team103;
+package ca.mcmaster.se2aa4.island.team103.Storage;
 
 public class Coordinate {
 	private int x;

@@ -1,8 +1,6 @@
-package ca.mcmaster.se2aa4.island.team103.Recon;
+package ca.mcmaster.se2aa4.island.team103;
 
 import java.util.ArrayList;
-
-import ca.mcmaster.se2aa4.island.team103.Storage.Tile;
 
 public class Map {
 	// Storing info about map.

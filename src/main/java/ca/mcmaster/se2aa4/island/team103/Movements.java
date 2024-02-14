@@ -18,7 +18,7 @@ public class Movements {
     }
 
     public JSONObject leftTurn(Direction current_heading){
-        // Returns JSONObject required for turning left - requires the current heading as argument
+        /* Returns JSONObject required for turning left - requires the current heading as argument, does NOT modidy current_heading */
         JSONObject leftTurn = new JSONObject();
         JSONObject parameters = new JSONObject();
         if(current_heading == Direction.NORTH) {
@@ -36,7 +36,7 @@ public class Movements {
     }
 
     public JSONObject rightTurn(Direction current_heading){
-        // Returns JSONObject required for turning right - requires the current heading as argument
+        /* Returns JSONObject required for turning right - requires the current heading as argument, does NOT modify current_heading */
         JSONObject rightTurn = new JSONObject();
         JSONObject parameters = new JSONObject();
         if(current_heading == Direction.NORTH) {
@@ -49,7 +49,7 @@ public class Movements {
             parameters.put("direction", "S");
         }
         rightTurn.put("action", "fly");
-        rightTurn.put("parameters", parameters);
+        rightTurn.put("parameters", parameters); 
         return rightTurn;
     }
 
