@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team103.Navigation;
+package ca.mcmaster.se2aa4.island.team103;
 
 import org.json.JSONObject;
 
@@ -11,46 +11,47 @@ enum Direction {
 
 public class Movements {
 
+
     public JSONObject flyForward(){
         JSONObject fly = new JSONObject();
         fly.put("action", "fly");
         return fly;
     }
 
-    public JSONObject leftTurn(Direction current_heading){
-        /* Returns JSONObject required for turning left - requires the current heading as argument, does NOT modidy current_heading */
-        JSONObject leftTurn = new JSONObject();
+    public JSONObject flyNorth() {
+        JSONObject north = new JSONObject();
         JSONObject parameters = new JSONObject();
-        if(current_heading == Direction.NORTH) {
-            parameters.put("direction", "W");
-        } else if (current_heading == Direction.WEST) {
-            parameters.put("direction", "S");
-        } else if (current_heading == Direction.SOUTH) {
-            parameters.put("direction", "E");
-        } else if (current_heading == Direction.EAST) {
-            parameters.put("direction", "N");
-        }
-        leftTurn.put("action", "fly");
-        leftTurn.put("parameters", parameters);
-        return leftTurn;
+        parameters.put("direction", "N");
+        north.put("action", "fly");
+        north.put("parameters", parameters); 
+        return north;
     }
 
-    public JSONObject rightTurn(Direction current_heading){
-        /* Returns JSONObject required for turning right - requires the current heading as argument, does NOT modify current_heading */
-        JSONObject rightTurn = new JSONObject();
+    public JSONObject flySouth() {
+        JSONObject south = new JSONObject();
         JSONObject parameters = new JSONObject();
-        if(current_heading == Direction.NORTH) {
-            parameters.put("direction", "E");
-        } else if (current_heading == Direction.WEST) {
-            parameters.put("direction", "N");
-        } else if (current_heading == Direction.SOUTH) {
-            parameters.put("direction", "W");
-        } else if (current_heading == Direction.EAST) {
-            parameters.put("direction", "S");
-        }
-        rightTurn.put("action", "fly");
-        rightTurn.put("parameters", parameters); 
-        return rightTurn;
+        parameters.put("direction", "S");
+        south.put("action", "fly");
+        south.put("parameters", parameters); 
+        return south;
+    }
+
+    public JSONObject flyEast() {
+        JSONObject east = new JSONObject();
+        JSONObject parameters = new JSONObject();
+        parameters.put("direction", "N");
+        east.put("action", "fly");
+        east.put("parameters", parameters); 
+        return east;
+    }
+
+    public JSONObject flyWest() {
+        JSONObject west = new JSONObject();
+        JSONObject parameters = new JSONObject();
+        parameters.put("direction", "N");
+        west.put("action", "fly");
+        west.put("parameters", parameters); 
+        return west;
     }
 
     public void UTurn(){
