@@ -22,7 +22,9 @@ public class Map {
 	}
 
 	public void findEmSite(){
-		// to find emergency site
+		// Get initial orientation and coordinates.
+		// Travel towards center of map 
+		// Locate emergency site
 	}
 
 	public void closestCreek(){

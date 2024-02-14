@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team103.Navigation;
+package ca.mcmaster.se2aa4.island.team103;
 
 import org.json.JSONObject;
 
