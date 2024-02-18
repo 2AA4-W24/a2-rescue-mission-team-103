@@ -2,15 +2,7 @@ package ca.mcmaster.se2aa4.island.team103;
 
 import org.json.JSONObject;
 
-enum Direction {
-    NORTH,
-    WEST,
-    SOUTH,
-    EAST
-}
-
 public class Movements {
-
 
     public JSONObject flyForward(){
         JSONObject fly = new JSONObject();

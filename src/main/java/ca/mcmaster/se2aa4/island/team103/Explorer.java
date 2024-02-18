@@ -11,7 +11,7 @@ import org.json.JSONTokener;
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
-	private int i = 0;
+	private ExplorationManager manager = new ExplorationManager();
 
     @Override
     public void initialize(String s) {
@@ -26,8 +26,7 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String takeDecision() {
-        JSONObject decision = new JSONObject();
-		decision.put("action","stop");
+        JSONObject decision = manager.getDecision();
         logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
@@ -42,6 +41,8 @@ public class Explorer implements IExplorerRaid {
         logger.info("The status of the drone is {}", status);
         JSONObject extraInfo = response.getJSONObject("extras");
         logger.info("Additional information received: {}", extraInfo);
+		manager.addInfo(response);
+
     }
 
     @Override

@@ -1,14 +1,12 @@
 package ca.mcmaster.se2aa4.island.team103;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Map {
 	// Storing info about map.
-	ArrayList<Tile> tiles = new ArrayList<Tile>();
+	List<Tile> tiles = new ArrayList<Tile>();
 
-	/*
-	 * add tile to map
-	 */
 	private void addTile(Tile t) {
 		tiles.add(t);
 	}

@@ -3,12 +3,6 @@ package ca.mcmaster.se2aa4.island.team103;
 import org.json.JSONObject;
 
 public class Radar {
-	enum Direction{
-		NORTH,
-		WEST,
-		SOUTH,
-		EAST
-	} // Maybe incorporate turning within this to have easy return vals, no need for 4 switch statements?
 
 	public JSONObject scanForward(Direction current_heading){
 		/*  Returns JSON required for scanning forwards - requires current heading as argument */

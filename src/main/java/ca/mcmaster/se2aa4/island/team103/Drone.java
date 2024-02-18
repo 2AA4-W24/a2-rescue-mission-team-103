@@ -1,12 +1,11 @@
 package ca.mcmaster.se2aa4.island.team103;
 import org.json.JSONObject;
 
-
 public class Drone {
 
-    Movements controls = new Movements();
-    Radar radar = new Radar();
-    Direction heading = Direction.EAST; //CHANGE -- Must be instantiated as the actual start heading returned by the game
+    private Movements controls = new Movements();
+    private Radar radar = new Radar();
+    private Direction heading = Direction.EAST; //CHANGE -- Must be instantiated as the actual start heading returned by the game
 
     public JSONObject flyForwards() {
         return controls.flyForward();
@@ -45,5 +44,18 @@ public class Drone {
         }
         
     }
+
+	public JSONObject scanLeft(){
+		return radar.scanLeft(heading);
+	}
+
+	public JSONObject scanRight(){
+		return radar.scanRight(heading);
+	}
+
+	public JSONObject scanForward(){
+		return radar.scanForward(heading);
+	}
+
     
 }
