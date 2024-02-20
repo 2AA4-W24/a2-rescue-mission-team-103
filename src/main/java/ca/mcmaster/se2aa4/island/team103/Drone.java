@@ -5,7 +5,12 @@ public class Drone {
 
     private Movements controls = new Movements();
     private Radar radar = new Radar();
-    private Direction heading = Direction.EAST; //CHANGE -- Must be instantiated as the actual start heading returned by the game
+    private Direction heading;
+
+    public Drone(Direction start_heading) {
+        // Initializes starting heading
+        heading = start_heading;
+    }
 
     public JSONObject flyForwards() {
         return controls.flyForward();
