@@ -11,7 +11,7 @@ import org.json.JSONTokener;
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
-	private ExplorationManager manager = new ExplorationManager();
+	private ExplorationManager manager; //Constructor is called in this.initialize() when initial info is available (heading etc.)
 
     @Override
     public void initialize(String s) {
@@ -22,6 +22,7 @@ public class Explorer implements IExplorerRaid {
         Integer batteryLevel = info.getInt("budget");
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
+        manager = new ExplorationManager(direction, batteryLevel);
     }
 
     @Override

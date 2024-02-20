@@ -11,23 +11,50 @@ public class ExplorationManager {
 	private ResponseHistory history = new ResponseHistory();
 	private String status = "unknown";
 	private IslandLocator islandLocator = new IslandLocator();
-	private Drone drone = new Drone();
+	private Drone drone;
 	private int headingCounter = 0;
+	private Direction start_heading;
+	private String start_location;
+	private Battery battery_tracker;
+
+	public ExplorationManager(String heading, Integer battery_start_level) {
+		// Initializes start heading, battery level and drone
+
+		if(heading == "N") {
+			start_heading = Direction.NORTH;
+		} else if (heading == "S") {
+			start_heading = Direction.SOUTH;
+		} else if (heading == "W") {
+			start_heading = Direction.WEST;
+		} else {
+			start_heading = Direction.EAST;
+		}
+
+		battery_tracker = new Battery(battery_start_level);
+		drone = new Drone(start_heading);
+	}
 	
 	public JSONObject getDecision() {
-		JSONObject decision= new JSONObject();
+		JSONObject decision = new JSONObject();
+		
 		if(status.equals("unknown")){
-			decision = islandLocator.getHeading(drone,headingCounter);
-			if(headingCounter == 2){
+
+			JSONObject location = islandLocator.getStartingLocation(drone,headingCounter,history,start_heading);
+
+			if(location.getString("position") == "action-required") {
+				decision = location.getJSONObject("decision");
+			} else {
+				start_location = location.getString("position");
 				status = "find-island";
-			}else{
-				headingCounter++;
 			}
+			headingCounter++;
+			
 		}
-		else if(status.equals("find-island")){
-			logger.info("heading to decision method");
+		if(status.equals("find-island")){
+			logger.info("Heading to decision method");
 			decision = islandLocator.locate(drone, history);
 		}
+		
         return decision;
 	}
 
