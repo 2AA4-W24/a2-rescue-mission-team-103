@@ -12,7 +12,7 @@ public class ExplorationManager {
 	private String status = "unknown";
 	private IslandLocator islandLocator = new IslandLocator();
 	private Drone drone;
-	private int headingCounter = 0;
+	private int counter = 0;
 	private Direction start_heading;
 	private String start_location;
 	private Battery battery_tracker;
@@ -39,20 +39,22 @@ public class ExplorationManager {
 		
 		if(status.equals("unknown")){
 
-			JSONObject location = islandLocator.getStartingLocation(drone,headingCounter,history,start_heading);
+			JSONObject location = islandLocator.getStartingLocation(drone,counter,history,start_heading);
 
 			if(location.getString("position") == "action-required") {
 				decision = location.getJSONObject("decision");
+				counter++;
 			} else {
 				start_location = location.getString("position");
 				status = "find-island";
+				counter = 0;
 			}
-			headingCounter++;
+			
 			
 		}
 		if(status.equals("find-island")){
 			logger.info("Heading to decision method");
-			decision = islandLocator.locate(drone, history);
+			decision = islandLocator.locate(drone, history, start_location, start_heading, counter);
 		}
 		
         return decision;

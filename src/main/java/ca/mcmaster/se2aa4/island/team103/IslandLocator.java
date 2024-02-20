@@ -8,32 +8,46 @@ import org.json.JSONObject;
 
 public class IslandLocator {
 
-	private String instruction = "scan";
 	private final Logger logger = LogManager.getLogger();
 
-	public JSONObject locate(Drone drone, ResponseHistory history) {
+	public JSONObject locate(Drone drone, ResponseHistory history, String starting_location, Direction start_heading, int counter) {
 		JSONObject decision = new JSONObject();
-		if(instruction.equals("scan")){
-			logger.info("SCAN");
-			decision.put("action","scan");
-			instruction = "echo";
-		}else if(instruction.equals("echo")){
-			logger.info("ECHO");
-			decision = drone.scanForward();
-			instruction = "fly";
-		}else{
-			JSONObject lastHistory = history.getLast();
-			logger.info("History, {}", lastHistory);
-			JSONObject information = lastHistory.getJSONObject("extras");
-			logger.info("Information, {}", information);
-			int distance = information.getInt("range");
-			logger.info("distance", information);
-			if(distance == 0){
-				decision.put("action","stop");
-			}else{
-				decision = drone.flyForwards();
-			}
-			instruction = "scan";
+		if(counter == 0) {
+			switch(starting_location) {
+				case "NW":
+					if (start_heading == Direction.EAST) {
+						decision = drone.flyForwards();
+					} else if (start_heading == Direction.SOUTH){
+						decision = drone.turnLeft();
+					}
+					break;
+					
+				case "NE":
+					if (start_heading == Direction.WEST) {
+						decision = drone.flyForwards();
+					} else if (start_heading == Direction.SOUTH) {
+						decision = drone.turnRight();
+					}
+					break;
+
+				case "SW":
+					if (start_heading == Direction.EAST) {
+						decision = drone.flyForwards();
+					} else if (start_heading == Direction.NORTH) {
+						decision = drone.turnRight();
+					}
+					break;
+				
+				case "SE":
+					if (start_heading == Direction.WEST) {
+						decision = drone.flyForwards();
+					} else if (start_heading == Direction.NORTH) {
+						decision = drone.turnLeft();
+					}
+					break;
+			}		
+		} else {
+			
 		}
 		return decision;
 	}
