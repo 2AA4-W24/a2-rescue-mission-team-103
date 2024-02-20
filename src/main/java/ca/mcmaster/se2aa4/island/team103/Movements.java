@@ -14,7 +14,7 @@ public class Movements {
         JSONObject north = new JSONObject();
         JSONObject parameters = new JSONObject();
         parameters.put("direction", "N");
-        north.put("action", "fly");
+        north.put("action", "heading");
         north.put("parameters", parameters); 
         return north;
     }
@@ -23,7 +23,7 @@ public class Movements {
         JSONObject south = new JSONObject();
         JSONObject parameters = new JSONObject();
         parameters.put("direction", "S");
-        south.put("action", "fly");
+        south.put("action", "heading");
         south.put("parameters", parameters); 
         return south;
     }
@@ -32,7 +32,7 @@ public class Movements {
         JSONObject east = new JSONObject();
         JSONObject parameters = new JSONObject();
         parameters.put("direction", "E");
-        east.put("action", "fly");
+        east.put("action", "heading");
         east.put("parameters", parameters); 
         return east;
     }
@@ -41,7 +41,7 @@ public class Movements {
         JSONObject west = new JSONObject();
         JSONObject parameters = new JSONObject();
         parameters.put("direction", "W");
-        west.put("action", "fly");
+        west.put("action", "heading");
         west.put("parameters", parameters); 
         return west;
     }

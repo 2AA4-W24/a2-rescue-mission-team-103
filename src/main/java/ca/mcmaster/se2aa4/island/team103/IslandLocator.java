@@ -13,7 +13,11 @@ public class IslandLocator {
 	private Action last_move;
 
 	public JSONObject locate(Drone drone, ResponseHistory history, String starting_location, Direction start_heading, int counter) {
-		// *** THIS METHOD IS CURRENTLY BROKEN. I DIDN'T HAVE TIME TO FIX IT, BUT WILL ON THE 21ST *** //
+		/* locates the island by travelling in a diagonal, then beelining for the first echo that returns "GROUND" 
+		 * Returns a JSONObject where the key "decision" contains the action command, and "result" contains "action-required" if
+		 * an action command is being passed in "decision", and will contain "arrived" when the drone has reached the island.
+		 * If "result" contains "arrived", the ouput JSONObject will NOT contain the key "decision"
+		*/
 		JSONObject decision = new JSONObject();
 		JSONObject output = new JSONObject();
 		if(counter == 0) {
@@ -66,10 +70,14 @@ public class IslandLocator {
 
 				case Action.TRIGHT:
 					echo_result = last_result.getJSONObject("extras");
+					logger.info(echo_result.toString(2));
+					logger.info("Has found: {}", echo_result.has("found"));
 					if (echo_result.has("found")){
-						if (echo_result.getString("found") == "GROUND") {
+						logger.info("Found (looking for GROUND): {}", echo_result.getString("found"));
+						logger.info("Is Ground: {}", echo_result.getString("found").equals("GROUND"));
+						if (echo_result.getString("found").equals("GROUND")) {
 							logger.info("Island Spotted. Flying towards it.");
-							if(echo_result.getInt("range") == 7) {
+							if(echo_result.getInt("range") == 0) {
 								logger.info("Arrived at Island");
 								output.put("result", "arrived");
 								break;
@@ -98,7 +106,7 @@ public class IslandLocator {
 						logger.info("Is Ground: {}", echo_result.getString("found").equals("GROUND"));
 						if (echo_result.getString("found").equals("GROUND")) {
 							logger.info("Island Spotted. Flying towards it.");
-							if(echo_result.getInt("range") == 7) {
+							if(echo_result.getInt("range") == 0) {
 								logger.info("Arrived at Island");
 								output.put("result", "arrived");
 								break;
@@ -141,7 +149,7 @@ public class IslandLocator {
 				case Action.FORWARD:
 					echo_result = last_result.getJSONObject("extras");
 					if (last_move == Action.FORWARD) {
-						if(echo_result.getInt("range") == 7) {
+						if(echo_result.getInt("range") == 0) {
 							logger.info("Arrived at Island");
 							output.put("result", "arrived");
 							break;

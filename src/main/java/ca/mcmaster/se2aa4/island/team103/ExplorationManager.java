@@ -52,8 +52,7 @@ public class ExplorationManager {
 			
 			
 		}
-
-		// *** THIS PORTION IS CURRENTLY BROKEN. I DIDN'T HAVE TIME TO FIX IT, BUT WILL ON THE 21ST *** //
+		
 		if(status.equals("find-island")){
 			logger.info("Heading to decision method");
 			JSONObject output = islandLocator.locate(drone, history, start_location, start_heading, counter);
