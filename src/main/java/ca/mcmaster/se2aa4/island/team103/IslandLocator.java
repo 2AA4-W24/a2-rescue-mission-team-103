@@ -65,30 +65,56 @@ public class IslandLocator {
 			switch(next_move) {
 
 				case Action.TRIGHT:
-					echo_result = last_result.getJSONObject("data").getJSONObject("extras");
-					if (echo_result.getString("found") == "GROUND") {
-						logger.info("Island Spotted. Flying towards it.");
-						next_move = Action.FORWARD;
-						break;
+					echo_result = last_result.getJSONObject("extras");
+					if (echo_result.has("found")){
+						if (echo_result.getString("found") == "GROUND") {
+							logger.info("Island Spotted. Flying towards it.");
+							if(echo_result.getInt("range") == 7) {
+								logger.info("Arrived at Island");
+								output.put("result", "arrived");
+								break;
+							}
+							decision = drone.flyForwards();
+							output.put("decision", decision);
+							output.put("result", "action-required");
+							next_move = Action.SCAN;
+							last_move = Action.FORWARD;
+							break;
+						}
 					}
 					decision = drone.turnRight();
 					output.put("decision", decision);
 					output.put("result", "action-required");
-					next_move = Action.SCAN;
+					next_move = Action.FORWARD;
 					last_move = Action.TRIGHT;
 					break;
 
 				case Action.TLEFT:
-					echo_result = last_result.getJSONObject("data").getJSONObject("extras");
-					if (echo_result.getString("found") == "GROUND") {
-						logger.info("Island Spotted. Flying towards it.");
-						next_move = Action.FORWARD;
-						break;
+					echo_result = last_result.getJSONObject("extras");
+					logger.info(echo_result.toString(2));
+					logger.info("Has found: {}", echo_result.has("found"));
+					if (echo_result.has("found")){
+						logger.info("Found (looking for GROUND): {}", echo_result.getString("found"));
+						logger.info("Is Ground: {}", echo_result.getString("found").equals("GROUND"));
+						if (echo_result.getString("found").equals("GROUND")) {
+							logger.info("Island Spotted. Flying towards it.");
+							if(echo_result.getInt("range") == 7) {
+								logger.info("Arrived at Island");
+								output.put("result", "arrived");
+								break;
+							}
+							decision = drone.flyForwards();
+							output.put("decision", decision);
+							output.put("result", "action-required");
+							next_move = Action.SCAN;
+							last_move = Action.FORWARD;
+							break;
+						}
 					}
 					decision = drone.turnLeft();
 					output.put("decision", decision);
 					output.put("result", "action-required");
-					next_move = Action.SCAN;
+					next_move = Action.FORWARD;
 					last_move = Action.TLEFT;
 					break;
 
@@ -113,16 +139,18 @@ public class IslandLocator {
 					break;
 
 				case Action.FORWARD:
-					echo_result = last_result.getJSONObject("data").getJSONObject("extras");
-					if(echo_result.getInt("range") == 0) {
-						logger.info("Arrived at Island");
-						output.put("result", "arrived");
-						break;
+					echo_result = last_result.getJSONObject("extras");
+					if (last_move == Action.FORWARD) {
+						if(echo_result.getInt("range") == 7) {
+							logger.info("Arrived at Island");
+							output.put("result", "arrived");
+							break;
+						}
 					}
 					decision = drone.flyForwards();
 					output.put("decision", decision);
 					output.put("result", "action-required");
-					last_move = Action.FORWARD;
+					//last_move = Action.FORWARD;
 					next_move = Action.SCAN;
 			}
 		}

@@ -31,7 +31,7 @@ public class Movements {
     public JSONObject flyEast() {
         JSONObject east = new JSONObject();
         JSONObject parameters = new JSONObject();
-        parameters.put("direction", "N");
+        parameters.put("direction", "E");
         east.put("action", "fly");
         east.put("parameters", parameters); 
         return east;
@@ -40,7 +40,7 @@ public class Movements {
     public JSONObject flyWest() {
         JSONObject west = new JSONObject();
         JSONObject parameters = new JSONObject();
-        parameters.put("direction", "N");
+        parameters.put("direction", "W");
         west.put("action", "fly");
         west.put("parameters", parameters); 
         return west;
