@@ -4,6 +4,12 @@ import org.json.JSONObject;
 
 public class Radar {
 
+	public JSONObject scan() {
+		JSONObject scan = new JSONObject();
+		scan.put("action","scan");
+		return scan;
+	}
+
 	public JSONObject scanForward(Direction current_heading){
 		/*  Returns JSON required for scanning forwards - requires current heading as argument */
 		JSONObject scan = new JSONObject();

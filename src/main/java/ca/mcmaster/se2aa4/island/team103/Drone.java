@@ -50,6 +50,10 @@ public class Drone {
         
     }
 
+    public JSONObject scan() {
+        return radar.scan();
+    }
+
 	public JSONObject scanLeft(){
 		return radar.scanLeft(heading);
 	}

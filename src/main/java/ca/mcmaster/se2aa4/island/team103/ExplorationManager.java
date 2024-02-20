@@ -52,9 +52,18 @@ public class ExplorationManager {
 			
 			
 		}
+
+		// *** THIS PORTION IS CURRENTLY BROKEN. I DIDN'T HAVE TIME TO FIX IT, BUT WILL ON THE 21ST *** //
 		if(status.equals("find-island")){
 			logger.info("Heading to decision method");
-			decision = islandLocator.locate(drone, history, start_location, start_heading, counter);
+			JSONObject output = islandLocator.locate(drone, history, start_location, start_heading, counter);
+			counter++;
+			if(output.getString("result") == "action-required" ) {
+				decision = output.getJSONObject("decision");
+			} else {
+				logger.info("Island found, stopping.");
+				decision.put("action", "stop");
+			}
 		}
 		
         return decision;

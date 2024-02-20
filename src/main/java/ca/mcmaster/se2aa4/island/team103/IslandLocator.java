@@ -9,9 +9,13 @@ import org.json.JSONObject;
 public class IslandLocator {
 
 	private final Logger logger = LogManager.getLogger();
+	private Action next_move;
+	private Action last_move;
 
 	public JSONObject locate(Drone drone, ResponseHistory history, String starting_location, Direction start_heading, int counter) {
+		// *** THIS METHOD IS CURRENTLY BROKEN. I DIDN'T HAVE TIME TO FIX IT, BUT WILL ON THE 21ST *** //
 		JSONObject decision = new JSONObject();
+		JSONObject output = new JSONObject();
 		if(counter == 0) {
 			switch(starting_location) {
 				case "NW":
@@ -20,6 +24,7 @@ public class IslandLocator {
 					} else if (start_heading == Direction.SOUTH){
 						decision = drone.turnLeft();
 					}
+					next_move = Action.TRIGHT;
 					break;
 					
 				case "NE":
@@ -28,6 +33,7 @@ public class IslandLocator {
 					} else if (start_heading == Direction.SOUTH) {
 						decision = drone.turnRight();
 					}
+					next_move = Action.TLEFT;
 					break;
 
 				case "SW":
@@ -36,6 +42,7 @@ public class IslandLocator {
 					} else if (start_heading == Direction.NORTH) {
 						decision = drone.turnRight();
 					}
+					next_move = Action.TLEFT;
 					break;
 				
 				case "SE":
@@ -44,12 +51,82 @@ public class IslandLocator {
 					} else if (start_heading == Direction.NORTH) {
 						decision = drone.turnLeft();
 					}
+					next_move = Action.TRIGHT;
 					break;
-			}		
+			}
+			output.put("decision", decision);
+			output.put("result", "action-required");	
+
 		} else {
-			
+
+			JSONObject last_result = history.getLast();
+			JSONObject echo_result;
+
+			switch(next_move) {
+
+				case Action.TRIGHT:
+					echo_result = last_result.getJSONObject("data").getJSONObject("extras");
+					if (echo_result.getString("found") == "GROUND") {
+						logger.info("Island Spotted. Flying towards it.");
+						next_move = Action.FORWARD;
+						break;
+					}
+					decision = drone.turnRight();
+					output.put("decision", decision);
+					output.put("result", "action-required");
+					next_move = Action.SCAN;
+					last_move = Action.TRIGHT;
+					break;
+
+				case Action.TLEFT:
+					echo_result = last_result.getJSONObject("data").getJSONObject("extras");
+					if (echo_result.getString("found") == "GROUND") {
+						logger.info("Island Spotted. Flying towards it.");
+						next_move = Action.FORWARD;
+						break;
+					}
+					decision = drone.turnLeft();
+					output.put("decision", decision);
+					output.put("result", "action-required");
+					next_move = Action.SCAN;
+					last_move = Action.TLEFT;
+					break;
+
+				case Action.SCAN:
+					decision = drone.scan();
+					output.put("decision", decision);
+					output.put("result", "action-required");
+					next_move = Action.ECHO;
+					break;
+
+				case Action.ECHO:
+					decision = drone.scanForward();
+					output.put("decision", decision);
+					output.put("result", "action-required");
+					if (last_move == Action.TRIGHT) {
+						next_move = Action.TLEFT;
+					} else if (last_move == Action.TLEFT) {
+						next_move = Action.TRIGHT;
+					} else {
+						next_move = Action.FORWARD;
+					}
+					break;
+
+				case Action.FORWARD:
+					echo_result = last_result.getJSONObject("data").getJSONObject("extras");
+					if(echo_result.getInt("range") == 0) {
+						logger.info("Arrived at Island");
+						output.put("result", "arrived");
+						break;
+					}
+					decision = drone.flyForwards();
+					output.put("decision", decision);
+					output.put("result", "action-required");
+					last_move = Action.FORWARD;
+					next_move = Action.SCAN;
+			}
 		}
-		return decision;
+		return output;
 	}
 
 	public JSONObject getStartingLocation(Drone drone, int count, ResponseHistory memory, Direction start_heading) {
