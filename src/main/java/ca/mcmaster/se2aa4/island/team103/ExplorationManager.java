@@ -19,7 +19,6 @@ public class ExplorationManager {
 
 	public ExplorationManager(String heading, Integer battery_start_level) {
 		// Initializes start heading, battery level and drone
-
 		if(heading == "N") {
 			start_heading = Direction.NORTH;
 		} else if (heading == "S") {
@@ -55,7 +54,6 @@ public class ExplorationManager {
 
 		// *** THIS PORTION IS CURRENTLY BROKEN. I DIDN'T HAVE TIME TO FIX IT, BUT WILL ON THE 21ST *** //
 		if(status.equals("find-island")){
-			logger.info("Heading to decision method");
 			JSONObject output = islandLocator.locate(drone, history, start_location, start_heading, counter);
 			counter++;
 			if(output.getString("result") == "action-required" ) {
@@ -65,7 +63,17 @@ public class ExplorationManager {
 				decision.put("action", "stop");
 			}
 		}
-		
+
+		if(status.equals("find-coast")){
+			JSONObject output = islandLocator.locate(drone, history, start_location, start_heading, counter);
+			counter++;
+			if(output.getString("result") == "action-required" ) {
+				decision = output.getJSONObject("decision");
+			} else {
+				logger.info("Island found, stopping.");
+				decision.put("action", "stop");
+			}
+		}
         return decision;
 	}
 

@@ -43,7 +43,6 @@ public class Explorer implements IExplorerRaid {
         JSONObject extraInfo = response.getJSONObject("extras");
         logger.info("Additional information received: {}", extraInfo);
 		manager.addInfo(response);
-
     }
 
     @Override
