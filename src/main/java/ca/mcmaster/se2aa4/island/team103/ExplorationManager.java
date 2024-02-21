@@ -69,8 +69,17 @@ public class ExplorationManager {
 
 		if(status.equals("find-coast")){
 			JSONObject output = coastlineMapper.coastlineScan(drone, coast_status, respHistory, navHistory);
-			coast_status = (coast_status > 5) ? coast_status++ : 0;
-			decision = output.getJSONObject("decision");
+			JSONObject echo_result = respHistory.getLast().getJSONObject("data").getJSONObject("extras");
+			if(counter == 1 || counter == 3){
+				if (echo_result.getString("found") != "GROUND") {
+					counter++;
+				}else{
+					counter += 2;
+				}
+			}else{
+				counter++;
+			}
+			decision = output;
 		}
         return decision;
 	}
