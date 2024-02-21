@@ -8,24 +8,24 @@ public class CoastlineRecon {
 	/* Intended to scan all coastline of the island, get an idea of the size. This 
 	 * result will be stored in the map, and used for emergency site and inlet finding. 
 	*/
-	public JSONObject coastlineScan(Drone drone, String status, ResponseHistory history, navHistory navHistory){
+	public JSONObject coastlineScan(Drone drone, int status_code, ResponseHistory history, navHistory navHistory){
 		JSONObject decision = new JSONObject();
-		switch(status){
-			case "scanning-1":
+		switch(status_code){
+			case 1:
 				decision = drone.scanForward();
 				break;
-			case "left":
+			case 2:
 				// If scan forward returns land, turn left
 				addToHistory(drone,"left",navHistory.getLast());
 				decision = drone.turnLeft();
-			case "scanning-2":
+			case 3:
 				// If scan forward returns no land, scan right
 				decision = drone.scanRight();
 				break;
-			case "straight":
+			case 4:
 				// If scan right returns land, then fly straight
 				decision = drone.flyForwards();
-			case "right":
+			case 5:
 				// If scan right returns no land, then turn right
 				addToHistory(drone,"right",navHistory.getLast());
 				decision = drone.turnRight();
