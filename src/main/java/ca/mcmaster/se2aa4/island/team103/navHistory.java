@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-public class CoordinateHistory {
+public class navHistory {
 	private List<Coordinate> navHistory = new ArrayList<Coordinate>();
 
 	public void addItem(Coordinate c){

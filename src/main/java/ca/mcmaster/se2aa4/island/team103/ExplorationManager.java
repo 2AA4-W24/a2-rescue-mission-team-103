@@ -8,9 +8,12 @@ public class ExplorationManager {
 
 	private final Logger logger = LogManager.getLogger();
 
-	private ResponseHistory history = new ResponseHistory();
+	private ResponseHistory respHistory = new ResponseHistory();
+	private navHistory navHistory = new navHistory();
 	private String status = "unknown";
+	private String coast_status = "scanning-1";
 	private IslandLocator islandLocator = new IslandLocator();
+	private CoastlineRecon coastlineMapper = new CoastlineRecon();
 	private Drone drone;
 	private int counter = 0;
 	private Direction start_heading;
@@ -38,7 +41,7 @@ public class ExplorationManager {
 		
 		if(status.equals("unknown")){
 
-			JSONObject location = islandLocator.getStartingLocation(drone,counter,history,start_heading);
+			JSONObject location = islandLocator.getStartingLocation(drone, counter, respHistory, start_heading);
 
 			if(location.getString("position") == "action-required") {
 				decision = location.getJSONObject("decision");
@@ -54,7 +57,7 @@ public class ExplorationManager {
 
 		// *** THIS PORTION IS CURRENTLY BROKEN. I DIDN'T HAVE TIME TO FIX IT, BUT WILL ON THE 21ST *** //
 		if(status.equals("find-island")){
-			JSONObject output = islandLocator.locate(drone, history, start_location, start_heading, counter);
+			JSONObject output = islandLocator.locate(drone,respHistory, start_location, start_heading, counter);
 			counter++;
 			if(output.getString("result") == "action-required" ) {
 				decision = output.getJSONObject("decision");
@@ -65,7 +68,7 @@ public class ExplorationManager {
 		}
 
 		if(status.equals("find-coast")){
-			JSONObject output = islandLocator.locate(drone, history, start_location, start_heading, counter);
+			JSONObject output = coastlineMapper.coastlineScan(drone, coast_status, respHistory, navHistory );
 			counter++;
 			if(output.getString("result") == "action-required" ) {
 				decision = output.getJSONObject("decision");
@@ -78,10 +81,10 @@ public class ExplorationManager {
 	}
 
 	public void addInfo(JSONObject j){
-		history.addItem(j);
+		respHistory.addItem(j);
 	}
 
 	public JSONObject getLastInfo(){
-		return history.getLast();
+		return respHistory.getLast();
 	}
 }
