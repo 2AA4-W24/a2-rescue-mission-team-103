@@ -61,14 +61,14 @@ public class ExplorationManager {
 			if(output.getString("result") == "action-required" ) {
 				decision = output.getJSONObject("decision");
 			} else {
-				logger.info("Island found, stopping.");
-				decision.put("action", "stop");
+				logger.info("Island found, moving on.");
+				status = "find-coast";
 			}
 		}
 
 		if(status.equals("find-coast")){
 			JSONObject output = coastlineMapper.coastlineScan(drone, coast_status, respHistory, navHistory);
-			JSONObject echo_result = respHistory.getLast().getJSONObject("data").getJSONObject("extras");
+			JSONObject echo_result = respHistory.getLast().getJSONObject("extras");
 			if(counter == 1 || counter == 3){
 				if (echo_result.getString("found") != "GROUND") {
 					counter++;
