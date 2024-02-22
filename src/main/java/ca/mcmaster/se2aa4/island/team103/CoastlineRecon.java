@@ -39,7 +39,10 @@ public class CoastlineRecon {
 	}
 
 	public Coordinate addToHistory(Drone drone, String turning, Coordinate prev){
-		/*Method used to add coordinate to navigation history, depending on turn and current heading.*/
+		/*Method used to add coordinate to navigation history, depending on turn and current heading.
+		 * For example, if going north and turning left, new coordinate will be currentX-1,currentY-1
+		*/
+
 		Direction heading = drone.getHeading();
 		if(turning.equals("left")){
 			switch(heading){
