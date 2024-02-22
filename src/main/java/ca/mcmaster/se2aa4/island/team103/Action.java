@@ -5,6 +5,8 @@ enum Action {
 	TRIGHT,
 	TLEFT,
 	FORWARD,
-	ECHO,
+	ECHO_FORWARD,
+	ECHO_RIGHT,
+	ECHO_LEFT,
 	SCAN
 }

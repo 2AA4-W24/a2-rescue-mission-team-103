@@ -130,10 +130,10 @@ public class IslandLocator {
 					decision = drone.scan();
 					output.put("decision", decision);
 					output.put("result", "action-required");
-					next_move = Action.ECHO;
+					next_move = Action.ECHO_FORWARD;
 					break;
 
-				case Action.ECHO:
+				case Action.ECHO_FORWARD:
 					decision = drone.scanForward();
 					output.put("decision", decision);
 					output.put("result", "action-required");
@@ -160,6 +160,10 @@ public class IslandLocator {
 					output.put("result", "action-required");
 					//last_move = Action.FORWARD;
 					next_move = Action.SCAN;
+					break;
+					
+				default:
+					break;
 			}
 		}
 		return output;

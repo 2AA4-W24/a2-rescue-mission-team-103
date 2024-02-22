@@ -9,9 +9,9 @@ public class ExplorationManager {
 	private final Logger logger = LogManager.getLogger();
 
 	private ResponseHistory respHistory = new ResponseHistory();
-	private navHistory navHistory = new navHistory();
+	private NavHistory navHistory = new NavHistory();
 	private String status = "unknown";
-	private int coast_status = 0;
+	private int coast_status = 1;
 	private IslandLocator islandLocator = new IslandLocator();
 	private CoastlineRecon coastlineMapper = new CoastlineRecon();
 	private Drone drone;
@@ -34,6 +34,7 @@ public class ExplorationManager {
 
 		battery_tracker = new Battery(battery_start_level);
 		drone = new Drone(start_heading);
+		navHistory.addItem(new Coordinate(0,0));
 	}
 	
 	public JSONObject getDecision() {
@@ -56,7 +57,7 @@ public class ExplorationManager {
 		}
 		
 		if(status.equals("find-island")){
-			JSONObject output = islandLocator.locate(drone,respHistory, start_location, start_heading, counter);
+			JSONObject output = islandLocator.locate(drone, respHistory, start_location, start_heading, counter);
 			counter++;
 			if(output.getString("result") == "action-required" ) {
 				decision = output.getJSONObject("decision");
@@ -68,18 +69,17 @@ public class ExplorationManager {
 
 		if(status.equals("find-coast")){
 			JSONObject output = coastlineMapper.coastlineScan(drone, coast_status, respHistory, navHistory);
-			JSONObject echo_result = respHistory.getLast().getJSONObject("extras");
-			if(counter == 1 || counter == 3){
-				if (echo_result.getString("found") != "GROUND") {
-					counter++;
-				}else{
-					counter += 2;
-				}
-			}else{
-				counter++;
+			logger.info("OUTPUT: {}",output);
+			counter++;
+			if(output.getString("result") == "action-required" ) {
+				decision = output.getJSONObject("decision");
+			} else {
+				logger.info("Completed island coast finding, stopping mission.");
+				decision.put("action","stop");
 			}
-			decision = output;
+			logger.info("Last coordinate {}", navHistory.getLast().toString());
 		}
+
         return decision;
 	}
 

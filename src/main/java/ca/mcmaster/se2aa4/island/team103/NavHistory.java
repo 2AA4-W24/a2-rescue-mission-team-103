@@ -5,15 +5,19 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-public class navHistory {
+public class NavHistory {
 	private List<Coordinate> navHistory = new ArrayList<Coordinate>();
-
+	
 	public void addItem(Coordinate c){
 		navHistory.add(c);
 	}
 
 	public Coordinate getLast(){
 		return navHistory.get(navHistory.size()-1);
+	}
+
+	public Coordinate getFirst(){
+		return navHistory.get(0);
 	}
 
 	public List<Coordinate> getItems(int offset) {
@@ -29,6 +33,10 @@ public class navHistory {
 	public List<Coordinate> getItems(int start, int end) {
 		/* Gets items from start (inclusive) to end (exclusive)*/
 		return navHistory.subList(start, end);
+	}
+
+	public int getSize(){
+		return navHistory.size();
 	}
 
 }
