@@ -189,27 +189,9 @@ public class IslandLocator {
 			int left_scan = scans.get(0).getJSONObject("extras").getInt("range");
 			int forward_scan = scans.get(1).getJSONObject("extras").getInt("range");
 			int right_scan = scans.get(2).getJSONObject("extras").getInt("range");
-			boolean left_wall;
-			boolean forward_wall;
-			boolean right_wall;
-
-			if (left_scan == 0) {
-				left_wall = true;
-			} else {
-				left_wall = false;
-			}
-
-			if (right_scan == 0) {
-				right_wall = true;
-			} else {
-				right_wall = false;
-			}
-
-			if (forward_scan == 0) {
-				forward_wall = true;
-			} else {
-				forward_wall = false;
-			}
+			boolean left_wall = (left_scan == 0);
+			boolean forward_wall = (forward_scan == 0);
+			boolean right_wall = (right_scan == 0);
 
 			switch(start_heading) {
 				case NORTH:

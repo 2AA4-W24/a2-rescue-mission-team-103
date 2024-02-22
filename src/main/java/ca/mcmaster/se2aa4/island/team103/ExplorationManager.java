@@ -8,9 +8,12 @@ public class ExplorationManager {
 
 	private final Logger logger = LogManager.getLogger();
 
-	private ResponseHistory history = new ResponseHistory();
+	private ResponseHistory respHistory = new ResponseHistory();
+	private navHistory navHistory = new navHistory();
 	private String status = "unknown";
+	private int coast_status = 0;
 	private IslandLocator islandLocator = new IslandLocator();
+	private CoastlineRecon coastlineMapper = new CoastlineRecon();
 	private Drone drone;
 	private int counter = 0;
 	private Direction start_heading;
@@ -19,7 +22,6 @@ public class ExplorationManager {
 
 	public ExplorationManager(String heading, Integer battery_start_level) {
 		// Initializes start heading, battery level and drone
-
 		if(heading == "N") {
 			start_heading = Direction.NORTH;
 		} else if (heading == "S") {
@@ -39,7 +41,7 @@ public class ExplorationManager {
 		
 		if(status.equals("unknown")){
 
-			JSONObject location = islandLocator.getStartingLocation(drone,counter,history,start_heading);
+			JSONObject location = islandLocator.getStartingLocation(drone, counter, respHistory, start_heading);
 
 			if(location.getString("position") == "action-required") {
 				decision = location.getJSONObject("decision");
@@ -54,8 +56,7 @@ public class ExplorationManager {
 		}
 		
 		if(status.equals("find-island")){
-			logger.info("Heading to decision method");
-			JSONObject output = islandLocator.locate(drone, history, start_location, start_heading, counter);
+			JSONObject output = islandLocator.locate(drone,respHistory, start_location, start_heading, counter);
 			counter++;
 			if(output.getString("result") == "action-required" ) {
 				decision = output.getJSONObject("decision");
@@ -64,15 +65,29 @@ public class ExplorationManager {
 				decision.put("action", "stop");
 			}
 		}
-		
+
+		if(status.equals("find-coast")){
+			JSONObject output = coastlineMapper.coastlineScan(drone, coast_status, respHistory, navHistory);
+			JSONObject echo_result = respHistory.getLast().getJSONObject("data").getJSONObject("extras");
+			if(counter == 1 || counter == 3){
+				if (echo_result.getString("found") != "GROUND") {
+					counter++;
+				}else{
+					counter += 2;
+				}
+			}else{
+				counter++;
+			}
+			decision = output;
+		}
         return decision;
 	}
 
 	public void addInfo(JSONObject j){
-		history.addItem(j);
+		respHistory.addItem(j);
 	}
 
 	public JSONObject getLastInfo(){
-		return history.getLast();
+		return respHistory.getLast();
 	}
 }

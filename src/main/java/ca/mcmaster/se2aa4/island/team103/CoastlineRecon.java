@@ -1,0 +1,88 @@
+package ca.mcmaster.se2aa4.island.team103;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+
+public class CoastlineRecon {
+	/* Intended to scan all coastline of the island, get an idea of the size. This 
+	 * result will be stored in the map, and used for emergency site and inlet finding. 
+	*/
+	public JSONObject coastlineScan(Drone drone, int status_code, ResponseHistory history, navHistory navHistory){
+		JSONObject decision = new JSONObject();
+		switch(status_code){
+			case 1:
+				decision = drone.scanForward();
+				break;
+			case 2:
+				// If scan forward returns land, turn left
+				addToHistory(drone,"left",navHistory.getLast());
+				decision = drone.turnLeft();
+				break;
+			case 3:
+				// If scan forward returns no land, scan right
+				decision = drone.scanRight();
+				break;
+			case 4:
+				// If scan right returns land, then fly straight
+				addToHistory(drone,"straight",navHistory.getLast());
+				decision = drone.flyForwards();
+				break;
+			case 5:
+				// If scan right returns no land, then turn right
+				addToHistory(drone,"right",navHistory.getLast());
+				decision = drone.turnRight();
+				break;
+		}
+		// Keep doing this until starting coordinate is once again found.
+		return decision;
+	}
+
+	public Coordinate addToHistory(Drone drone, String turning, Coordinate prev){
+		/*Method used to add coordinate to navigation history, depending on turn and current heading.
+		 * For example, if going north and turning left, new coordinate will be currentX-1,currentY-1
+		*/
+
+		Direction heading = drone.getHeading();
+		if(turning.equals("left")){
+			switch(heading){
+				case NORTH:
+					return new Coordinate(prev.x()-1,prev.y()-1);
+				case EAST:
+					return new Coordinate(prev.x()+1,prev.y()-1);
+				case WEST:
+					return new Coordinate(prev.x()-1,prev.y()+1);
+				case SOUTH:
+					return new Coordinate(prev.x()+1,prev.y()+1);
+				default:
+					return new Coordinate(prev.x(),prev.y());
+			}
+		}else if(turning.equals("right")){
+			switch(heading){
+				case NORTH:
+					return new Coordinate(prev.x()+1,prev.y()-1);
+				case EAST:
+					return new Coordinate(prev.x()+1,prev.y()+1);
+				case WEST:
+					return new Coordinate(prev.x()-1,prev.y()-1);
+				case SOUTH:
+					return new Coordinate(prev.x()-1,prev.y()+1);
+				default:
+					return new Coordinate(prev.x(),prev.y());
+			}
+		}else{ // Going forward otherwise
+			switch(heading){
+				case NORTH:
+					return new Coordinate(prev.x(),prev.y()-1);
+				case EAST:
+					return new Coordinate(prev.x()+1,prev.y());
+				case WEST:
+					return new Coordinate(prev.x()-1,prev.y());
+				case SOUTH:
+					return new Coordinate(prev.x(),prev.y()+1);
+				default:
+					return new Coordinate(prev.x(),prev.y());
+			}
+		}
+	}
+}

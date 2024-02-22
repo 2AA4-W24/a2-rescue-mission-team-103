@@ -66,5 +66,7 @@ public class Drone {
 		return radar.scanForward(heading);
 	}
 
-    
+	public Direction getHeading(){
+		return this.heading;
+	}
 }

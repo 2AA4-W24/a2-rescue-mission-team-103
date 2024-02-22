@@ -46,7 +46,4 @@ public class Movements {
         return west;
     }
 
-    public void UTurn(){
-        // call of 2x left turn or 2x right turn
-    }
 }
