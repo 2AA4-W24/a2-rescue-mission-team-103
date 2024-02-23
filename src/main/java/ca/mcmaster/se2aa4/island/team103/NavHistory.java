@@ -39,4 +39,8 @@ public class NavHistory {
 		return navHistory.size();
 	}
 
+	public Coordinate getIndex(int index){
+		return navHistory.get(index);
+	}
+
 }

@@ -29,4 +29,8 @@ public class ResponseHistory {
 		/* Gets items from start (inclusive) to end (exclusive)*/
 		return responseHistory.subList(start, end);
 	}
+
+	public int getSize(){
+		return responseHistory.size();
+	}
 }

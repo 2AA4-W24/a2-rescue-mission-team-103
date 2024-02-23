@@ -15,72 +15,122 @@ public class CoastlineRecon {
 	private Action last_move;
 
 	public JSONObject coastlineScan(Drone drone, int counter, ResponseHistory respHistory, NavHistory navHistory){
+
 		JSONObject decision = new JSONObject();
 		JSONObject output = new JSONObject();
+		Coordinate new_add;
+
 		if(navHistory.getFirst() == navHistory.getLast() && navHistory.getSize()>1){
 			output.put("result","complete");
 		}else{
 			switch(next_move) {
 				case Action.ECHO_RIGHT:
+
 					decision = drone.scanRight();
 					output.put("decision",decision);
 					output.put("result","action-required");
+
 					next_move = Action.ECHO_FORWARD;
 					last_move = Action.ECHO_RIGHT;
 					break;
+
 				case Action.ECHO_FORWARD:
+
 					decision = drone.scanForward();
 					output.put("decision",decision);
 					output.put("result","action-required");
+
 					next_move = Action.ECHO_LEFT;
 					last_move = Action.ECHO_FORWARD;
 					break;
+
 				case Action.ECHO_LEFT:
+
 					decision = drone.scanLeft();
 					output.put("decision",decision);
 					output.put("result","action-required");
+
 					next_move = Action.SCAN;
 					last_move = Action.ECHO_RIGHT;
 					break;
+
 				case Action.SCAN:
+
 					decision = drone.scan();
 					output.put("decision",decision);
 					output.put("result","action-required");
 					List<JSONObject> scans = respHistory.getItems(-3);
-					JSONObject echo_right = scans.get(0);
-					JSONObject echo_straight = scans.get(1);
-					logger.info("SCAN RESULTS");
-					logger.info(echo_right);
-					logger.info(echo_straight);
-					if(!echo_right.getJSONObject("extras").has("found")){
+					logger.info("Scans, {}", scans);
+					JSONObject echo_right = scans.get(scans.size()-3);
+					JSONObject echo_straight = scans.get(scans.size()-2);
+					JSONObject echo_left = scans.get(scans.size()-1);
+
+					String result_right = echo_right.getJSONObject("extras").getString("found");
+					int right_range = echo_right.getJSONObject("extras").getInt("range");
+
+					String result_straight = echo_straight.getJSONObject("extras").getString("found");
+					int straight_range = echo_straight.getJSONObject("extras").getInt("range");
+
+					String result_left = echo_left.getJSONObject("extras").getString("found");
+					int left_range = echo_left.getJSONObject("extras").getInt("range");
+
+					logger.info("Result_Right: {}", result_right);
+					logger.info("Right_Range: {}", right_range);
+					logger.info("Result_Straight: {}", result_straight);
+					logger.info("Straight_Range: {}", straight_range);
+					logger.info("Result_Left: {}", result_left);
+					logger.info("Left_Range: {}", left_range);
+
+					if(result_left.equals("GROUND") && result_straight.equals("GROUND")){
 						next_move = Action.TRIGHT;
-					}else if(echo_right.getJSONObject("extras").has("found") && !echo_straight.getJSONObject("extras").has("found")){
+					}else if(result_left.equals("GROUND")){
 						next_move = Action.FORWARD;
 					}else{
 						next_move = Action.TLEFT;
 					}
 					break;
+
 				case Action.TRIGHT:
 					decision = drone.turnRight();
 					output.put("decision",decision);
 					output.put("result","action-required");
+
+					new_add = addToHistory(drone,"right",navHistory.getLast());
+					output.put("coordinateX",new_add.x());
+					output.put("coordinateY",new_add.y());
+
 					next_move = Action.ECHO_RIGHT;
 					last_move = Action.TRIGHT;
 					break;
+
 				case Action.FORWARD:
 					decision = drone.flyForwards();
 					output.put("decision",decision);
 					output.put("result","action-required");
+
+					new_add = addToHistory(drone,"straight",navHistory.getLast());
+					output.put("coordinateX",new_add.x());
+					output.put("coordinateY",new_add.y());
+
+					logger.info("Going forwards, coordinates are: {}",new_add.toString());
 					next_move = Action.ECHO_RIGHT;
 					last_move = Action.FORWARD;
 					break;
+
 				case Action.TLEFT:
 					decision = drone.turnLeft();
 					output.put("decision",decision);
 					output.put("result","action-required");
+
+					new_add = addToHistory(drone,"left",navHistory.getLast());
+					output.put("coordinateX",new_add.x());
+					output.put("coordinateY",new_add.y());
+
+					logger.info("Going left, coordinates are: {}",new_add.toString());
 					next_move = Action.ECHO_RIGHT;
 					last_move = Action.TLEFT;
 					break;
+
 				default:
 					break;
 			}

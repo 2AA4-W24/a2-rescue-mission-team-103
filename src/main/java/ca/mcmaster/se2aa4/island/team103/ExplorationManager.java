@@ -13,7 +13,7 @@ public class ExplorationManager {
 	private String status = "unknown";
 	private int coast_status = 1;
 	private IslandLocator islandLocator = new IslandLocator();
-	private CoastlineRecon coastlineMapper = new CoastlineRecon();
+	private IslandRecon islandMapper = new IslandRecon();
 	private Drone drone;
 	private int counter = 0;
 	private Direction start_heading;
@@ -64,20 +64,19 @@ public class ExplorationManager {
 			} else {
 				logger.info("Island found, moving on.");
 				status = "find-coast";
+				counter = 0;
 			}
 		}
 
 		if(status.equals("find-coast")){
-			JSONObject output = coastlineMapper.coastlineScan(drone, coast_status, respHistory, navHistory);
+			JSONObject output = islandMapper.islandScan(drone, respHistory);
 			logger.info("OUTPUT: {}",output);
 			counter++;
-			if(output.getString("result") == "action-required" ) {
-				decision = output.getJSONObject("decision");
-			} else {
-				logger.info("Completed island coast finding, stopping mission.");
+			if(counter > 400){
 				decision.put("action","stop");
+			}else{
+				decision = output;
 			}
-			logger.info("Last coordinate {}", navHistory.getLast().toString());
 		}
 
         return decision;
