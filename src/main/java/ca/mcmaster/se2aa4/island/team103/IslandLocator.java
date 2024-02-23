@@ -21,6 +21,7 @@ public class IslandLocator {
 		JSONObject decision = new JSONObject();
 		JSONObject output = new JSONObject();
 		if(counter == 0) {
+			// Making sure our orientation is correct (i.e. facing EAST for NorthWest corner)
 			switch(starting_location) {
 				case "NW":
 					if (start_heading == Direction.EAST) {
@@ -66,17 +67,20 @@ public class IslandLocator {
 			JSONObject last_result = history.getLast();
 			JSONObject echo_result;
 
+			// Follows repeating pattern until echo returns "GROUND" (Turn right -> fly forwards -> scan -> echo forwards -> turn left -> fly forwards -> etc...)
+			// After echo returns "GROUND", flies straight until it reaches the island
+			// The next move is controlled by the next_move and last_move variables
+
 			switch(next_move) {
 
 				case Action.TRIGHT:
 					echo_result = last_result.getJSONObject("extras");
-					logger.info(echo_result.toString(2));
-					logger.info("Has found: {}", echo_result.has("found"));
+
+					// If ground is found
 					if (echo_result.has("found")){
-						logger.info("Found (looking for GROUND): {}", echo_result.getString("found"));
-						logger.info("Is Ground: {}", echo_result.getString("found").equals("GROUND"));
 						if (echo_result.getString("found").equals("GROUND")) {
 							logger.info("Island Spotted. Flying towards it.");
+
 							if(echo_result.getInt("range") == 0) {
 								logger.info("Arrived at Island");
 								output.put("result", "arrived");
@@ -90,6 +94,8 @@ public class IslandLocator {
 							break;
 						}
 					}
+					
+					// If ground is not found
 					decision = drone.turnRight();
 					output.put("decision", decision);
 					output.put("result", "action-required");
@@ -99,13 +105,12 @@ public class IslandLocator {
 
 				case Action.TLEFT:
 					echo_result = last_result.getJSONObject("extras");
-					logger.info(echo_result.toString(2));
-					logger.info("Has found: {}", echo_result.has("found"));
+					
+					// If ground is found
 					if (echo_result.has("found")){
-						logger.info("Found (looking for GROUND): {}", echo_result.getString("found"));
-						logger.info("Is Ground: {}", echo_result.getString("found").equals("GROUND"));
 						if (echo_result.getString("found").equals("GROUND")) {
 							logger.info("Island Spotted. Flying towards it.");
+
 							if(echo_result.getInt("range") == 0) {
 								logger.info("Arrived at Island");
 								output.put("result", "arrived");
@@ -119,6 +124,8 @@ public class IslandLocator {
 							break;
 						}
 					}
+					
+					// If ground is not found
 					decision = drone.turnLeft();
 					output.put("decision", decision);
 					output.put("result", "action-required");
@@ -137,6 +144,7 @@ public class IslandLocator {
 					decision = drone.scanForward();
 					output.put("decision", decision);
 					output.put("result", "action-required");
+
 					if (last_move == Action.TRIGHT) {
 						next_move = Action.TLEFT;
 					} else if (last_move == Action.TLEFT) {
@@ -180,14 +188,17 @@ public class IslandLocator {
 			decision.put("decision", drone.scanLeft());
 			decision.put("position", "action-required");
 			logger.info("[getStartingLocation] Issuing scanLeft command");
+
 		}else if(count == 1){
 			decision.put("decision", drone.scanForward());
 			decision.put("position", "action-required");
 			logger.info("[getStartingLocation] Issuing scanForward command");
+
 		}else if(count == 2) {
 			decision.put("decision", drone.scanRight());
 			decision.put("position", "action-required");
 			logger.info("[getStartingLocation] Issuing scanRight command");
+
 		} else {
 			List<JSONObject> scans = memory.getItems(-3);
 			int left_scan = scans.get(0).getJSONObject("extras").getInt("range");
@@ -201,43 +212,58 @@ public class IslandLocator {
 				case NORTH:
 					if (forward_wall & left_wall) {
 						decision.put("position", "NW");
+
 					} else if (forward_wall & right_wall) {
 						decision.put("position", "NE");
+
 					} else if (!forward_wall & left_wall) {
 						decision.put("position", "SW");
+
 					} else if (!forward_wall & right_wall) {
 						decision.put("position", "SE");
 					}
 					break;
+
 				case SOUTH:
 					if (forward_wall & left_wall) {
 						decision.put("position", "SE");
+
 					} else if (forward_wall & right_wall) {
 						decision.put("position", "SW");
+
 					} else if (!forward_wall & left_wall) {
 						decision.put("position", "NE");
+
 					} else if (!forward_wall & right_wall) {
 						decision.put("position", "NW");
 					}
 					break;
+
 				case EAST:
 					if (forward_wall & left_wall) {
 						decision.put("position", "NE");
+
 					} else if (forward_wall & right_wall) {
 						decision.put("position", "SE");
+
 					} else if (!forward_wall & left_wall) {
 						decision.put("position", "NW");
+
 					} else if (!forward_wall & right_wall) {
 						decision.put("position", "SW");
 					}
 					break;
+
 				case WEST:
 					if (forward_wall & left_wall) {
 						decision.put("position", "SW");
+
 					} else if (forward_wall & right_wall) {
 						decision.put("position", "NW");
+
 					} else if (!forward_wall & left_wall) {
 						decision.put("position", "SE");
+						
 					} else if (!forward_wall & right_wall) {
 						decision.put("position", "NE");
 					}
