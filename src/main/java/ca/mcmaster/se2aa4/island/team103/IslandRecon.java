@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 public class IslandRecon {
-	/* Intended to scan all coastline of the island, get an idea of the size. This 
-	 * result will be stored in the map, and used for emergency site and inlet finding. 
+	/* Intended to perform a full scan of the island. Goes lengthwise until the end, then performs three turns of one direction, then one of the opposite,
+	 * such that it ends up right next to where it turned around and does not miss any potential scan area.
 	*/
 	private final Logger logger = LogManager.getLogger(); 
 	private enum Status {
@@ -43,7 +43,7 @@ public class IslandRecon {
 				status = Status.Move;
 				break;
 			case Move:
-				logger.info("TEST: {}", respHistory.getLast());
+				// If the land is out of range we have reached the end of the island and can turn around.
 				if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE")){
 					decision = drone.flyForwards();
 					status = Status.TurnStage1;
@@ -83,6 +83,7 @@ public class IslandRecon {
 				status = Status.TurnStage5;
 				break;
 			case TurnStage5:
+				// Changing the direction of the turn so that it does not travel in a loop.
 				if(turn_status.equals("left")){
 					decision = drone.turnRight();
 					turn_status = "right";
