@@ -7,8 +7,11 @@ public enum Direction{
 	SOUTH,
 	EAST;
 
-	public Direction turnRight() {
-		switch(this) {
+	/*
+	 * returns Direction to the right of d and throws exception if d is not a valid direction 
+	 */
+	public static Direction rightOf(Direction d) {
+		switch(d) {
 			case NORTH -> {
 				return EAST;
 			}
@@ -22,25 +25,49 @@ public enum Direction{
 				return NORTH;
 			}
 		}
-		throw new IllegalStateException("Illegal direction: " + this);
+		throw new IllegalStateException("Illegal direction: " + d);
+	}
+	
+	/*
+	 * returns Direction to the left of d and throws exception if d is not a valid direction 
+	 */
+	public static Direction leftOf(Direction d) {
+		switch(d) {
+			case NORTH -> {
+				return WEST;
+			}
+			case EAST -> {
+				return NORTH;
+			}
+			case SOUTH -> {
+				return EAST;
+			}
+			case WEST -> {
+				return SOUTH;
+			}
+		}
+		throw new IllegalStateException("Illegal direction: " + d);
 	}
 
-	public Direction turnLeft() {
-		switch(this) {
+	/*
+	 * returns Direction d as a string or null if direction is invalid.
+	 */
+	public static String stringValue(Direction d) {
+		String dirString = switch(d) {
 			case NORTH -> {
-				return WEST;
+				yield "N";
 			}
 			case EAST -> {
-				return NORTH;
+				yield "E";
 			}
 			case SOUTH -> {
-				return EAST;
+				yield "S";
 			}
 			case WEST -> {
-				return SOUTH;
+				yield "W";
 			}
-		}
-		throw new IllegalStateException("Illegal direction: " + this);
+		};
+		return dirString;
 	}
 } 
 
