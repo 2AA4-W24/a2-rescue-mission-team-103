@@ -53,7 +53,6 @@ public class ExplorationManager {
 				counter = 0;
 			}
 			
-			
 		}
 		
 		if(status.equals("find-island")){
