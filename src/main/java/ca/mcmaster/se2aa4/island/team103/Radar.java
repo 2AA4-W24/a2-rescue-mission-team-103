@@ -1,13 +1,13 @@
-package ca.mcmaster.se2aa4.island.team103.Navigation;
+package ca.mcmaster.se2aa4.island.team103;
 
 import org.json.JSONObject;
 
 public class Radar {
-	enum Direction{
-		NORTH,
-		WEST,
-		SOUTH,
-		EAST
+
+	public JSONObject scan() {
+		JSONObject scan = new JSONObject();
+		scan.put("action","scan");
+		return scan;
 	}
 
 	public JSONObject scanForward(Direction current_heading){
