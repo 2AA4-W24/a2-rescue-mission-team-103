@@ -11,9 +11,11 @@ public class IslandRecon {
 	 * such that it ends up right next to where it turned around and does not miss any potential scan area.
 	*/
 	private final Logger logger = LogManager.getLogger(); 
+	private List<JSONObject> scanResults = new ArrayList<JSONObject>();
 	private enum Status {
 		Unknown,
 		Echo,
+		EchoDir,
 		Move,
 		Scan,
 		TurnStage1,
@@ -24,11 +26,12 @@ public class IslandRecon {
 	}
 	private Status status = Status.Unknown;
 	private String turn_status = "left";
+	private String scan_status = "left";
+	private boolean scanning_over = true;
 
-	public JSONObject islandScan(Drone drone, ResponseHistory respHistory){
+	public JSONObject islandScan(Drone drone, ResponseHistory respHistory, String initial_heading){
 
 		JSONObject decision = new JSONObject();
-		
 		switch(status){
 			case Unknown:
 				decision = drone.turnLeft();
@@ -36,14 +39,23 @@ public class IslandRecon {
 				break;
 			case Scan:
 				decision = drone.scan();
-				status = Status.Echo;
+				status = Status.EchoDir;
 				break;
+			case EchoDir:
+				if(scan_status.equals("left")){
+					decision = drone.scanLeft();
+				}else{
+					decision = drone.scanRight();
+				}
+				status = Status.Echo;
 			case Echo:
 				decision = drone.scanForward();
 				status = Status.Move;
 				break;
 			case Move:
-				// If the land is out of range we have reached the end of the island and can turn around.
+				// If the land is out of range we have reached the end of the island and can turn around. Also appending second last (scan left/right) item to scan results.
+				// This will be used to see if the scanning can be completed or not.
+				scanResults.add(respHistory.getItems(-2).get(0));
 				if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE")){
 					decision = drone.flyForwards();
 					status = Status.TurnStage1;
@@ -53,6 +65,10 @@ public class IslandRecon {
 				}
 				break;
 			case TurnStage1:
+				for(int i=0; i<scanResults.size(); i++){
+					scanning_over = scanning_over && scanResults.get(i).getString("found").equals("OUT_OF_RANGE");
+				}
+				scanResults = new ArrayList<JSONObject>();
 				if(turn_status.equals("left")){
 					decision = drone.turnLeft();
 				}else{
@@ -93,9 +109,14 @@ public class IslandRecon {
 				}
 				status = Status.Scan;
 				break;
+			
+		}
+		if(scanning_over && status.equals(Status.TurnStage1)){
+			decision.put("over","true");
 		}
 
 		return decision;
 		
 	}
+}
 }
