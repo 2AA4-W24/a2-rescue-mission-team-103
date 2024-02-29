@@ -20,7 +20,7 @@ public class IslandLocator {
 	}
 
 	private final Logger logger = LogManager.getLogger();
-	private Action next_action;
+	private Action next_action = Action.ECHO_RIGHT;
 	private Phase phase = Phase.SEARCH;
 	private JSONObject last_result;
 	private String last_echo_found;
@@ -28,14 +28,10 @@ public class IslandLocator {
 
 	
 	public Optional<JSONObject> locate(Drone drone, ResponseHistory history, Direction start_heading) {
-		/* locates the island by travelling in a diagonal, then beelining for the first echo that returns "GROUND" 
-		 * Returns a JSONObject where the key "decision" contains the action command, and "result" contains "action-required" if
-		 * an action command is being passed in "decision", and will contain "arrived" when the drone has reached the island.
-		 * If "result" contains "arrived", the ouput JSONObject will NOT contain the key "decision"
-		*/
+		/* */
 		JSONObject decision = new JSONObject();
-
 		switch (phase) {
+			
 			case Phase.SEARCH:
 				switch (next_action) {
 					case Action.ECHO_RIGHT:
@@ -43,14 +39,19 @@ public class IslandLocator {
 						next_action = Action.ECHO_FORWARD;
 						break;
 					case Action.ECHO_FORWARD:
-						decision = drone.scanForward();
-						next_action = Action.ECHO_LEFT;
 						last_result = history.getLast();
+						next_action = Action.ECHO_LEFT;
 						last_echo_found = last_result.getJSONObject("extras").getString("found");
+						logger.info(last_echo_found);
+						logger.info(last_echo_found.equals("GROUND"));
 						if(last_echo_found.equals("GROUND")) {
+							logger.info("Ground Found on right scan, turning right...");
 							phase = Phase.UTURN_F;
 							decision = drone.turnRight();
+						} else {
+							decision = drone.scanForward();
 						}
+						logger.info(decision.toString());
 						break;
 					case Action.ECHO_LEFT:
 						next_action = Action.FORWARD;
@@ -85,6 +86,8 @@ public class IslandLocator {
 				break;
 
 		}
+		logger.info("returned: " + decision.toString());
+		return Optional.of(decision);
 	}
 	
 }
