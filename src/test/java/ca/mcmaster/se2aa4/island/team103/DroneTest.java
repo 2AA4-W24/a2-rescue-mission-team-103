@@ -26,8 +26,7 @@ public class DroneTest {
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
 		result = drone.turnRight();
-		
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -37,7 +36,7 @@ public class DroneTest {
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
 		result = drone.turnRight();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -47,7 +46,7 @@ public class DroneTest {
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
 		result = drone.turnRight();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -57,7 +56,7 @@ public class DroneTest {
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
 		result = drone.turnRight();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -67,7 +66,7 @@ public class DroneTest {
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
 		result = drone.turnLeft();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());	
 	}
 
 	@Test
@@ -77,7 +76,7 @@ public class DroneTest {
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
 		result = drone.turnLeft();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -87,7 +86,7 @@ public class DroneTest {
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
 		result = drone.turnLeft();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 	
 	@Test
@@ -97,7 +96,7 @@ public class DroneTest {
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
 		result = drone.turnLeft();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -105,7 +104,7 @@ public class DroneTest {
 		drone = new Drone(Direction.NORTH);
 		expected.put("action", "fly");
 		result = drone.flyForwards();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -113,7 +112,7 @@ public class DroneTest {
 		drone = new Drone(Direction.NORTH);	
 		expected.put("action", "scan");
 		result = drone.scan();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -123,7 +122,7 @@ public class DroneTest {
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
 		result = drone.scanLeft();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -133,7 +132,7 @@ public class DroneTest {
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
 		result = drone.scanRight();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 
 	@Test
@@ -143,6 +142,6 @@ public class DroneTest {
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
 		result = drone.scanForward();
-		assertEquals(result.toString(), expected.toString());
+		assertEquals(expected.toString(), result.toString());
 	}
 }

@@ -12,15 +12,16 @@ import org.apache.logging.log4j.Logger;
 
 public class IslandLocatorTest {
 
-	JSONObject detection = new JSONObject();
-	JSONObject expected = new JSONObject();
-	ResponseHistory history = new ResponseHistory();
-	Drone drone = new Drone(Direction.EAST);
-	IslandLocator locator = new IslandLocator();
+	JSONObject detection;
+	JSONObject expected;
+	ResponseHistory history;
+	Drone drone;
+	Drone drone_reference;
+	IslandLocator locator;
 	Optional<JSONObject> result;
 	JSONObject last_history;
 	JSONObject extras;
-	Logger logger = LogManager.getLogger();
+	final Logger logger = LogManager.getLogger();
 
 	@BeforeEach
 	public void reset() {
@@ -28,9 +29,10 @@ public class IslandLocatorTest {
 		expected = new JSONObject();
 		history = new ResponseHistory();
 		drone = new Drone(Direction.EAST);
+		drone_reference = new Drone(Direction.EAST);
 		locator = new IslandLocator();
 	}
-	/* 
+	
 	@Test
 	public void testSearch() {
 		result = locator.locate(drone, history, Direction.EAST);
@@ -63,11 +65,11 @@ public class IslandLocatorTest {
 		expected = drone.flyForwards();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
-	} */
+	} 
 
 	@Test
 	public void testFoundR() {
-		logger.info("Started TestFoundR");
+		locator.locate(drone, history, Direction.EAST);
 		last_history = new JSONObject();
 		extras = new JSONObject();
 		extras.put("found", "GROUND");
@@ -77,15 +79,23 @@ public class IslandLocatorTest {
 
 		result = locator.locate(drone, history, Direction.EAST);
 
-		expected = drone.turnRight();
+		expected = drone_reference.turnRight();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 	}
 
 	@Test
 	public void testFoundF() {
-		logger.info("started testfoundF");
-		result = locator.locate(drone, history, Direction.EAST);
+		locator.locate(drone, history, Direction.EAST);
+
+		last_history = new JSONObject();
+		extras = new JSONObject();
+		extras.put("found", "OUT_OF_RANGE");
+		extras.put("range", 10);
+		last_history.put("extras", extras);
+		history.addItem(last_history);
+
+		locator.locate(drone, history, Direction.EAST);
 
 		last_history = new JSONObject();
 		extras = new JSONObject();
@@ -96,7 +106,7 @@ public class IslandLocatorTest {
 
 		result = locator.locate(drone, history, Direction.EAST);
 
-		expected = drone.flyForwards();
+		expected = drone_reference.turnRight();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 
@@ -104,8 +114,7 @@ public class IslandLocatorTest {
 
 	@Test
 	public void testFoundL() {
-		logger.info("started test found L");
-		result = locator.locate(drone, history, Direction.EAST);
+		locator.locate(drone, history, Direction.EAST);
 
 		last_history = new JSONObject();
 		extras = new JSONObject();
@@ -114,7 +123,8 @@ public class IslandLocatorTest {
 		last_history.put("extras", extras);
 		history.addItem(last_history);
 		
-		result = locator.locate(drone, history, Direction.EAST);
+		locator.locate(drone, history, Direction.EAST);
+		locator.locate(drone, history, Direction.EAST);
 
 		last_history = new JSONObject();
 		extras = new JSONObject();
@@ -124,8 +134,7 @@ public class IslandLocatorTest {
 		history.addItem(last_history);
 
 		result = locator.locate(drone, history, Direction.EAST);
-
-		expected = drone.turnLeft();
+		expected = drone_reference.turnLeft();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 	}

@@ -42,13 +42,12 @@ public class ExplorationManager {
 		
 		if(status.equals("find-island")){
 			Optional<JSONObject> output = islandLocator.locate(drone, respHistory, start_heading);
-			counter++;
 			if(output.isPresent()) {
 				decision = output.get();
 			} else {
 				logger.info("Island found, moving on.");
-				status = "find-coast";
-				counter = 0;
+				//status = "find-coast";
+				decision.put("action", "stop");
 			}
 		}
 
