@@ -46,8 +46,7 @@ public class ExplorationManager {
 				decision = output.get();
 			} else {
 				logger.info("Island found, moving on.");
-				//status = "find-coast";
-				decision.put("action", "stop");
+				status = "find-coast";
 			}
 		}
 

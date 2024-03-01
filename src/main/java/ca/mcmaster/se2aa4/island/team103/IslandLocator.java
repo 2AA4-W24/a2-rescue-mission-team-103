@@ -47,7 +47,8 @@ public class IslandLocator {
 						next_action = Action.ECHO_LEFT;
 						last_echo_found = last_result.getJSONObject("extras").getString("found");
 						if(last_echo_found.equals("GROUND")) {
-							phase = Phase.UTURN_F;
+							phase = Phase.UTURN_R;
+							logger.info("Exiting Search Phase -> UTURN_R");
 							decision = drone.turnRight();
 						} else {
 							decision = drone.scanForward();
@@ -59,7 +60,8 @@ public class IslandLocator {
 						last_echo_found = last_result.getJSONObject("extras").getString("found");
 						last_echo_dist = last_result.getJSONObject("extras").getInt("range");
 						if(last_echo_found.equals("GROUND") && last_echo_dist == 2) {
-							phase = Phase.UTURN_F;
+							phase = Phase.TRAVEL_TO_END;
+							logger.info("Exiting Search Phase -> TRAVEL_TO_END");
 							decision = drone.turnRight();
 						} else {
 							decision = drone.scanLeft();
@@ -71,6 +73,7 @@ public class IslandLocator {
 						last_echo_found = last_result.getJSONObject("extras").getString("found");
 						if(last_echo_found.equals("GROUND")) {
 							phase = Phase.UTURN_L;
+							logger.info("Exiting Search Phase -> UTURN_L");
 							decision = drone.turnLeft();
 						} else {
 							decision = drone.flyForwards();
@@ -81,6 +84,7 @@ public class IslandLocator {
 						
 				}
 				break;
+
 			case Phase.TRAVEL_TO_END:
 				switch (trvl_to_end_count) {
 					case 0:
@@ -91,6 +95,7 @@ public class IslandLocator {
 						dist = last_result.getJSONObject("extras").getInt("range");
 						if(dist <= 1) {
 							phase = Phase.UTURN_F;
+							logger.info("Exiting TRAVEL_TO_END -> UTURN_F, dist <= 1");
 							decision = drone.scan();
 						} else {
 							decision = drone.flyForwards();
@@ -102,6 +107,7 @@ public class IslandLocator {
 						} else {
 							decision = drone.flyForwards();
 							phase = Phase.UTURN_F;
+							logger.info("Exiting TRAVEL_TO_END -> UTURN_F");
 						}
 						break;
 				}
@@ -115,41 +121,49 @@ public class IslandLocator {
 					case 1:
 						decision = drone.turnLeft();
 						phase = Phase.FINAL_FRWD;
+						logger.info("Exiting UTURN_F -> FINAL_FRWD");
 						break;
 				}
 				break;
 			case Phase.UTURN_R:
+				logger.info("Entering UTURN_R Decision: " + uturn_stage);
 				switch (uturn_stage) {
-					case 0 | 1:
+					case 0:
+						logger.info("UTURN_R has made decision case 0|1");
 						decision = drone.turnRight();
 						break;
-					case 2:
+					case 1:
 						decision = drone.flyForwards();
 						break;
-					case 3 | 4:
+					case 2:
+					case 3:
 						decision = drone.turnRight();
 						break;
-					case 5:
+					case 4:
 						decision = drone.turnRight();
 						phase = Phase.FINAL_FRWD;
+						logger.info("Exiting UTURN_R -> FINAL_FRWD");
 						break;
 				}
+				logger.info("Exiting UTURN_R Decision: " + decision);
 				uturn_stage++;
 				break;
 			case Phase.UTURN_L:
 				switch (uturn_stage) {
-					case 0 | 1:
+					case 0:
 						decision = drone.turnLeft();
 						break;
-					case 2:
+					case 1:
 						decision = drone.flyForwards();
 						break;
-					case 3 | 4:
+					case 2:
+					case 3:
 						decision = drone.turnLeft();
 						break;
-					case 5:
+					case 4:
 						decision = drone.turnLeft();
 						phase = Phase.FINAL_FRWD;
+						logger.info("Exiting UTURN_L -> FINAL_FRWD");
 						break;
 				}
 				uturn_stage++;
@@ -173,6 +187,7 @@ public class IslandLocator {
 						if(trvl_to_end_count < dist) {
 							decision = drone.flyForwards();
 						} else {
+							logger.info("Exiting FINAL_FRWD -> Returning empty");
 							return Optional.empty();
 						}
 						break;
