@@ -102,7 +102,7 @@ public class IslandLocator {
 						}
 						break;
 					default:
-						if(trvl_to_end_count < dist - 2) {
+						if(trvl_to_end_count < dist - 1) {
 							decision = drone.flyForwards();
 						} else {
 							decision = drone.flyForwards();
@@ -124,12 +124,11 @@ public class IslandLocator {
 						logger.info("Exiting UTURN_F -> FINAL_FRWD");
 						break;
 				}
+				uturn_stage++;
 				break;
 			case Phase.UTURN_R:
-				logger.info("Entering UTURN_R Decision: " + uturn_stage);
 				switch (uturn_stage) {
 					case 0:
-						logger.info("UTURN_R has made decision case 0|1");
 						decision = drone.turnRight();
 						break;
 					case 1:
@@ -145,7 +144,6 @@ public class IslandLocator {
 						logger.info("Exiting UTURN_R -> FINAL_FRWD");
 						break;
 				}
-				logger.info("Exiting UTURN_R Decision: " + decision);
 				uturn_stage++;
 				break;
 			case Phase.UTURN_L:
