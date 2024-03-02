@@ -1,6 +1,6 @@
 package ca.mcmaster.se2aa4.island.team103;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,273 +8,196 @@ import org.json.JSONObject;
 
 public class IslandLocator {
 
-	private final Logger logger = LogManager.getLogger();
-	private Action next_move;
-	private Action last_move;
-
-	public JSONObject locate(Drone drone, ResponseHistory history, String starting_location, Direction start_heading, int counter) {
-		/* locates the island by travelling in a diagonal, then beelining for the first echo that returns "GROUND" 
-		 * Returns a JSONObject where the key "decision" contains the action command, and "result" contains "action-required" if
-		 * an action command is being passed in "decision", and will contain "arrived" when the drone has reached the island.
-		 * If "result" contains "arrived", the ouput JSONObject will NOT contain the key "decision"
-		*/
-		JSONObject decision = new JSONObject();
-		JSONObject output = new JSONObject();
-		if(counter == 0) {
-			// Making sure our orientation is correct (i.e. facing EAST for NorthWest corner)
-			switch(starting_location) {
-				case "NW":
-					if (start_heading == Direction.EAST) {
-						decision = drone.flyForwards();
-					} else if (start_heading == Direction.SOUTH){
-						decision = drone.turnLeft();
-					}
-					next_move = Action.TRIGHT;
-					break;
-					
-				case "NE":
-					if (start_heading == Direction.WEST) {
-						decision = drone.flyForwards();
-					} else if (start_heading == Direction.SOUTH) {
-						decision = drone.turnRight();
-					}
-					next_move = Action.TLEFT;
-					break;
-
-				case "SW":
-					if (start_heading == Direction.EAST) {
-						decision = drone.flyForwards();
-					} else if (start_heading == Direction.NORTH) {
-						decision = drone.turnRight();
-					}
-					next_move = Action.TLEFT;
-					break;
-				
-				case "SE":
-					if (start_heading == Direction.WEST) {
-						decision = drone.flyForwards();
-					} else if (start_heading == Direction.NORTH) {
-						decision = drone.turnLeft();
-					}
-					next_move = Action.TRIGHT;
-					break;
-			}
-			output.put("decision", decision);
-			output.put("result", "action-required");	
-
-		} else {
-
-			JSONObject last_result = history.getLast();
-			JSONObject echo_result;
-
-			// Follows repeating pattern until echo returns "GROUND" (Turn right -> fly forwards -> scan -> echo forwards -> turn left -> fly forwards -> etc...)
-			// After echo returns "GROUND", flies straight until it reaches the island
-			// The next move is controlled by the next_move and last_move variables
-
-			switch(next_move) {
-
-				case Action.TRIGHT:
-					echo_result = last_result.getJSONObject("extras");
-
-					// If ground is found
-					if (echo_result.has("found")){
-						if (echo_result.getString("found").equals("GROUND")) {
-							logger.info("Island Spotted. Flying towards it.");
-
-							if(echo_result.getInt("range") == 0) {
-								logger.info("Arrived at Island");
-								output.put("result", "arrived");
-								break;
-							}
-							decision = drone.flyForwards();
-							output.put("decision", decision);
-							output.put("result", "action-required");
-							next_move = Action.SCAN;
-							last_move = Action.FORWARD;
-							break;
-						}
-					}
-					
-					// If ground is not found
-					decision = drone.turnRight();
-					output.put("decision", decision);
-					output.put("result", "action-required");
-					next_move = Action.FORWARD;
-					last_move = Action.TRIGHT;
-					break;
-
-				case Action.TLEFT:
-					echo_result = last_result.getJSONObject("extras");
-					
-					// If ground is found
-					if (echo_result.has("found")){
-						if (echo_result.getString("found").equals("GROUND")) {
-							logger.info("Island Spotted. Flying towards it.");
-
-							if(echo_result.getInt("range") == 0) {
-								logger.info("Arrived at Island");
-								output.put("result", "arrived");
-								break;
-							}
-							decision = drone.flyForwards();
-							output.put("decision", decision);
-							output.put("result", "action-required");
-							next_move = Action.SCAN;
-							last_move = Action.FORWARD;
-							break;
-						}
-					}
-					
-					// If ground is not found
-					decision = drone.turnLeft();
-					output.put("decision", decision);
-					output.put("result", "action-required");
-					next_move = Action.FORWARD;
-					last_move = Action.TLEFT;
-					break;
-
-				case Action.SCAN:
-					decision = drone.scan();
-					output.put("decision", decision);
-					output.put("result", "action-required");
-					next_move = Action.ECHO_FORWARD;
-					break;
-
-				case Action.ECHO_FORWARD:
-					decision = drone.scanForward();
-					output.put("decision", decision);
-					output.put("result", "action-required");
-
-					if (last_move == Action.TRIGHT) {
-						next_move = Action.TLEFT;
-					} else if (last_move == Action.TLEFT) {
-						next_move = Action.TRIGHT;
-					} else {
-						next_move = Action.FORWARD;
-					}
-					break;
-
-				case Action.FORWARD:
-					echo_result = last_result.getJSONObject("extras");
-					if (last_move == Action.FORWARD) {
-						if(echo_result.getInt("range") == 0) {
-							logger.info("Arrived at Island");
-							output.put("result", "arrived");
-							break;
-						}
-					}
-					decision = drone.flyForwards();
-					output.put("decision", decision);
-					output.put("result", "action-required");
-					//last_move = Action.FORWARD;
-					next_move = Action.SCAN;
-					break;
-					
-				default:
-					break;
-			}
-		}
-		return output;
+	enum Phase {
+		SEARCH,
+		TRAVEL_F,
+		TRAVEL_R,
+		TRAVEL_L,
+		TRAVEL_TO_END,
+		UTURN_F,
+		UTURN_R,
+		UTURN_L,
+		FINAL_FRWD
 	}
 
-	public JSONObject getStartingLocation(Drone drone, int count, ResponseHistory memory, Direction start_heading) {
-		/* Gets the starting corner of the drone. 
-		 * Performs scans, returning the scan command in the "decision" key in the returned JSON.
-		 * If a scan command is being issued, the "position" key will be set to "action-required".
-		 * Once the position has been determined there will be no "decision" key, and "position" key will be set to the starting corner.
-		 */
+	private final Logger logger = LogManager.getLogger();
+	private Action next_action = Action.ECHO_RIGHT;
+	private Phase phase = Phase.SEARCH;
+	private JSONObject last_result;
+	private String last_echo_found;
+	private int last_echo_dist;
+	private int uturn_stage = 0;
+	private int dist;
+	private int trvl_to_end_count = 0;
+
+	
+	public Optional<JSONObject> locate(Drone drone, ResponseHistory history, Direction start_heading) {
+		/* */
 		JSONObject decision = new JSONObject();
-		if(count == 0){
-			decision.put("decision", drone.scanLeft());
-			decision.put("position", "action-required");
-			logger.info("[getStartingLocation] Issuing scanLeft command");
-
-		}else if(count == 1){
-			decision.put("decision", drone.scanForward());
-			decision.put("position", "action-required");
-			logger.info("[getStartingLocation] Issuing scanForward command");
-
-		}else if(count == 2) {
-			decision.put("decision", drone.scanRight());
-			decision.put("position", "action-required");
-			logger.info("[getStartingLocation] Issuing scanRight command");
-
-		} else {
-			List<JSONObject> scans = memory.getItems(-3);
-			int left_scan = scans.get(0).getJSONObject("extras").getInt("range");
-			int forward_scan = scans.get(1).getJSONObject("extras").getInt("range");
-			int right_scan = scans.get(2).getJSONObject("extras").getInt("range");
-			boolean left_wall = (left_scan == 0);
-			boolean forward_wall = (forward_scan == 0);
-			boolean right_wall = (right_scan == 0);
-
-			switch(start_heading) {
-				case NORTH:
-					if (forward_wall & left_wall) {
-						decision.put("position", "NW");
-
-					} else if (forward_wall & right_wall) {
-						decision.put("position", "NE");
-
-					} else if (!forward_wall & left_wall) {
-						decision.put("position", "SW");
-
-					} else if (!forward_wall & right_wall) {
-						decision.put("position", "SE");
-					}
-					break;
-
-				case SOUTH:
-					if (forward_wall & left_wall) {
-						decision.put("position", "SE");
-
-					} else if (forward_wall & right_wall) {
-						decision.put("position", "SW");
-
-					} else if (!forward_wall & left_wall) {
-						decision.put("position", "NE");
-
-					} else if (!forward_wall & right_wall) {
-						decision.put("position", "NW");
-					}
-					break;
-
-				case EAST:
-					if (forward_wall & left_wall) {
-						decision.put("position", "NE");
-
-					} else if (forward_wall & right_wall) {
-						decision.put("position", "SE");
-
-					} else if (!forward_wall & left_wall) {
-						decision.put("position", "NW");
-
-					} else if (!forward_wall & right_wall) {
-						decision.put("position", "SW");
-					}
-					break;
-
-				case WEST:
-					if (forward_wall & left_wall) {
-						decision.put("position", "SW");
-
-					} else if (forward_wall & right_wall) {
-						decision.put("position", "NW");
-
-					} else if (!forward_wall & left_wall) {
-						decision.put("position", "SE");
-						
-					} else if (!forward_wall & right_wall) {
-						decision.put("position", "NE");
-					}
-					break;
-			}
-			String pos = decision.getString("position");
-			logger.info("Starting Location Determined: {}", pos);
+		switch (phase) {
 			
+			case Phase.SEARCH:
+				switch (next_action) {
+					case Action.ECHO_RIGHT:
+						decision = drone.scanRight();
+						next_action = Action.ECHO_FORWARD;
+						break;
+					case Action.ECHO_FORWARD:
+						last_result = history.getLast();
+						next_action = Action.ECHO_LEFT;
+						last_echo_found = last_result.getJSONObject("extras").getString("found");
+						if(last_echo_found.equals("GROUND")) {
+							phase = Phase.UTURN_R;
+							logger.info("Exiting Search Phase -> UTURN_R");
+							decision = drone.turnRight();
+						} else {
+							decision = drone.scanForward();
+						}
+						break;
+					case Action.ECHO_LEFT:
+						next_action = Action.FORWARD;
+						last_result = history.getLast();
+						last_echo_found = last_result.getJSONObject("extras").getString("found");
+						last_echo_dist = last_result.getJSONObject("extras").getInt("range");
+						if(last_echo_found.equals("GROUND") && last_echo_dist == 2) {
+							phase = Phase.TRAVEL_TO_END;
+							logger.info("Exiting Search Phase -> TRAVEL_TO_END");
+							decision = drone.turnRight();
+						} else {
+							decision = drone.scanLeft();
+						}
+						break;
+					case Action.FORWARD:
+						next_action = Action.ECHO_RIGHT;
+						last_result = history.getLast();
+						last_echo_found = last_result.getJSONObject("extras").getString("found");
+						if(last_echo_found.equals("GROUND")) {
+							phase = Phase.UTURN_L;
+							logger.info("Exiting Search Phase -> UTURN_L");
+							decision = drone.turnLeft();
+						} else {
+							decision = drone.flyForwards();
+						}
+						break;
+					default:
+						logger.error("next_action is not in an acceptable state");
+						
+				}
+				break;
+
+			case Phase.TRAVEL_TO_END:
+				switch (trvl_to_end_count) {
+					case 0:
+						decision = drone.scanForward();
+						break;
+					case 1:
+						last_result = history.getLast();
+						dist = last_result.getJSONObject("extras").getInt("range");
+						if(dist <= 1) {
+							phase = Phase.UTURN_F;
+							logger.info("Exiting TRAVEL_TO_END -> UTURN_F, dist <= 1");
+							decision = drone.scan();
+						} else {
+							decision = drone.flyForwards();
+						}
+						break;
+					default:
+						if(trvl_to_end_count < dist - 1) {
+							decision = drone.flyForwards();
+						} else {
+							decision = drone.flyForwards();
+							phase = Phase.UTURN_F;
+							logger.info("Exiting TRAVEL_TO_END -> UTURN_F");
+						}
+						break;
+				}
+				trvl_to_end_count++;
+				break;
+			case Phase.UTURN_F:
+				switch (uturn_stage) {
+					case 0:
+						decision = drone.turnLeft();
+						break;
+					case 1:
+						decision = drone.turnLeft();
+						phase = Phase.FINAL_FRWD;
+						logger.info("Exiting UTURN_F -> FINAL_FRWD");
+						break;
+				}
+				uturn_stage++;
+				break;
+			case Phase.UTURN_R:
+				switch (uturn_stage) {
+					case 0:
+						decision = drone.turnRight();
+						break;
+					case 1:
+						decision = drone.flyForwards();
+						break;
+					case 2:
+					case 3:
+						decision = drone.turnRight();
+						break;
+					case 4:
+						decision = drone.turnRight();
+						phase = Phase.FINAL_FRWD;
+						logger.info("Exiting UTURN_R -> FINAL_FRWD");
+						break;
+				}
+				uturn_stage++;
+				break;
+			case Phase.UTURN_L:
+				switch (uturn_stage) {
+					case 0:
+						decision = drone.turnLeft();
+						break;
+					case 1:
+						decision = drone.flyForwards();
+						break;
+					case 2:
+					case 3:
+						decision = drone.turnLeft();
+						break;
+					case 4:
+						decision = drone.turnLeft();
+						phase = Phase.FINAL_FRWD;
+						logger.info("Exiting UTURN_L -> FINAL_FRWD");
+						break;
+				}
+				uturn_stage++;
+				break;
+			case Phase.FINAL_FRWD:
+				switch (trvl_to_end_count) {
+					case 0:
+						decision = drone.scanForward();
+						break;
+					case 1:
+						last_result = history.getLast();
+						dist = last_result.getJSONObject("extras").getInt("range");
+						if(dist == 0) {
+							phase = Phase.UTURN_F;
+							decision = drone.scan();
+						} else {
+							decision = drone.flyForwards();
+						}
+						break;
+					default:
+						if(trvl_to_end_count < dist) {
+							decision = drone.flyForwards();
+						} else {
+							logger.info("Exiting FINAL_FRWD -> Returning empty");
+							return Optional.empty();
+						}
+						break;
+				}
+				trvl_to_end_count++;
+				break;
+				
+			default:
+				logger.error("phase is not in an acceptable state");
+
 		}
-		
-		return decision;
+		return Optional.of(decision);
 	}
 	
 }
