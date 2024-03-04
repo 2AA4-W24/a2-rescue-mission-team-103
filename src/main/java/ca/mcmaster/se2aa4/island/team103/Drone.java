@@ -20,6 +20,7 @@ public class Drone {
 
     public void logCost(int cost) {
         battery.log(cost);
+        logger.info("Battery Remaining: {}", battery.getBattery());
     }
 
     public JSONObject flyForwards() {

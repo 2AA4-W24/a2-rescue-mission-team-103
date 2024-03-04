@@ -9,7 +9,7 @@ public class Battery {
 	}
 
 	public void log(int cost) {
-		value += cost;
+		value -= cost;
 	}
 
 	public boolean canContinue() {

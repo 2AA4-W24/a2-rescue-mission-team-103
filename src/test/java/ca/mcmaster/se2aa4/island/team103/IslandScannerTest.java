@@ -29,8 +29,8 @@ public class IslandScannerTest {
 		detection = new JSONObject();
 		expected = new JSONObject();
 		history = new ResponseHistory();
-		drone = new Drone(Direction.EAST);
-		drone_reference = new Drone(Direction.EAST);
+		drone = new Drone(Direction.EAST, 100000);
+		drone_reference = new Drone(Direction.EAST, 100000);
 		scanner = new IslandRecon();
 	}
 
