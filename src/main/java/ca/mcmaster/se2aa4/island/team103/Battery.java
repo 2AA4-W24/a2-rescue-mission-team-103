@@ -2,12 +2,12 @@ package ca.mcmaster.se2aa4.island.team103;
 
 public class Battery {
 	// For tracking battery percentage and ensuring that power is not too low to continue.
-	
+	private int value;
 	public Battery(int starting_level) {
 		// Initializes battery with starting battery level (passed in)
-
+		this.value = starting_level;
 	}
-	public void getBattery(){
-		
+	public int getBattery(){
+		return this.value;
 	}
 }
