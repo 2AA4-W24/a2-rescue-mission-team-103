@@ -30,6 +30,10 @@ public class ResponseHistory {
 		return responseHistory.subList(start, end);
 	}
 
+	public JSONObject getItem(int index){
+		return responseHistory.get(index);
+	}
+
 	public int getSize(){
 		return responseHistory.size();
 	}

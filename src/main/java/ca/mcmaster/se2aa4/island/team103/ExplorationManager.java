@@ -12,7 +12,6 @@ public class ExplorationManager {
 	private ResponseHistory respHistory = new ResponseHistory();
 	private NavHistory navHistory = new NavHistory();
 	private String status = "find-island";
-	private int coast_status = 1;
 	private IslandLocator islandLocator = new IslandLocator();
 	private IslandRecon islandMapper = new IslandRecon();
 	private Drone drone;
@@ -21,6 +20,7 @@ public class ExplorationManager {
 	private Battery battery_tracker;
 
 	public ExplorationManager(String heading, Integer battery_start_level) {
+		
 		// Initializes start heading, battery level and drone
 		if(heading == "N") {
 			start_heading = Direction.NORTH;
@@ -51,14 +51,32 @@ public class ExplorationManager {
 		}
 
 		if(status.equals("find-coast")){
-			JSONObject output = islandMapper.islandScan(drone, respHistory, "TESTSTRING");
+			/* 
+			JSONObject output = islandMapper.islandScan(drone, respHistory);
 			logger.info("OUTPUT: {}",output);
-			counter++;
-			if(output.getString("stop").equals("true")){
-				decision.put("action","stop");
+			if(output.has("over")){
+				if(output.getString("over").equals("true")){
+					logger.info("Island scan completed, moving on.");
+					decision.put("action","stop");
+				}
 			}else{
-				decision = output;
+				logger.info(output.has("response"));
+				decision = output.getJSONObject("response");
+				logger.info("Response: {}",decision);
 			}
+			*/
+			JSONObject output = islandMapper.islandScan(drone, respHistory);
+			counter++;
+			if(output.has("over") || counter > 300){
+				if(output.getString("over").equals("true") || counter > 300){
+					logger.info("Island scan completed, moving on.");
+					decision.put("action","stop");
+				}
+			}else{
+				decision = output.getJSONObject("response");
+			}
+			
+			
 		}
 
         return decision;
