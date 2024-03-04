@@ -18,7 +18,7 @@ public class IslandScannerTest {
 	ResponseHistory history;
 	Drone drone;
 	Drone drone_reference;
-	IslandRecon2 scanner;
+	IslandRecon scanner;
 	Optional<JSONObject> result;
 	JSONObject last_history;
 	JSONObject extras;
@@ -31,7 +31,7 @@ public class IslandScannerTest {
 		history = new ResponseHistory();
 		drone = new Drone(Direction.EAST);
 		drone_reference = new Drone(Direction.EAST);
-		scanner = new IslandRecon2();
+		scanner = new IslandRecon();
 	}
 
 	public void addOORtoHistory() {

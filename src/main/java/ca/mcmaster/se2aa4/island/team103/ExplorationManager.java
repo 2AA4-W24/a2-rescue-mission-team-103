@@ -13,7 +13,7 @@ public class ExplorationManager {
 	private NavHistory navHistory = new NavHistory();
 	private String status = "find-island";
 	private IslandLocator islandLocator = new IslandLocator();
-	private IslandRecon2 islandMapper = new IslandRecon2();
+	private IslandRecon islandMapper = new IslandRecon();
 	private Drone drone;
 	private int counter = 0;
 	private Direction start_heading;
