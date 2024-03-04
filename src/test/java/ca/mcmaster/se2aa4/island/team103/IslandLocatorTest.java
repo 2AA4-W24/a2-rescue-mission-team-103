@@ -29,8 +29,8 @@ public class IslandLocatorTest {
 		detection = new JSONObject();
 		expected = new JSONObject();
 		history = new ResponseHistory();
-		drone = new Drone(Direction.EAST);
-		drone_reference = new Drone(Direction.EAST);
+		drone = new Drone(Direction.EAST,100000);
+		drone_reference = new Drone(Direction.EAST,100000);
 		locator = new IslandLocator();
 	}
 
@@ -228,7 +228,7 @@ public class IslandLocatorTest {
 
 	@Test
 	public void testUTURNF() {
-		drone_reference = new Drone(Direction.SOUTH);
+		drone_reference = new Drone(Direction.SOUTH,100000);
 		setupUturnF();
 
 		result = locator.locate(drone, history, Direction.EAST);

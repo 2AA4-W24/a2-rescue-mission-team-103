@@ -7,6 +7,19 @@ public class Battery {
 		// Initializes battery with starting battery level (passed in)
 		this.value = starting_level;
 	}
+
+	public void log(int cost) {
+		value += cost;
+	}
+
+	public boolean canContinue() {
+		if (this.value > 20) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public int getBattery(){
 		return this.value;
 	}

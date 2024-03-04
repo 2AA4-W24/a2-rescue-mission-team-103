@@ -17,7 +17,6 @@ public class ExplorationManager {
 	private Drone drone;
 	private int counter = 0;
 	private Direction start_heading;
-	private Battery battery_tracker;
 
 	public ExplorationManager(String heading, Integer battery_start_level) {
 		
@@ -31,9 +30,7 @@ public class ExplorationManager {
 		} else {
 			start_heading = Direction.EAST;
 		}
-
-		battery_tracker = new Battery(battery_start_level);
-		drone = new Drone(start_heading);
+		drone = new Drone(start_heading, battery_start_level);
 		navHistory.addItem(new Coordinate(0,0));
 	}
 	
@@ -70,7 +67,7 @@ public class ExplorationManager {
 			if(output.has("over") || counter > 300){
 				if(output.getString("over").equals("true") || counter > 300){
 					logger.info("Island scan completed, moving on.");
-					decision.put("action","stop");
+					decision = drone.stop();
 				}
 			}else{
 				decision = output.getJSONObject("response");
@@ -82,8 +79,9 @@ public class ExplorationManager {
         return decision;
 	}
 
-	public void addInfo(JSONObject j){
-		respHistory.addItem(j);
+	public void addInfo(JSONObject response){
+		respHistory.addItem(response);
+		drone.logCost(response.getInt("cost"));
 	}
 
 	public JSONObject getLastInfo(){
