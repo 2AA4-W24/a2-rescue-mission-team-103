@@ -1,6 +1,7 @@
 package ca.mcmaster.se2aa4.island.team103;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -118,5 +119,4 @@ public class IslandRecon {
 		return decision;
 		
 	}
-}
 }
