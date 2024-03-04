@@ -48,32 +48,13 @@ public class ExplorationManager {
 		}
 
 		if(status.equals("find-coast")){
-			/* 
-			JSONObject output = islandMapper.islandScan(drone, respHistory);
+			Optional<JSONObject> output = islandMapper.islandScan(drone, respHistory);
 			logger.info("OUTPUT: {}",output);
-			if(output.has("over")){
-				if(output.getString("over").equals("true")){
-					logger.info("Island scan completed, moving on.");
-					decision.put("action","stop");
-				}
+			if(output.isPresent()){
+				decision = output.get();
 			}else{
-				logger.info(output.has("response"));
-				decision = output.getJSONObject("response");
-				logger.info("Response: {}",decision);
+				decision = drone.stop();
 			}
-			*/
-			JSONObject output = islandMapper.islandScan(drone, respHistory);
-			counter++;
-			if(output.has("over") || counter > 300){
-				if(output.getString("over").equals("true") || counter > 300){
-					logger.info("Island scan completed, moving on.");
-					decision = drone.stop();
-				}
-			}else{
-				decision = output.getJSONObject("response");
-			}
-			
-			
 		}
 
         return decision;

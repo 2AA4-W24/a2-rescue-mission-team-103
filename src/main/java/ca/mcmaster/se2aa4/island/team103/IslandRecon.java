@@ -3,129 +3,195 @@ package ca.mcmaster.se2aa4.island.team103;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 public class IslandRecon {
-	/* Intended to perform a full scan of the island. Goes lengthwise until the end, then performs three turns of one direction, then one of the opposite,
-	 * such that it ends up right next to where it turned around and does not miss any potential scan area.
-	*/
 	private final Logger logger = LogManager.getLogger(); 
-	private List<JSONObject> scanResults = new ArrayList<JSONObject>();
-	private enum Status {
-		Echo,
-		EchoDir,
-		Move,
-		Scan,
-		TurnStage1,
-		TurnStage2,
-		TurnStage3,
-		TurnStage4,
-		TurnStage5
-	}
-	private Status status = Status.Scan;
-	private String turn_status = "left";
-	private String scan_status = "left";
-	private List<Boolean> scanning_over = new ArrayList<Boolean>();
-	private boolean stop_scan = true;
 
-	public JSONObject islandScan(Drone drone, ResponseHistory respHistory){
-		
-		stop_scan = true;
+	private enum HLPhase{
+		Echo,
+		Decision,
+		Travel,
+		TurnWait,
+		Turn,
+		SpecialTurn
+	}
+
+	private enum TravelPhase{
+		Scan,
+		Move,
+		Decision
+	}
+
+	private enum TurnWaitPhase{
+		EchoSide,
+		Move
+	}
+
+	private enum TurnStages{
+		TurnStage1,
+		TurnStage2
+	}
+
+	private enum TurnStatus{
+		Left,
+		Right
+	}
+
+	private HLPhase HLstatus = HLPhase.Echo;
+	private TravelPhase travelStatus = TravelPhase.Move;
+	private TurnWaitPhase turn_wait = TurnWaitPhase.Move;
+	private TurnStages turn_status = TurnStages.TurnStage1;
+	private TurnStatus turn_direction = TurnStatus.Left;
+	private TurnStatus special_turn_direction = TurnStatus.Left;
+
+	private int SCAN_NUM = 1;
+	private int special_turn_counter = 0;
+
+	public Optional<JSONObject> islandScan(Drone drone, ResponseHistory respHistory){
 		JSONObject decision = new JSONObject();
-		switch(status){
-			case Scan:
-				decision.put("response",drone.scan());
-				status = Status.EchoDir;
-				break;
-			case EchoDir:
-				if(scan_status.equals("left")){
-					decision.put("response",drone.scanLeft());
-				}else{
-					decision.put("response",drone.scanRight());
-				}
-				status = Status.Echo;
-				break;
+
+		logger.info("IN PHASE, {}", HLstatus);
+		logger.info("SCAN_NUM, {}", SCAN_NUM);
+		logger.info("SPECIAL: {}",special_turn_counter);
+
+		switch(HLstatus){
 			case Echo:
-				decision.put("response",drone.scanForward());
-				status = Status.Move;
+				// Resetting turn status.
+				turn_status = TurnStages.TurnStage1;
+				decision = drone.scanForward();
+				HLstatus = HLPhase.Decision;
 				break;
-			case Move:
-				// If the land is out of range we have reached the end of the island and can turn around. Also appending second last (scan left/right) item to scan results.
-				// This will be used to see if the scanning can be completed or not.
-				scanResults.add(respHistory.getItems(-2).get(0));
+
+			case Decision:
 				if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE")){
-					decision.put("response",drone.flyForwards());
-					status = Status.TurnStage1;
-				}else{
-					decision.put("response",drone.flyForwards());
-					status = Status.Scan;
-				}
-				break;
-			case TurnStage1:
-				for(int i=0; i<scanResults.size(); i++){
-					scanning_over.add(scanResults.get(i).getJSONObject("extras").getString("found").equals("OUT_OF_RANGE"));
-				}
-				for(int i=0; i<scanning_over.size(); i++){
-					if(!scanning_over.get(i)){
-						stop_scan = false;
+					if(SCAN_NUM == 1){
+						if(turn_direction.equals(TurnStatus.Right)){
+							decision = drone.turnLeft();
+							special_turn_direction = TurnStatus.Left;
+						}else{
+							decision = drone.turnRight();
+							special_turn_direction = TurnStatus.Right;
+						}
+						HLstatus = HLPhase.SpecialTurn;
+						SCAN_NUM++;
+					}else if(SCAN_NUM == 2){
+						return Optional.empty();
 					}
-				}
-				
-				if(turn_status.equals("left")){
-					decision.put("response",drone.turnLeft());
 				}else{
-					decision.put("response",drone.turnRight());
+					decision = drone.scan();
+					HLstatus = HLPhase.Travel;
+					travelStatus = TravelPhase.Move;
 				}
-				status = Status.TurnStage3;
 				break;
-			case TurnStage2:
-				decision.put("response",drone.flyForwards());
-				status = Status.TurnStage3;
+			case Travel:
+				switch(travelStatus){
+					case Scan:
+						decision = drone.scan();
+						travelStatus = TravelPhase.Move;
+						break;
+					case Move:
+						JSONArray biomesObj = respHistory.getLast().getJSONObject("extras").getJSONArray("biomes");
+						for(int i=0; i<biomesObj.length(); i++){
+							if(biomesObj.getString(i).equals("OCEAN")){
+								decision = drone.scanForward();
+								travelStatus = TravelPhase.Decision;
+								break;
+							}
+						}
+						if(travelStatus != TravelPhase.Decision){
+							decision = drone.flyForwards();
+							travelStatus = TravelPhase.Scan;
+						}
+						break;
+					case Decision:
+						if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE")){
+							if(turn_direction.equals(TurnStatus.Right)){
+								decision = drone.scanRight();
+							}else{
+								decision = drone.scanLeft();
+							}
+							HLstatus = HLPhase.TurnWait;
+						}else{
+							decision = drone.flyForwards();
+							travelStatus = TravelPhase.Scan;
+						}
+						break;
+				}
 				break;
-			case TurnStage3:
-				scanning_over = new ArrayList<Boolean>();
-				scanResults = new ArrayList<JSONObject>();
-				if(turn_status.equals("left")){
-					decision.put("response",drone.turnLeft());
-					turn_status = "right";
-					scan_status = "right";
+			case TurnWait:
+				travelStatus = TravelPhase.Move;
+				switch(turn_wait){
+
+					case EchoSide:
+						if(turn_direction.equals(TurnStatus.Right)){
+							decision = drone.scanRight();
+						}else{
+							decision = drone.scanLeft();
+						}
+						turn_wait = TurnWaitPhase.Move;
+						break;
+
+					case Move:
+						if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE") || (respHistory.getLast().getJSONObject("extras").getString("found").equals("GROUND") && respHistory.getLast().getJSONObject("extras").getInt("range")!=0)){
+							if(turn_direction.equals(TurnStatus.Right)){
+								decision = drone.turnRight();
+							}else{
+								decision = drone.turnLeft();
+							}
+							HLstatus = HLPhase.Turn;
+						}else{
+							decision = drone.flyForwards();
+							turn_wait = TurnWaitPhase.EchoSide;
+						}
+						break;
+				}
+				break;
+			case Turn:
+				if(turn_direction.equals(TurnStatus.Left)){
+					decision = drone.turnLeft();
+					turn_direction = TurnStatus.Right;
 				}else{
-					decision.put("response",drone.turnRight());
-					turn_status = "left";
-					scan_status = "left";
-					
+					decision = drone.turnRight();
+					turn_direction = TurnStatus.Left;
 				}
-				status = Status.Scan;
+				HLstatus = HLPhase.Echo;
 				break;
-			case TurnStage4:
-				if(turn_status.equals("left")){
-					decision.put("response",drone.turnLeft());
-				}else{
-					decision.put("response",drone.turnRight());
+			case SpecialTurn:
+				special_turn_counter++;
+				turn_wait = TurnWaitPhase.Move;
+				switch(turn_status){
+					case TurnStage1:
+						decision = drone.flyForwards();
+						turn_status = TurnStages.TurnStage2;
+					break;
+					case TurnStage2:
+						if(special_turn_direction.equals(TurnStatus.Left)){
+							decision = drone.turnRight();
+
+						}else{
+							decision = drone.turnLeft();
+							
+						}
+						turn_status = TurnStages.TurnStage1;
+						HLstatus = HLPhase.Echo;
+						if(turn_direction.equals(TurnStatus.Left)){
+							turn_direction = TurnStatus.Right;
+						}else{
+							turn_direction = TurnStatus.Left;
+						}
+						break;
 				}
-				status = Status.TurnStage5;
-				break;
-			case TurnStage5:
-				// Changing the direction of the turn so that it does not travel in a loop.
-				if(turn_status.equals("left")){
-					decision.put("response",drone.turnRight());
-					turn_status = "right";
-					
-				}else{
-					decision.put("response",drone.turnLeft());
-					turn_status = "left";
-					
-				}
-				status = Status.Scan;
-				break;
 			
 		}
-		if(stop_scan && status.equals(Status.TurnStage3)){
-			decision.put("over","true");
-		}
-		return decision;
-		
-	}
+		return Optional.of(decision);
+	}	
+	
+	
 }
+
