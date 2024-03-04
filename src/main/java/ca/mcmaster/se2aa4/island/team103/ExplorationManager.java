@@ -51,10 +51,10 @@ public class ExplorationManager {
 		}
 
 		if(status.equals("find-coast")){
-			JSONObject output = islandMapper.islandScan(drone, respHistory);
+			JSONObject output = islandMapper.islandScan(drone, respHistory, "TESTSTRING");
 			logger.info("OUTPUT: {}",output);
 			counter++;
-			if(counter > 400){
+			if(output.getString("stop").equals("true")){
 				decision.put("action","stop");
 			}else{
 				decision = output;
