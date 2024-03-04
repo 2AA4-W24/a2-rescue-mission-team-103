@@ -35,10 +35,7 @@ public class IslandRecon2 {
 
 	private enum TurnStages{
 		TurnStage1,
-		TurnStage2,
-		TurnStage3,
-		TurnStage4,
-		TurnStage5
+		TurnStage2
 	}
 
 	private enum TurnStatus{
@@ -75,15 +72,15 @@ public class IslandRecon2 {
 				if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE")){
 					if(SCAN_NUM == 1){
 						if(turn_direction.equals(TurnStatus.Right)){
-							decision = drone.turnRight();
+							decision = drone.turnLeft();
 							special_turn_direction = TurnStatus.Left;
 						}else{
-							decision = drone.turnLeft();
+							decision = drone.turnRight();
 							special_turn_direction = TurnStatus.Right;
 						}
 						HLstatus = HLPhase.SpecialTurn;
 						SCAN_NUM++;
-					}else{
+					}else if(SCAN_NUM == 2){
 						return Optional.empty();
 					}
 				}else{
@@ -170,34 +167,27 @@ public class IslandRecon2 {
 				turn_wait = TurnWaitPhase.Move;
 				switch(turn_status){
 					case TurnStage1:
-						logger.info("SPECITURN3");
+						decision = drone.flyForwards();
+						turn_status = TurnStages.TurnStage2;
+					break;
+					case TurnStage2:
 						if(special_turn_direction.equals(TurnStatus.Left)){
-							decision = drone.turnLeft();
-						}else{
 							decision = drone.turnRight();
-						}
-						turn_status = TurnStages.TurnStage4;
-						break;
-					case TurnStage4:
-						logger.info("SPECITURN3");
-						if(special_turn_direction.equals(TurnStatus.Left)){
-							decision = drone.turnLeft();
+
 						}else{
-							decision = drone.turnRight();
-						}
-						turn_status = TurnStages.TurnStage5;
-						break;
-					case TurnStage5:
-						logger.info("SPECITURN3");
-						if(special_turn_direction.equals(TurnStatus.Left)){
 							decision = drone.turnLeft();
-						}else{
-							decision = drone.turnRight();
+							
 						}
+						turn_status = TurnStages.TurnStage1;
 						HLstatus = HLPhase.Echo;
+						if(turn_direction.equals(TurnStatus.Left)){
+							turn_direction = TurnStatus.Right;
+						}else{
+							turn_direction = TurnStatus.Left;
+						}
 						break;
 				}
-				break;
+			
 		}
 		return Optional.of(decision);
 	}	
