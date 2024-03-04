@@ -21,7 +21,7 @@ public class DroneTest {
 
 	@Test
 	public void TRightFacingE() {
-		drone = new Drone(Direction.EAST);
+		drone = new Drone(Direction.EAST, 100000);
 		parameters.put("direction", "S");
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
@@ -31,7 +31,7 @@ public class DroneTest {
 
 	@Test
 	public void TRightFacingS() {
-		drone = new Drone(Direction.SOUTH);
+		drone = new Drone(Direction.SOUTH,100000);
 		parameters.put("direction", "W");
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
@@ -41,7 +41,7 @@ public class DroneTest {
 
 	@Test
 	public void TRightFacingW() {
-		drone = new Drone(Direction.WEST);
+		drone = new Drone(Direction.WEST,100000);
 		parameters.put("direction", "N");
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
@@ -51,7 +51,7 @@ public class DroneTest {
 
 	@Test
 	public void TRightFacingN() {
-		drone = new Drone(Direction.NORTH);
+		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "E");
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
@@ -61,7 +61,7 @@ public class DroneTest {
 
 	@Test
 	public void TLeftFacingE() {
-		drone = new Drone(Direction.EAST);
+		drone = new Drone(Direction.EAST,100000);
 		parameters.put("direction", "N");
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
@@ -71,7 +71,7 @@ public class DroneTest {
 
 	@Test
 	public void TLeftFacingS() {
-		drone = new Drone(Direction.SOUTH);
+		drone = new Drone(Direction.SOUTH,100000);
 		parameters.put("direction", "E");
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
@@ -81,7 +81,7 @@ public class DroneTest {
 
 	@Test
 	public void TLeftFacingW() {
-		drone = new Drone(Direction.WEST);
+		drone = new Drone(Direction.WEST,100000);
 		parameters.put("direction", "S");
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
@@ -91,7 +91,7 @@ public class DroneTest {
 	
 	@Test
 	public void TLeftFacingN() {
-		drone = new Drone(Direction.NORTH);
+		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "W");
 		expected.put("action", "heading");
 		expected.put("parameters", parameters);
@@ -101,7 +101,7 @@ public class DroneTest {
 
 	@Test
 	public void Forwards() {
-		drone = new Drone(Direction.NORTH);
+		drone = new Drone(Direction.NORTH,100000);
 		expected.put("action", "fly");
 		result = drone.flyForwards();
 		assertEquals(expected.toString(), result.toString());
@@ -109,7 +109,7 @@ public class DroneTest {
 
 	@Test
 	public void scan() {
-		drone = new Drone(Direction.NORTH);	
+		drone = new Drone(Direction.NORTH,100000);	
 		expected.put("action", "scan");
 		result = drone.scan();
 		assertEquals(expected.toString(), result.toString());
@@ -117,7 +117,7 @@ public class DroneTest {
 
 	@Test
 	public void echoLeft() {
-		drone = new Drone(Direction.NORTH);
+		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "W");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
@@ -127,7 +127,7 @@ public class DroneTest {
 
 	@Test
 	public void echoRight() {
-		drone = new Drone(Direction.NORTH);
+		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "E");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
@@ -137,11 +137,12 @@ public class DroneTest {
 
 	@Test
 	public void echoForw() {
-		drone = new Drone(Direction.NORTH);
+		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "N");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
 		result = drone.scanForward();
 		assertEquals(expected.toString(), result.toString());
 	}
+
 }

@@ -46,4 +46,10 @@ public class Movements {
         return west;
     }
 
+    public JSONObject stop() {
+        JSONObject output = new JSONObject();
+        output.put("action", "stop");
+        return output;
+    }
+
 }
