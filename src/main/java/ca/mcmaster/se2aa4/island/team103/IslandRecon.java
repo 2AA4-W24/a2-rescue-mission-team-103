@@ -39,13 +39,6 @@ public class IslandRecon {
 		TurnStage2,
 		TurnStage3,
 		TurnStage4,
-	}
-
-	private enum Special2TS{
-		TurnStage1,
-		TurnStage2,
-		TurnStage3,
-		TurnStage4,
 		TurnStage5
 	}
 
@@ -54,28 +47,37 @@ public class IslandRecon {
 		Right
 	}
 
+	// High-level, overview phase
 	private HLPhase HLstatus = HLPhase.Echo;
+
+	// Secondary phases to track stage within high-level phase
 	private TravelPhase travelStatus = TravelPhase.Move;
 	private TurnWaitPhase turn_wait = TurnWaitPhase.Move;
 	private TurnStages turn_status = TurnStages.TurnStage1;
-	private TurnStatus turn_direction = TurnStatus.Left;
-	private TurnStatus special_turn_direction = TurnStatus.Left;
-	private Special2TS special2_td = Special2TS.TurnStage1;
 
-	private int SCAN_NUM = 1;
-	private int special_turn_counter = 0;
-	private int edge_case = 0;
+	// Tracking next turn direction
+	private TurnStatus turn_direction = TurnStatus.Left;
+
+	// Handling edge cases for end of map
+	private TurnStatus special_turn_direction = TurnStatus.Left;
+
+	
+	// Extra trackers for handling edge case
+	private int moves_since_last_special = 0;
 	private boolean counter_activator = false;
-	private int counter = 0;
+	private int SCAN_NUM = 1;
 
 	public Optional<JSONObject> islandScan(Drone drone, ResponseHistory respHistory){
+
+		// Return JSON Object
 		JSONObject decision = new JSONObject();
-		if(counter_activator){
-			counter++;
-		}
+		
+		// Tracking logs
 		logger.info("IN PHASE, {}", HLstatus);
 		logger.info("SCAN_NUM, {}", SCAN_NUM);
-		logger.info("SPECIAL: {}",special_turn_counter);
+		if(counter_activator){
+			moves_since_last_special++;
+		}
 
 		switch(HLstatus){
 			case Echo:
@@ -98,20 +100,17 @@ public class IslandRecon {
 						HLstatus = HLPhase.SpecialTurn;
 						counter_activator = true;
 						SCAN_NUM++;
-					}else if(SCAN_NUM == 2) {
-						if(edge_case == 0 && counter < 20){
-							if(turn_direction.equals(TurnStatus.Right)){
-								decision = drone.turnLeft();
-								special_turn_direction = TurnStatus.Left;
-							}else{
-								decision = drone.turnRight();
-								special_turn_direction = TurnStatus.Right;
-							}
-							HLstatus = HLPhase.SpecialTurn2;
-							edge_case++;
+					}else if(SCAN_NUM == 2 && moves_since_last_special < 20) {
+						if(turn_direction.equals(TurnStatus.Right)){
+							decision = drone.turnRight();
+							special_turn_direction = TurnStatus.Right;
 						}else{
-							return Optional.empty();
+							decision = drone.turnLeft();
+							special_turn_direction = TurnStatus.Left;
 						}
+						HLstatus = HLPhase.SpecialTurn2;
+					}else if(SCAN_NUM == 2){
+						return Optional.empty();
 					}
 				}else{
 					decision = drone.scan();
@@ -193,7 +192,6 @@ public class IslandRecon {
 				HLstatus = HLPhase.Echo;
 				break;
 			case SpecialTurn:
-				special_turn_counter++;
 				turn_wait = TurnWaitPhase.Move;
 				switch(turn_status){
 					case TurnStage1:
@@ -233,28 +231,28 @@ public class IslandRecon {
 						turn_status = TurnStages.TurnStage1;
 						HLstatus = HLPhase.Echo;
 						break;
+					case TurnStage5:
+						break;
 				}
 				break;
 			case SpecialTurn2:
-				special_turn_counter++;
 				turn_wait = TurnWaitPhase.Move;
-				switch(special2_td){
+				switch(turn_status){
 					case TurnStage1:
 						decision = drone.flyForwards();
-						special2_td = Special2TS.TurnStage2;
+						turn_status = TurnStages.TurnStage2;
 						break;
 					case TurnStage2:
 						decision = drone.flyForwards();
-						special2_td = Special2TS.TurnStage3;
+						turn_status = TurnStages.TurnStage3;
 						break;
 					case TurnStage3:
 						if(special_turn_direction.equals(TurnStatus.Left)){
 							decision = drone.turnLeft();
-
 						}else{
 							decision = drone.turnRight();	
 						}
-						special2_td = Special2TS.TurnStage4;
+						turn_status = TurnStages.TurnStage4;
 						break;
 					case TurnStage4:
 						if(special_turn_direction.equals(TurnStatus.Left)){
@@ -263,7 +261,7 @@ public class IslandRecon {
 						}else{
 							decision = drone.turnRight();	
 						}
-						special2_td = Special2TS.TurnStage5;
+						turn_status = TurnStages.TurnStage5;
 						break;
 					case TurnStage5:
 						if(special_turn_direction.equals(TurnStatus.Left)){
@@ -272,12 +270,7 @@ public class IslandRecon {
 						}else{
 							decision = drone.turnRight();	
 						}
-						if(turn_direction.equals(TurnStatus.Left)){
-							turn_direction = TurnStatus.Right;
-						}else{
-							turn_direction = TurnStatus.Left;
-						}
-						special2_td = Special2TS.TurnStage1;
+						turn_status = TurnStages.TurnStage1;
 						HLstatus = HLPhase.Echo;
 						break;
 				}
