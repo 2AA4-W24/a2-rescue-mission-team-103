@@ -39,16 +39,16 @@ public class ActionUsage {
 	public String getSummary() {
 		int echo_total = this.echo_F + this.echo_L + this.echo_R;
 		int turn_total = this.turn_L + this.turn_R;
-		this.summary = "\nAction Usage Summary";
-		this.summary = this.summary + "\nEcho Total: " + echo_total;
-		this.summary = this.summary + "\nForward Total: " + fly;
-		this.summary = this.summary + "\nTurn Total: " + turn_total;
-		this.summary = this.summary + "\nScan Total: " + this.scan;
-		this.summary = this.summary + "\nEcho Left: " + this.echo_L;
-		this.summary = this.summary + "\nEcho Right: " + this.echo_R;
-		this.summary = this.summary + "\nEcho Forward: " + this.echo_F;
-		this.summary = this.summary + "\nTurn Left: " + this.turn_L;
-		this.summary = this.summary + "\nTurn Right: " + this.turn_R;
+		this.summary = "Action Usage Summary:";
+		this.summary = this.summary + "\n\tEcho Total: " + echo_total;
+		this.summary = this.summary + "\n\tForward Total: " + fly;
+		this.summary = this.summary + "\n\tTurn Total: " + turn_total;
+		this.summary = this.summary + "\n\tScan Total: " + this.scan;
+		this.summary = this.summary + "\n\tEcho Left: " + this.echo_L;
+		this.summary = this.summary + "\n\tEcho Right: " + this.echo_R;
+		this.summary = this.summary + "\n\tEcho Forward: " + this.echo_F;
+		this.summary = this.summary + "\n\tTurn Left: " + this.turn_L;
+		this.summary = this.summary + "\n\tTurn Right: " + this.turn_R;
 		return summary;
 	}
 
