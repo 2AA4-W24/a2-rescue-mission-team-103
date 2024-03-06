@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-public class IslandLocator {
+public class IslandLocator implements DroneController {
 
 	enum Phase {
 		SEARCH,
@@ -31,7 +31,7 @@ public class IslandLocator {
 	private int trvl_to_end_count = 0;
 
 	
-	public Optional<JSONObject> locate(Drone drone, ResponseHistory history, Direction start_heading) {
+	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> history) {
 		/* */
 		JSONObject decision = new JSONObject();
 		switch (phase) {
