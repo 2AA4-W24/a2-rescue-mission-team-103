@@ -11,7 +11,7 @@ public class ExplorationManager {
 
 	private History<JSONObject> respHistory = new ResponseHistory();
 	private NavHistory navHistory = new NavHistory();
-	private String status = "find-island";
+	private String status = "start";
 	private DroneController islandLocator = new IslandLocator();
 	private DroneController islandMapper = new IslandRecon();
 	private Drone drone;
@@ -20,23 +20,29 @@ public class ExplorationManager {
 	public ExplorationManager(String heading, Integer battery_start_level) {
 		
 		// Initializes start heading, battery level and drone
-		if(heading == "N") {
+		if(heading.equals("N")) {
 			start_heading = Direction.NORTH;
-		} else if (heading == "S") {
+		} else if (heading.equals("S")) {
 			start_heading = Direction.SOUTH;
-		} else if (heading == "W") {
+		} else if (heading.equals("W")) {
 			start_heading = Direction.WEST;
 		} else {
 			start_heading = Direction.EAST;
 		}
+		logger.info("Recieved start heading: {}", heading);
+		logger.info("Initializing dron with heading: {}", start_heading);
 		drone = new Drone(start_heading, battery_start_level);
 		navHistory.addItem(new Coordinate(0,0));
 	}
 	
 	public JSONObject getDecision() {
 		JSONObject decision = new JSONObject();
-		
-		if(status.equals("find-island")){
+
+		if(status.equals("start")) {
+			decision = drone.scan();
+			status = "find-island";
+		}
+		else if(status.equals("find-island")){
 			Optional<JSONObject> output = islandLocator.nextAction(drone, respHistory);
 			if(output.isPresent()) {
 				decision = output.get();
