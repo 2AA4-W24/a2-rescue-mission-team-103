@@ -11,6 +11,8 @@ public class Drone {
     private ActionUsage actions = new ActionUsage();
     private Battery battery;
     private Logger logger = LogManager.getLogger();
+	private Coordinate currentPos = new Coordinate(0,0);
+	private NavHistory coordHistory = new NavHistory();
 
     public Drone(Direction start_heading, int battery_level) {
         // Initializes starting heading
@@ -25,6 +27,24 @@ public class Drone {
 
     public JSONObject flyForwards() {
         actions.log(Action.FORWARD);
+		switch(heading){
+			case Direction.NORTH:
+				currentPos = new Coordinate(currentPos.x(),currentPos.y()-1);
+				coordHistory.addItem(currentPos);
+				break;
+			case Direction.EAST:
+				currentPos = new Coordinate(currentPos.x()+1,currentPos.y());
+				coordHistory.addItem(currentPos);
+				break;
+			case Direction.SOUTH:
+				currentPos = new Coordinate(currentPos.x(),currentPos.y()+1);
+				coordHistory.addItem(currentPos);
+				break;
+			case Direction.WEST:
+				currentPos = new Coordinate(currentPos.x()-1,currentPos.y());
+				coordHistory.addItem(currentPos);
+				break;
+		}
         if (battery.canContinue()) {
             return controls.flyForward();
         } else {
@@ -38,17 +58,20 @@ public class Drone {
         actions.log(Action.TRIGHT);
 
         if (battery.canContinue()) {
-
             if(heading == Direction.NORTH) {
+				coordHistory.addItem(new Coordinate(currentPos.x()+1,currentPos.y()-1));
                 heading = Direction.EAST;
                 return controls.flyEast();
             } else if (heading == Direction.WEST) {
+				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()-1));
                 heading = Direction.NORTH;
                 return controls.flyNorth();
             } else if (heading == Direction.SOUTH) {
+				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()+1));
                 heading = Direction.WEST;
                 return controls.flyWest();
             } else {
+				coordHistory.addItem(new Coordinate(currentPos.x()+1,currentPos.y()+1));
                 heading = Direction.SOUTH;
                 return controls.flySouth();
             }
@@ -66,15 +89,19 @@ public class Drone {
         if (battery.canContinue()) {
 
             if(heading == Direction.NORTH) {
+				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()-1));
                 heading = Direction.WEST;
                 return controls.flyWest();
             } else if (heading == Direction.WEST) {
+				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()+1));
                 heading = Direction.SOUTH;
                 return controls.flySouth();
             } else if (heading == Direction.SOUTH) {
+				coordHistory.addItem(new Coordinate(currentPos.x()+1,currentPos.y()+1));
                 heading = Direction.EAST;
                 return controls.flyEast();
             } else {
+				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()+1));
                 heading = Direction.NORTH;
                 return controls.flyNorth();
             }
@@ -87,6 +114,7 @@ public class Drone {
     }
 
     public JSONObject scan() {
+		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.SCAN);
         if (battery.canContinue()) {
             return radar.scan();
@@ -98,6 +126,7 @@ public class Drone {
     }
 
 	public JSONObject scanLeft(){
+		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_LEFT);
 		if (battery.canContinue()) {
             return radar.scanLeft(heading);
@@ -109,6 +138,7 @@ public class Drone {
 	}
 
 	public JSONObject scanRight(){
+		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_RIGHT);
 		if (battery.canContinue()) {
             return radar.scanRight(heading);
@@ -120,6 +150,7 @@ public class Drone {
 	}
 
 	public JSONObject scanForward(){
+		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_FORWARD);
 		if (battery.canContinue()) {
             return radar.scanForward(heading);
@@ -131,6 +162,7 @@ public class Drone {
 	}
 
     public JSONObject stop() {
+		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         logger.info("Stopping");
         logger.info(actions.getSummary());
         return controls.stop();
