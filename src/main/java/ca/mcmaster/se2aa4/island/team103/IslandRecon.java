@@ -56,7 +56,7 @@ public class IslandRecon {
 	private TurnStages turn_status = TurnStages.TurnStage1;
 
 	// Tracking next turn direction
-	private TurnStatus turn_direction = TurnStatus.Left;
+	private TurnStatus turn_direction;
 
 	// Handling edge cases for end of map
 	private TurnStatus special_turn_direction = TurnStatus.Left;
@@ -66,6 +66,8 @@ public class IslandRecon {
 	private int moves_since_last_special = 0;
 	private boolean counter_activator = false;
 	private int SCAN_NUM = 1;
+
+	private boolean first_iter = true;
 
 	public Optional<JSONObject> islandScan(Drone drone, ResponseHistory respHistory){
 
@@ -77,6 +79,15 @@ public class IslandRecon {
 		logger.info("SCAN_NUM, {}", SCAN_NUM);
 		if(counter_activator){
 			moves_since_last_special++;
+		}
+
+		if(first_iter){
+			if(drone.getHeading().equals(Direction.EAST) || drone.getHeading().equals(Direction.SOUTH)){
+				turn_direction = TurnStatus.Left;
+			}else{
+				turn_direction = TurnStatus.Right;
+			}
+			first_iter = false;
 		}
 
 		switch(HLstatus){
