@@ -15,10 +15,10 @@ public class IslandScannerTest {
 	JSONObject detection;
 	JSONObject expected;
 	Optional<JSONObject> expectedOp;
-	ResponseHistory history;
+	History<JSONObject> history;
 	Drone drone;
 	Drone drone_reference;
-	IslandRecon scanner;
+	DroneController scanner;
 	Optional<JSONObject> result;
 	JSONObject last_history;
 	JSONObject extras;

@@ -4,7 +4,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResponseHistory {
+public class ResponseHistory implements History<JSONObject> {
 	private List<JSONObject> responseHistory = new ArrayList<JSONObject>();
 
 	public void addItem(JSONObject j){

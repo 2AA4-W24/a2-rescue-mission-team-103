@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
-public class IslandRecon {
+public class IslandRecon implements DroneController {
 	private final Logger logger = LogManager.getLogger(); 
 
 	private enum HLPhase{
@@ -60,7 +60,6 @@ public class IslandRecon {
 
 	// Handling edge cases for end of map
 	private TurnStatus special_turn_direction = TurnStatus.Left;
-
 	
 	// Extra trackers for handling edge case
 	private int moves_since_last_special = 0;
@@ -69,7 +68,7 @@ public class IslandRecon {
 
 	private boolean first_iter = true;
 
-	public Optional<JSONObject> islandScan(Drone drone, ResponseHistory respHistory){
+	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> respHistory){
 
 		// Return JSON Object
 		JSONObject decision = new JSONObject();

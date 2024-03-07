@@ -3,9 +3,7 @@ package ca.mcmaster.se2aa4.island.team103;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONObject;
-
-public class NavHistory {
+public class NavHistory implements History<Coordinate> {
 	private List<Coordinate> navHistory = new ArrayList<Coordinate>();
 	
 	public void addItem(Coordinate c){
@@ -39,7 +37,7 @@ public class NavHistory {
 		return navHistory.size();
 	}
 
-	public Coordinate getIndex(int index){
+	public Coordinate getItem(int index){
 		return navHistory.get(index);
 	}
 

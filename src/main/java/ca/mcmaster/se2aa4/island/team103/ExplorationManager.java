@@ -9,36 +9,41 @@ public class ExplorationManager {
 
 	private final Logger logger = LogManager.getLogger();
 
-	private ResponseHistory respHistory = new ResponseHistory();
+	private History<JSONObject> respHistory = new ResponseHistory();
 	private NavHistory navHistory = new NavHistory();
-	private String status = "find-island";
-	private IslandLocator islandLocator = new IslandLocator();
-	private IslandRecon islandMapper = new IslandRecon();
+	private String status = "start";
+	private DroneController islandLocator = new IslandLocator();
+	private DroneController islandMapper = new IslandRecon();
 	private Drone drone;
-	private int counter = 0;
 	private Direction start_heading;
 
 	public ExplorationManager(String heading, Integer battery_start_level) {
 		
 		// Initializes start heading, battery level and drone
-		if(heading == "N") {
+		if(heading.equals("N")) {
 			start_heading = Direction.NORTH;
-		} else if (heading == "S") {
+		} else if (heading.equals("S")) {
 			start_heading = Direction.SOUTH;
-		} else if (heading == "W") {
+		} else if (heading.equals("W")) {
 			start_heading = Direction.WEST;
 		} else {
 			start_heading = Direction.EAST;
 		}
+		logger.info("Recieved start heading: {}", heading);
+		logger.info("Initializing dron with heading: {}", start_heading);
 		drone = new Drone(start_heading, battery_start_level);
 		navHistory.addItem(new Coordinate(0,0));
 	}
 	
 	public JSONObject getDecision() {
 		JSONObject decision = new JSONObject();
-		
-		if(status.equals("find-island")){
-			Optional<JSONObject> output = islandLocator.locate(drone, respHistory, start_heading);
+
+		if(status.equals("start")) {
+			decision = drone.scan();
+			status = "find-island";
+		}
+		else if(status.equals("find-island")){
+			Optional<JSONObject> output = islandLocator.nextAction(drone, respHistory);
 			if(output.isPresent()) {
 				decision = output.get();
 			} else {
@@ -48,7 +53,7 @@ public class ExplorationManager {
 		}
 
 		if(status.equals("find-coast")){
-			Optional<JSONObject> output = islandMapper.islandScan(drone, respHistory);
+			Optional<JSONObject> output = islandMapper.nextAction(drone, respHistory);
 			logger.info("OUTPUT: {}",output);
 			if(output.isPresent()){
 				decision = output.get();
