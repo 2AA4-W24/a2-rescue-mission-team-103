@@ -8,7 +8,10 @@ public class DistanceCalculation {
 	public String returnClosestInlet(List<Coordinate> inputCoordinates, Coordinate siteCoordinates){
 		double min_dist = Integer.MAX_VALUE;
 		for(int i=0; i<inputCoordinates.size(); i++){
-			
+			double current_distance = distance(inputCoordinates.get(i),siteCoordinates);
+			if(current_distance < min_dist){
+				min_dist = current_distance;
+			}
 		}
 		return "";
 	}
