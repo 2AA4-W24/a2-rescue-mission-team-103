@@ -5,6 +5,7 @@ import java.util.List;
 public class SiteTracker {
 	private List<PointOfIntrest> inlets = new ArrayList<PointOfIntrest>();
 	private PointOfIntrest site;
+	private DistanceCalculation calculator = new DistanceCalculation();
 
 	public void addInlet(String id, Coordinate coord) {
 		PointOfIntrest new_inlet = new Inlet(id, coord);
@@ -16,6 +17,7 @@ public class SiteTracker {
 	}
 
 	public String getClosestInlet() {
-		return "none";
+		PointOfIntrest closest_inlet = calculator.returnClosestInlet(inlets, site);
+		return closest_inlet.id();
 	}
 }
