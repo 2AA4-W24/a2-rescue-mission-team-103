@@ -5,15 +5,17 @@ import java.util.List;
 public class DistanceCalculation {
 	
 	// Note: params must be modified for input coordinates to handle new object's from Matt's side of things (e.g. Inlet, Site objects)
-	public String returnClosestInlet(List<Coordinate> inputCoordinates, Coordinate siteCoordinates){
+	public PointOfInterest returnClosestInlet(List<PointOfInterest> inlets, PointOfInterest site){
 		double min_dist = Integer.MAX_VALUE;
-		for(int i=0; i<inputCoordinates.size(); i++){
-			double current_distance = distance(inputCoordinates.get(i),siteCoordinates);
+		PointOfInterest closest_inlet = new Inlet("00000000-1111-2222-3333-44444444444", new Coordinate(0,0));
+		for(int i=0; i<inlets.size(); i++){
+			double current_distance = distance(inlets.get(i).coord(),site.coord());
 			if(current_distance < min_dist){
 				min_dist = current_distance;
+				closest_inlet = inlets.get(i);
 			}
 		}
-		return "";
+		return closest_inlet;
 	}
 
 	public double distance(Coordinate c1, Coordinate c2){

@@ -7,6 +7,7 @@ import org.json.JSONObject;
 public class SiteTracker {
 	private List<PointOfInterest> inlets = new ArrayList<PointOfInterest>();
 	private PointOfInterest site;
+	private DistanceCalculation calculator = new DistanceCalculation();
 
 	private void addInlet(String id, Coordinate coord) {
 		PointOfInterest new_inlet = new Inlet(id, coord);
@@ -18,7 +19,8 @@ public class SiteTracker {
 	}
 
 	public String getClosestInlet() {
-		return "none";
+		PointOfInterest closest_inlet = calculator.returnClosestInlet(inlets, site);
+		return closest_inlet.id();
 	}
 
 	public void findPointsOfInterest(List<JSONObject> history, List<Coordinate> coordHistory){
