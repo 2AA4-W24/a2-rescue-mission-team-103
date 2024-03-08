@@ -1,6 +1,6 @@
 package ca.mcmaster.se2aa4.island.team103;
 
-public class Inlet implements PointOfIntrest {
+public class Inlet implements PointOfInterest {
 	private String id;
 	private Coordinate coordinate;
 

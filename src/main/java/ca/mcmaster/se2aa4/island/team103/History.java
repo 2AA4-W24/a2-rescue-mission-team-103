@@ -6,4 +6,5 @@ public interface History<T> {
 	public T getLast();
 	public List<T> getItems(int offset);
 	public List<T> getItems(int start, int end);
+	public int getSize();
 }

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import java.util.Optional;
+import java.util.List;
 
 public class ExplorationManager {
 
@@ -52,12 +53,13 @@ public class ExplorationManager {
 			}
 		}
 
-		if(status.equals("find-coast")){
+		else if(status.equals("find-coast")){
 			Optional<JSONObject> output = islandMapper.nextAction(drone, respHistory);
 			logger.info("OUTPUT: {}",output);
 			if(output.isPresent()){
 				decision = output.get();
 			}else{
+				logger.info("Island scanning complete, moving on.");
 				decision = drone.stop();
 			}
 		}
@@ -72,5 +74,13 @@ public class ExplorationManager {
 
 	public JSONObject getLastInfo(){
 		return respHistory.getLast();
+	}
+
+	public List<JSONObject> getResponseReport(){
+		return respHistory.getItems(0,respHistory.getSize());
+	}
+
+	public List<Coordinate> getNavReport(){
+		return navHistory.getItems(0,navHistory.getSize());
 	}
 }

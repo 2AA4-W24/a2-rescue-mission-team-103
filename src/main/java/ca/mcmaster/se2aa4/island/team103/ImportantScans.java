@@ -6,7 +6,6 @@ import org.json.JSONObject;
 
 public class ImportantScans {
 	private List<JSONObject> scans = new ArrayList<JSONObject>();
-
 	public ImportantScans(ResponseHistory history, NavHistory coordHistory){
 		for(int i=0; i<history.getSize(); i++){
 			JSONObject current_obj = history.getItem(i);
@@ -19,4 +18,5 @@ public class ImportantScans {
 			}
 		}
 	}
+	
 }

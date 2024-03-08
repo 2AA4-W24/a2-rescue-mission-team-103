@@ -12,6 +12,7 @@ public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
 	private ExplorationManager manager; //Constructor is called in this.initialize() when initial info is available (heading etc.)
+	private SiteTracker siteTracker; //Constructor is called in deliverFinalReport()
 
     @Override
     public void initialize(String s) {
@@ -47,7 +48,9 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        return "no creek found";
+		siteTracker = new SiteTracker();
+		siteTracker.findPointsOfInterest(manager.getResponseReport(),manager.getNavReport());
+		return siteTracker.getClosestInlet();
     }
 
 }

@@ -1,6 +1,6 @@
 package ca.mcmaster.se2aa4.island.team103;
 
-public class Site implements PointOfIntrest {
+public class Site implements PointOfInterest {
 	private String id;
 	private Coordinate coord;
 
