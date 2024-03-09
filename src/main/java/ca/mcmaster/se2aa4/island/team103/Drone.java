@@ -2,6 +2,7 @@ package ca.mcmaster.se2aa4.island.team103;
 import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.util.List;
 
 public class Drone {
 
@@ -18,6 +19,7 @@ public class Drone {
         // Initializes starting heading
         heading = start_heading;
         battery = new Battery(battery_level);
+        coordHistory.addItem(new Coordinate(0,0));
     }
 
     public void logCost(int cost) {
@@ -171,4 +173,8 @@ public class Drone {
 	public Direction getHeading(){
 		return this.heading;
 	}
+
+    public List<Coordinate> getNavHistory() {
+        return coordHistory.getItems(0);
+    }
 }

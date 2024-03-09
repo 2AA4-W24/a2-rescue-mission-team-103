@@ -48,8 +48,10 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
+        logger.info("Compiling Final Report");
 		siteTracker = new SiteTracker();
 		siteTracker.findPointsOfInterest(manager.getResponseReport(),manager.getNavReport());
+        logger.info("Closest Inlet: {}", siteTracker.getClosestInlet());
 		return siteTracker.getClosestInlet();
     }
 

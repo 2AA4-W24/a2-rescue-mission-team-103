@@ -11,7 +11,6 @@ public class ExplorationManager {
 	private final Logger logger = LogManager.getLogger();
 
 	private History<JSONObject> respHistory = new ResponseHistory();
-	private NavHistory navHistory = new NavHistory();
 	private String status = "start";
 	private DroneController islandLocator = new IslandLocator();
 	private DroneController islandMapper = new IslandRecon();
@@ -33,7 +32,6 @@ public class ExplorationManager {
 		logger.info("Recieved start heading: {}", heading);
 		logger.info("Initializing dron with heading: {}", start_heading);
 		drone = new Drone(start_heading, battery_start_level);
-		navHistory.addItem(new Coordinate(0,0));
 	}
 	
 	public JSONObject getDecision() {
@@ -53,7 +51,7 @@ public class ExplorationManager {
 			}
 		}
 
-		else if(status.equals("find-coast")){
+		if(status.equals("find-coast")){
 			Optional<JSONObject> output = islandMapper.nextAction(drone, respHistory);
 			logger.info("OUTPUT: {}",output);
 			if(output.isPresent()){
@@ -81,6 +79,6 @@ public class ExplorationManager {
 	}
 
 	public List<Coordinate> getNavReport(){
-		return navHistory.getItems(0,navHistory.getSize());
+		return drone.getNavHistory();
 	}
 }
