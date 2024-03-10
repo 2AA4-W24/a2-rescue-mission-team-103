@@ -120,7 +120,7 @@ public class DroneTest {
 		parameters.put("direction", "W");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
-		result = drone.scanLeft();
+		result = drone.echoLeft();
 		assertEquals(expected.toString(), result.toString());
 	}
 
@@ -130,7 +130,7 @@ public class DroneTest {
 		parameters.put("direction", "E");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
-		result = drone.scanRight();
+		result = drone.echoRight();
 		assertEquals(expected.toString(), result.toString());
 	}
 
@@ -140,7 +140,7 @@ public class DroneTest {
 		parameters.put("direction", "N");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
-		result = drone.scanForward();
+		result = drone.echoForward();
 		assertEquals(expected.toString(), result.toString());
 	}
 
@@ -164,7 +164,7 @@ public class DroneTest {
 	public void outOfBatteryEF() {
 		drone = new Drone(Direction.NORTH,50);
 		expected.put("action", "stop");
-		result = drone.scanForward();
+		result = drone.echoForward();
 		assertEquals(expected.toString(), result.toString());
 	}
 
@@ -200,7 +200,7 @@ public class DroneTest {
 		parameters.put("direction", "N");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
-		result = drone.scanForward();
+		result = drone.echoForward();
 		assertEquals(expected.toString(), result.toString());
 	}
 

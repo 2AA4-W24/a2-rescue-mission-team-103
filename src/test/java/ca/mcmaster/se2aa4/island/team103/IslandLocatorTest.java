@@ -127,7 +127,7 @@ public class IslandLocatorTest {
 	public void testSearch() {
 		result = locator.nextAction(drone, history);
 
-		expected = drone.scanRight();
+		expected = drone.echoRight();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 
@@ -135,13 +135,13 @@ public class IslandLocatorTest {
 		
 		result = locator.nextAction(drone, history);
 
-		expected = drone.scanForward();
+		expected = drone.echoForward();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 
 		result = locator.nextAction(drone, history);
 
-		expected = drone.scanLeft();
+		expected = drone.echoLeft();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 

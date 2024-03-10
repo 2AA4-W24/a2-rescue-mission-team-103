@@ -93,7 +93,7 @@ public class IslandRecon implements DroneController {
 			case Echo:
 				// Resetting turn status.
 				turn_status = TurnStages.TurnStage1;
-				decision = drone.scanForward();
+				decision = drone.echoForward();
 				HLstatus = HLPhase.Decision;
 				break;
 
@@ -138,7 +138,7 @@ public class IslandRecon implements DroneController {
 						JSONArray biomesObj = respHistory.getLast().getJSONObject("extras").getJSONArray("biomes");
 						
 						if(biomesObj.getString(0).equals("OCEAN") && biomesObj.length() == 1){
-							decision = drone.scanForward();
+							decision = drone.echoForward();
 							travelStatus = TravelPhase.Decision;
 							break;
 						}
@@ -151,9 +151,9 @@ public class IslandRecon implements DroneController {
 					case Decision:
 						if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE")){
 							if(turn_direction.equals(TurnStatus.Right)){
-								decision = drone.scanRight();
+								decision = drone.echoRight();
 							}else{
-								decision = drone.scanLeft();
+								decision = drone.echoLeft();
 							}
 							HLstatus = HLPhase.TurnWait;
 						}else{
@@ -169,9 +169,9 @@ public class IslandRecon implements DroneController {
 
 					case EchoSide:
 						if(turn_direction.equals(TurnStatus.Right)){
-							decision = drone.scanRight();
+							decision = drone.echoRight();
 						}else{
-							decision = drone.scanLeft();
+							decision = drone.echoLeft();
 						}
 						turn_wait = TurnWaitPhase.Move;
 						break;

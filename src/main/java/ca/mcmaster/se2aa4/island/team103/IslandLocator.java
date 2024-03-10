@@ -42,7 +42,7 @@ public class IslandLocator implements DroneController {
 			case Phase.SEARCH:
 				switch (next_action) {
 					case Action.ECHO_RIGHT:
-						decision = drone.scanRight();
+						decision = drone.echoRight();
 						next_action = Action.ECHO_FORWARD;
 						break;
 					case Action.ECHO_FORWARD:
@@ -54,7 +54,7 @@ public class IslandLocator implements DroneController {
 							logger.info("Exiting Search Phase -> UTURN_R");
 							decision = drone.turnRight();
 						} else {
-							decision = drone.scanForward();
+							decision = drone.echoForward();
 						}
 						break;
 					case Action.ECHO_LEFT:
@@ -67,7 +67,7 @@ public class IslandLocator implements DroneController {
 							logger.info("Exiting Search Phase -> TRAVEL_TO_END");
 							decision = drone.turnRight();
 						} else {
-							decision = drone.scanLeft();
+							decision = drone.echoLeft();
 						}
 						break;
 					case Action.FORWARD:
@@ -95,7 +95,7 @@ public class IslandLocator implements DroneController {
 			case Phase.TRAVEL_TO_END:
 				switch (trvl_to_end_count) {
 					case 0:
-						decision = drone.scanForward();
+						decision = drone.echoForward();
 						break;
 					case 1:
 						last_result = history.getLast();
@@ -186,7 +186,7 @@ public class IslandLocator implements DroneController {
 				logger.info("Final frwd decision: {}", trvl_to_isl_count);
 				switch (trvl_to_isl_count) {
 					case 0:
-						decision = drone.scanForward();
+						decision = drone.echoForward();
 						break;
 					case 1:
 						last_result = history.getLast();

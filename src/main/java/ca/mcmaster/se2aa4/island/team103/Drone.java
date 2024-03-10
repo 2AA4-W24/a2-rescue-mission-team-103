@@ -134,7 +134,7 @@ public class Drone {
         }
     }
 
-	public JSONObject scanLeft(){
+	public JSONObject echoLeft(){
 		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_LEFT);
 		if (battery.canContinue()) {
@@ -146,7 +146,7 @@ public class Drone {
         }
 	}
 
-	public JSONObject scanRight(){
+	public JSONObject echoRight(){
 		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_RIGHT);
 		if (battery.canContinue()) {
@@ -158,7 +158,7 @@ public class Drone {
         }
 	}
 
-	public JSONObject scanForward(){
+	public JSONObject echoForward(){
 		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_FORWARD);
 		if (battery.canContinue()) {

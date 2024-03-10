@@ -131,7 +131,7 @@ public class CoordinateTest {
 	@Test
 	public void Echo() {
 		drone = new Drone(Direction.NORTH, 100000);
-		drone.scanForward();
+		drone.echoForward();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
 		expected = new Coordinate(0,0);
 		assertEquals(expected.toString(),result.toString());
