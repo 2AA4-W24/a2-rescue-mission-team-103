@@ -103,7 +103,7 @@ public class Drone {
                 heading = Direction.EAST;
                 return controls.flyEast();
             } else {
-				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()+1));
+				coordHistory.addItem(new Coordinate(currentPos.x()+1,currentPos.y()-1));
                 heading = Direction.NORTH;
                 return controls.flyNorth();
             }

@@ -59,7 +59,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void TLeftFacingS() {
+	public void TLeftFacingS() { 
 		drone = new Drone(Direction.SOUTH, 100000);
 		drone.turnLeft();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -80,7 +80,7 @@ public class CoordinateTest {
 	
 	@Test
 	public void TLeftFacingN() {
-		drone = new Drone(Direction.WEST, 100000);
+		drone = new Drone(Direction.NORTH, 100000);
 		drone.turnLeft();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
 		expected = new Coordinate(-1,-1);
@@ -90,7 +90,7 @@ public class CoordinateTest {
 
 	@Test
 	public void ForwardsFacingE() {
-		drone = new Drone(Direction.WEST, 100000);
+		drone = new Drone(Direction.EAST, 100000);
 		drone.flyForwards();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
 		expected = new Coordinate(1,0);
