@@ -3,8 +3,7 @@ package ca.mcmaster.se2aa4.island.team103;
 import java.util.List;
 
 public class DistanceCalculation {
-	
-	// Note: params must be modified for input coordinates to handle new object's from Matt's side of things (e.g. Inlet, Site objects)
+
 	public PointOfInterest returnClosestInlet(List<PointOfInterest> inlets, PointOfInterest site){
 		double min_dist = Integer.MAX_VALUE;
 		PointOfInterest closest_inlet = new Inlet("00000000-1111-2222-3333-44444444444", new Coordinate(0,0));

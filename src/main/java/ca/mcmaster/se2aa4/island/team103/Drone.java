@@ -58,22 +58,25 @@ public class Drone {
 
     public JSONObject turnRight() {
         actions.log(Action.TRIGHT);
-
         if (battery.canContinue()) {
             if(heading == Direction.NORTH) {
-				coordHistory.addItem(new Coordinate(currentPos.x()+1,currentPos.y()-1));
+				currentPos = new Coordinate(currentPos.x()+1,currentPos.y()-1);
+				coordHistory.addItem(currentPos);
                 heading = Direction.EAST;
                 return controls.flyEast();
             } else if (heading == Direction.WEST) {
-				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()-1));
+				currentPos = new Coordinate(currentPos.x()-1,currentPos.y()-1);
+				coordHistory.addItem(currentPos);
                 heading = Direction.NORTH;
                 return controls.flyNorth();
             } else if (heading == Direction.SOUTH) {
-				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()+1));
+				currentPos = new Coordinate(currentPos.x()-1,currentPos.y()+1);
+				coordHistory.addItem(currentPos);
                 heading = Direction.WEST;
                 return controls.flyWest();
             } else {
-				coordHistory.addItem(new Coordinate(currentPos.x()+1,currentPos.y()+1));
+				currentPos = new Coordinate(currentPos.x()+1,currentPos.y()+1);
+				coordHistory.addItem(currentPos);
                 heading = Direction.SOUTH;
                 return controls.flySouth();
             }
@@ -91,19 +94,23 @@ public class Drone {
         if (battery.canContinue()) {
 
             if(heading == Direction.NORTH) {
-				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()-1));
+				currentPos = new Coordinate(currentPos.x()-1,currentPos.y()-1);
+				coordHistory.addItem(currentPos);
                 heading = Direction.WEST;
                 return controls.flyWest();
             } else if (heading == Direction.WEST) {
-				coordHistory.addItem(new Coordinate(currentPos.x()-1,currentPos.y()+1));
+				currentPos = new Coordinate(currentPos.x()-1,currentPos.y()+1);
+				coordHistory.addItem(currentPos);
                 heading = Direction.SOUTH;
                 return controls.flySouth();
             } else if (heading == Direction.SOUTH) {
-				coordHistory.addItem(new Coordinate(currentPos.x()+1,currentPos.y()+1));
+				currentPos = new Coordinate(currentPos.x()+1,currentPos.y()+1);
+				coordHistory.addItem(currentPos);
                 heading = Direction.EAST;
                 return controls.flyEast();
             } else {
-				coordHistory.addItem(new Coordinate(currentPos.x()+1,currentPos.y()-1));
+				currentPos = new Coordinate(currentPos.x()+1,currentPos.y()-1);
+				coordHistory.addItem(currentPos);
                 heading = Direction.NORTH;
                 return controls.flyNorth();
             }

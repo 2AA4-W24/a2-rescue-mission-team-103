@@ -36,12 +36,10 @@ public class SiteTracker {
 				if(extras.getJSONArray("creeks").length() > 0){
 					String id = extras.getJSONArray("creeks").getString(0);
 					addInlet(id,new Coordinate(coordHistory.get(i).x(),coordHistory.get(i).y()));
-					logger.info("Above Inlet Coords: {}", coordHistory.get(i).x()*3 + "," + coordHistory.get(i).y()*3);
 					
 				}else if(extras.getJSONArray("sites").length() > 0){
 					String id = extras.getJSONArray("sites").getString(0);
 					addRescueSite(id,new Coordinate(coordHistory.get(i).x(),coordHistory.get(i).y()));
-					logger.info("Above RescueSite Coords: {}", coordHistory.get(i).x()*3 + "," + coordHistory.get(i).y()*3);
 				}
 			}
 		}
