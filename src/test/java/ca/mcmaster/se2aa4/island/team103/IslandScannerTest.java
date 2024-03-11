@@ -15,10 +15,10 @@ public class IslandScannerTest {
 	JSONObject detection;
 	JSONObject expected;
 	Optional<JSONObject> expectedOp;
-	ResponseHistory history;
+	History<JSONObject> history;
 	Drone drone;
 	Drone drone_reference;
-	IslandRecon scanner;
+	DroneController scanner;
 	Optional<JSONObject> result;
 	JSONObject last_history;
 	JSONObject extras;
@@ -29,8 +29,8 @@ public class IslandScannerTest {
 		detection = new JSONObject();
 		expected = new JSONObject();
 		history = new ResponseHistory();
-		drone = new Drone(Direction.EAST);
-		drone_reference = new Drone(Direction.EAST);
+		drone = new Drone(Direction.EAST, 100000);
+		drone_reference = new Drone(Direction.EAST, 100000);
 		scanner = new IslandRecon();
 	}
 

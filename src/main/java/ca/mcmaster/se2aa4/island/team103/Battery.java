@@ -9,11 +9,11 @@ public class Battery {
 	}
 
 	public void log(int cost) {
-		value += cost;
+		value -= cost;
 	}
 
 	public boolean canContinue() {
-		if (this.value > 20) {
+		if (this.value > 50) {
 			return true;
 		} else {
 			return false;

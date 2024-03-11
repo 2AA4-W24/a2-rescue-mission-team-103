@@ -1,6 +1,5 @@
 package ca.mcmaster.se2aa4.island.team103;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -121,7 +120,7 @@ public class DroneTest {
 		parameters.put("direction", "W");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
-		result = drone.scanLeft();
+		result = drone.echoLeft();
 		assertEquals(expected.toString(), result.toString());
 	}
 
@@ -131,7 +130,7 @@ public class DroneTest {
 		parameters.put("direction", "E");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
-		result = drone.scanRight();
+		result = drone.echoRight();
 		assertEquals(expected.toString(), result.toString());
 	}
 
@@ -141,7 +140,75 @@ public class DroneTest {
 		parameters.put("direction", "N");
 		expected.put("action", "echo");
 		expected.put("parameters", parameters);
-		result = drone.scanForward();
+		result = drone.echoForward();
+		assertEquals(expected.toString(), result.toString());
+	}
+
+	@Test
+	public void outOfBatteryFF() {
+		drone = new Drone(Direction.NORTH,50);
+		expected.put("action", "stop");
+		result = drone.flyForwards();
+		assertEquals(expected.toString(), result.toString());
+	}
+
+	@Test
+	public void outOfBatteryTR() {
+		drone = new Drone(Direction.NORTH,50);
+		expected.put("action", "stop");
+		result = drone.turnRight();
+		assertEquals(expected.toString(), result.toString());
+	}
+
+	@Test
+	public void outOfBatteryEF() {
+		drone = new Drone(Direction.NORTH,50);
+		expected.put("action", "stop");
+		result = drone.echoForward();
+		assertEquals(expected.toString(), result.toString());
+	}
+
+	@Test
+	public void outOfBatterySC() {
+		drone = new Drone(Direction.NORTH,50);
+		expected.put("action", "stop");
+		result = drone.scan();
+		assertEquals(expected.toString(), result.toString());
+	}
+
+	@Test
+	public void almostOutOfBatteryFF() {
+		drone = new Drone(Direction.NORTH,51);
+		expected.put("action", "fly");
+		result = drone.flyForwards();
+		assertEquals(expected.toString(), result.toString());
+	}
+
+	@Test
+	public void almostOutOfBatteryTR() {
+		drone = new Drone(Direction.NORTH,51);
+		parameters.put("direction", "E");
+		expected.put("action", "heading");
+		expected.put("parameters", parameters);
+		result = drone.turnRight();
+		assertEquals(expected.toString(), result.toString());
+	}
+
+	@Test
+	public void almostOutOfBatteryEF() {
+		drone = new Drone(Direction.NORTH,51);
+		parameters.put("direction", "N");
+		expected.put("action", "echo");
+		expected.put("parameters", parameters);
+		result = drone.echoForward();
+		assertEquals(expected.toString(), result.toString());
+	}
+
+	@Test
+	public void almostOutOfBatterySC() {
+		drone = new Drone(Direction.NORTH,51);
+		expected.put("action", "scan");
+		result = drone.scan();
 		assertEquals(expected.toString(), result.toString());
 	}
 
