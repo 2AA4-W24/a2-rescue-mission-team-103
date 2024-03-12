@@ -50,7 +50,7 @@ public class Drone {
         if (battery.canContinue()) {
             return controls.flyForward();
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info("OUT OF BATTERY");
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -82,7 +82,7 @@ public class Drone {
             }
 
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info("OUT OF BATTERY");
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -116,7 +116,7 @@ public class Drone {
             }
 
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info("OUT OF BATTERY");
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -128,7 +128,7 @@ public class Drone {
         if (battery.canContinue()) {
             return radar.scan();
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info("OUT OF BATTERY");
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -140,7 +140,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanLeft(heading);
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info("OUT OF BATTERY");
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -152,7 +152,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanRight(heading);
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info("OUT OF BATTERY");
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -164,7 +164,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanForward(heading);
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info("OUT OF BATTERY");
             logger.info(actions.getSummary());
             return controls.stop();
         }

@@ -51,8 +51,9 @@ public class Explorer implements IExplorerRaid {
         logger.info("Compiling Final Report");
 		siteTracker = new SiteTracker();
 		siteTracker.findPointsOfInterest(manager.getResponseReport(),manager.getNavReport());
-        logger.info("Closest Inlet: {}", siteTracker.getClosestInlet());
-		return siteTracker.getClosestInlet();
+        String closest_inlet = siteTracker.getClosestInlet();
+        logger.info("Closest Inlet: {}", closest_inlet);
+		return closest_inlet;
     }
 
 }

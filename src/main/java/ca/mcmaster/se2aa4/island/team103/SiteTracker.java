@@ -3,14 +3,16 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.util.Optional;
 
 import org.json.JSONObject;
 
 public class SiteTracker {
 	private List<PointOfInterest> inlets = new ArrayList<PointOfInterest>();
-	private PointOfInterest site;
+	private Optional<PointOfInterest> site = Optional.empty();
 	private DistanceCalculation calculator = new DistanceCalculation();
 	private final Logger logger = LogManager.getLogger();
+	private PointOfInterest closest_inlet;
 
 	private void addInlet(String id, Coordinate coord) {
 		PointOfInterest new_inlet = new Inlet(id, coord);
@@ -19,12 +21,18 @@ public class SiteTracker {
 	}
 
 	private void addRescueSite(String id, Coordinate coord) {
-		this.site = new Site(id, coord);
-		logger.info("Adding Rescue Site: {}", site.id());
+		this.site = Optional.of(new Site(id, coord));
+		logger.info("Adding Rescue Site: {}", site.get().id());
 	}
 
 	public String getClosestInlet() {
-		PointOfInterest closest_inlet = calculator.returnClosestInlet(inlets, site);
+		
+		if (site.isPresent()) {
+			closest_inlet = calculator.returnClosestInlet(inlets, site.get());
+		} else {
+			logger.warn("Site is not present, returning first inlet");
+			closest_inlet = inlets.get(0);
+		}
 		return closest_inlet.id();
 	}
 
