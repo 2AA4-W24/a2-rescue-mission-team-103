@@ -29,8 +29,6 @@ public class IslandLocator implements DroneController {
 	private int uturn_stage = 0;
 	private int dist;
 	private int trvl_to_end_count = 0;
-	private Action test_action = Action.FORWARD;  //REMOVE AFTER DONE TROUBLESHOOTING
-	private Action test_action2 = Action.FORWARD;	// ^^
 	private int trvl_to_isl_count = 0;	
 
 	
@@ -71,7 +69,7 @@ public class IslandLocator implements DroneController {
 						}
 						break;
 					case Action.FORWARD:
-						next_action = Action.SCAN;
+						next_action = Action.ECHO_RIGHT;
 						last_result = history.getLast();
 						last_echo_found = last_result.getJSONObject("extras").getString("found");
 						if(last_echo_found.equals("GROUND")) {
@@ -84,11 +82,6 @@ public class IslandLocator implements DroneController {
 						break;
 					default:
 						logger.error("next_action is not in an acceptable state");
-					case Action.SCAN:
-						next_action = Action.ECHO_RIGHT;
-						decision = drone.scan(); // REMOVE SCAN ACTION AFTER DONE TROUBLESHOOTING AND UN-COMMENT TEST CASES
-						break;
-						
 				}
 				break;
 
@@ -109,17 +102,12 @@ public class IslandLocator implements DroneController {
 						}
 						break;
 					default:
-						if(trvl_to_end_count < dist - 1 && test_action2 == Action.FORWARD) { // REMOVE ALL TEST_ACTION2 STUFF AFTER DONE TROUBLESHOOTING
+						if(trvl_to_end_count < dist - 1) {
 							decision = drone.flyForwards();
-							test_action2 = Action.SCAN;
-						} else if (test_action2 == Action.FORWARD) {
+						} else {
 							decision = drone.flyForwards();
 							phase = Phase.UTURN_F;
 							logger.info("Exiting TRAVEL_TO_END -> UTURN_F");
-						} else {
-							decision = drone.scan();
-							test_action2 = Action.FORWARD;
-							trvl_to_end_count--;
 						}
 						break;
 				}
@@ -129,12 +117,9 @@ public class IslandLocator implements DroneController {
 				logger.info("uturn_stage: {}", uturn_stage);
 				switch (uturn_stage) {
 					case 0:
-						decision = drone.scan();  //REMOVE SCAN PHASE AFTER DONE TROUBLESHOOTING
-						break;
-					case 1:
 						decision = drone.turnLeft();
 						break;
-					case 2:
+					case 1:
 						decision = drone.turnLeft();
 						phase = Phase.FINAL_FRWD;
 						logger.info("Exiting UTURN_F -> FINAL_FRWD");
@@ -199,16 +184,11 @@ public class IslandLocator implements DroneController {
 						}
 						break;
 					default:
-						if(trvl_to_isl_count < dist && test_action == Action.FORWARD){  //REMOVE ALL test_action STUFF AFTER DONE TROUBLESHOOTING
+						if(trvl_to_isl_count < dist){
 							decision = drone.flyForwards();
-							test_action = Action.SCAN;
-						} else if (test_action == Action.FORWARD){
+						} else {
 							logger.info("Exiting FINAL_FRWD -> Returning empty");
 							return Optional.empty();
-						} else {
-							decision = drone.scan();
-							test_action = Action.FORWARD;
-							trvl_to_isl_count--;
 						}
 						break;
 				}
