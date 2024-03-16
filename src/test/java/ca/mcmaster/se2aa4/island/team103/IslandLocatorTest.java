@@ -31,7 +31,7 @@ public class IslandLocatorTest {
 		history = new ResponseHistory();
 		drone = new Drone(Direction.EAST,100000);
 		drone_reference = new Drone(Direction.EAST,100000);
-		locator = new IslandLocator();
+		locator = new IslandLocator(drone, history);
 	}
 
 	public void addOORtoHistory() {
@@ -209,7 +209,7 @@ public class IslandLocatorTest {
 		assertTrue(result.isEmpty());
 	}
 	
-	//@Test
+	@Test
 	public void testFFfar() {
 		// Tests FF normal case of shore 5 blocks away
 		setupFinalForwards();
@@ -225,7 +225,7 @@ public class IslandLocatorTest {
 	}
 
 
-	//@Test
+	@Test
 	public void testUTURNF() {
 		drone_reference = new Drone(Direction.SOUTH,100000);
 		setupUturnF();

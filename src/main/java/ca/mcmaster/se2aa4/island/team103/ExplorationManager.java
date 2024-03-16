@@ -12,7 +12,7 @@ public class ExplorationManager {
 
 	private History<JSONObject> respHistory = new ResponseHistory();
 	private String status = "start";
-	private DroneController islandLocator = new IslandLocator();
+	private DroneController islandLocator;
 	private DroneController islandMapper = new IslandRecon();
 	private Drone drone;
 	private Direction start_heading;
@@ -31,7 +31,8 @@ public class ExplorationManager {
 		}
 		logger.info("Recieved start heading: {}", heading);
 		logger.info("Initializing dron with heading: {}", start_heading);
-		drone = new Drone(start_heading, battery_start_level);
+		this.drone = new Drone(start_heading, battery_start_level);
+		this.islandLocator = new IslandLocator(this.drone, this.respHistory);
 	}
 	
 	public JSONObject getDecision() {

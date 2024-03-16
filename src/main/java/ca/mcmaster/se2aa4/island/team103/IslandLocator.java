@@ -1,4 +1,7 @@
 package ca.mcmaster.se2aa4.island.team103;
+import ca.mcmaster.se2aa4.island.team103.DroneCommands.*;
+
+import static org.junit.jupiter.api.DynamicContainer.dynamicContainer;
 
 import java.util.Optional;
 
@@ -23,153 +26,151 @@ public class IslandLocator implements DroneController {
 	private final Logger logger = LogManager.getLogger();
 	private Action next_action = Action.ECHO_RIGHT;
 	private Phase phase = Phase.SEARCH;
+	private Drone drone;
+	private History<JSONObject> history;
 	private JSONObject last_result;
 	private String last_echo_found;
+	private Counter stage = new Counter();
+	private CommandHandler commander = new CommandHandler();
+	private Command shiftRight;
+	private Command shiftLeft;
+	private Command Uturn;
 	private int last_echo_dist;
-	private int uturn_stage = 0;
 	private int dist;
-	private int trvl_to_end_count = 0;
-	private int trvl_to_isl_count = 0;	
-
 	
-	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> history) {
+
+	public IslandLocator(Drone drone_in, History<JSONObject> history_in) {
+		this.drone = drone_in;
+		this.history = history_in;
+		this.shiftRight = new ShiftRight(drone_in);
+		this.shiftLeft = new ShiftLeft(drone_in);
+		this.Uturn = new UturnLeft(drone_in);
+	}
+	
+	public Optional<JSONObject> nextAction(Drone temp_placeholder, History<JSONObject> temp_placeholder1) {
 		/* */
 		JSONObject decision = new JSONObject();
-		switch (phase) {
+		Optional<JSONObject> result;
 			
-			case Phase.SEARCH:
-				switch (next_action) {
-					case Action.ECHO_RIGHT:
-						decision = drone.echoRight();
-						next_action = Action.ECHO_FORWARD;
-						break;
-					case Action.ECHO_FORWARD:
-						last_result = history.getLast();
-						next_action = Action.ECHO_LEFT;
-						last_echo_found = last_result.getJSONObject("extras").getString("found");
-						if(last_echo_found.equals("GROUND")) {
-							phase = Phase.UTURN_R;
-							logger.info("Exiting Search Phase -> UTURN_R");
-							decision = drone.turnRight();
-						} else {
-							decision = drone.echoForward();
-						}
-						break;
-					case Action.ECHO_LEFT:
-						next_action = Action.FORWARD;
-						last_result = history.getLast();
-						last_echo_found = last_result.getJSONObject("extras").getString("found");
-						last_echo_dist = last_result.getJSONObject("extras").getInt("range");
-						if(last_echo_found.equals("GROUND") && last_echo_dist == 2) {
-							phase = Phase.TRAVEL_TO_END;
-							logger.info("Exiting Search Phase -> TRAVEL_TO_END");
-							decision = drone.turnRight();
-						} else {
-							decision = drone.echoLeft();
-						}
-						break;
-					case Action.FORWARD:
-						next_action = Action.ECHO_RIGHT;
-						last_result = history.getLast();
-						last_echo_found = last_result.getJSONObject("extras").getString("found");
-						if(last_echo_found.equals("GROUND")) {
-							phase = Phase.UTURN_L;
-							logger.info("Exiting Search Phase -> UTURN_L");
-							decision = drone.turnLeft();
-						} else {
-							decision = drone.flyForwards();
-						}
-						break;
-					default:
-						logger.error("next_action is not in an acceptable state");
-				}
-				break;
-
-			case Phase.TRAVEL_TO_END:
-				switch (trvl_to_end_count) {
-					case 0:
+		if (phase == Phase.SEARCH) {
+			switch (next_action) {
+				case Action.ECHO_RIGHT:
+					decision = drone.echoRight();
+					next_action = Action.ECHO_FORWARD;
+					break;
+				case Action.ECHO_FORWARD:
+					last_result = history.getLast();
+					next_action = Action.ECHO_LEFT;
+					last_echo_found = last_result.getJSONObject("extras").getString("found");
+					if(last_echo_found.equals("GROUND")) {
+						decision = drone.turnRight();
+						phase = Phase.UTURN_R;
+						logger.info("Exiting Search Phase -> UTURN_R");
+						logger.info("Heading: {}", drone.getHeading());
+						logger.info("Decision: {}", decision.toString());
+					} else {
 						decision = drone.echoForward();
-						break;
-					case 1:
-						last_result = history.getLast();
-						dist = last_result.getJSONObject("extras").getInt("range");
-						if(dist <= 1) {
-							phase = Phase.UTURN_F;
-							logger.info("Exiting TRAVEL_TO_END -> UTURN_F, dist <= 1");
-							decision = drone.scan();
-						} else {
-							decision = drone.flyForwards();
-						}
-						break;
-					default:
-						if(trvl_to_end_count < dist - 1) {
-							decision = drone.flyForwards();
-						} else {
-							decision = drone.flyForwards();
-							phase = Phase.UTURN_F;
-							logger.info("Exiting TRAVEL_TO_END -> UTURN_F");
-						}
-						break;
-				}
-				trvl_to_end_count++;
-				break;
-			case Phase.UTURN_F:
-				logger.info("uturn_stage: {}", uturn_stage);
-				switch (uturn_stage) {
-					case 0:
-						decision = drone.turnLeft();
-						break;
-					case 1:
-						decision = drone.turnLeft();
-						phase = Phase.FINAL_FRWD;
-						logger.info("Exiting UTURN_F -> FINAL_FRWD");
-						break;
-				}
-				uturn_stage++;
-				break;
-			case Phase.UTURN_R:
-				switch (uturn_stage) {
-					case 0:
+					}
+					break;
+				case Action.ECHO_LEFT:
+					next_action = Action.FORWARD;
+					last_result = history.getLast();
+					last_echo_found = last_result.getJSONObject("extras").getString("found");
+					last_echo_dist = last_result.getJSONObject("extras").getInt("range");
+					if(last_echo_found.equals("GROUND") && last_echo_dist == 2) {
+						phase = Phase.TRAVEL_TO_END;
+						logger.info("Exiting Search Phase -> TRAVEL_TO_END");
 						decision = drone.turnRight();
-						break;
-					case 1:
+					} else {
+						decision = drone.echoLeft();
+					}
+					break;
+				case Action.FORWARD:
+					next_action = Action.ECHO_RIGHT;
+					last_result = history.getLast();
+					last_echo_found = last_result.getJSONObject("extras").getString("found");
+					if(last_echo_found.equals("GROUND")) {
+						phase = Phase.UTURN_L;
+						logger.info("Exiting Search Phase -> UTURN_L");
+						decision = drone.turnLeft();
+					} else {
 						decision = drone.flyForwards();
-						break;
-					case 2:
-					case 3:
-						decision = drone.turnRight();
-						break;
-					case 4:
-						decision = drone.turnRight();
-						phase = Phase.FINAL_FRWD;
-						logger.info("Exiting UTURN_R -> FINAL_FRWD");
-						break;
-				}
-				uturn_stage++;
-				break;
-			case Phase.UTURN_L:
-				switch (uturn_stage) {
-					case 0:
-						decision = drone.turnLeft();
-						break;
-					case 1:
+					}
+					break;
+				default:
+					logger.error("next_action is not in an acceptable state");
+			}
+		}
+
+		else if (phase == Phase.TRAVEL_TO_END) {
+			switch (this.stage.value()) {
+				case 0:
+					decision = drone.echoForward();
+					break;
+				case 1:
+					last_result = history.getLast();
+					dist = last_result.getJSONObject("extras").getInt("range");
+					if(dist <= 1) {
+						phase = Phase.UTURN_F;
+						logger.info("Exiting TRAVEL_TO_END -> UTURN_F, dist <= 1");
+						this.stage.reset();
+						decision = drone.scan();
+					} else {
 						decision = drone.flyForwards();
-						break;
-					case 2:
-					case 3:
-						decision = drone.turnLeft();
-						break;
-					case 4:
-						decision = drone.turnLeft();
-						phase = Phase.FINAL_FRWD;
-						logger.info("Exiting UTURN_L -> FINAL_FRWD");
-						break;
+					}
+					break;
+				default:
+					if(this.stage.value() < dist - 1) {
+						decision = drone.flyForwards();
+					} else {
+						decision = drone.flyForwards();
+						phase = Phase.UTURN_F;
+						logger.info("Exiting TRAVEL_TO_END -> UTURN_F");
+						this.stage.reset();
+					}
+					break;
+			}
+			this.stage.next();
+		} else {
+			
+			if (phase == Phase.UTURN_F) {
+				commander.setCommand(this.Uturn);
+				result = commander.nextAction();
+
+				if (result.isPresent()) {
+					decision = result.get();
+				} else {
+					phase = Phase.FINAL_FRWD;
+					logger.info("Exiting UTURN_F -> FINAL_FRWD");
 				}
-				uturn_stage++;
-				break;
-			case Phase.FINAL_FRWD:
-				logger.info("Final frwd decision: {}", trvl_to_isl_count);
-				switch (trvl_to_isl_count) {
+			}
+
+			if (phase == Phase.UTURN_R) {
+				commander.setCommand(this.shiftRight);
+				result = commander.nextAction();
+
+				if (result.isPresent()) {
+					decision = result.get();
+				} else {
+					phase = Phase.FINAL_FRWD;
+					logger.info("Exiting UTURN_R -> FINAL_FRWD");
+				}
+			}
+
+			if (phase == Phase.UTURN_L) {
+				commander.setCommand(this.shiftLeft);
+				result = commander.nextAction();
+
+				if (result.isPresent()) {
+					decision = result.get();
+				} else {
+					phase = Phase.FINAL_FRWD;
+					logger.info("Exiting UTURN_L -> FINAL_FRWD");
+				}
+			}
+				
+			if (phase == Phase.FINAL_FRWD) {
+				switch (this.stage.value()) {
 					case 0:
 						decision = drone.echoForward();
 						break;
@@ -178,28 +179,25 @@ public class IslandLocator implements DroneController {
 						dist = last_result.getJSONObject("extras").getInt("range");
 						if(dist == 0) {
 							logger.info("Exiting FINAL_FRWD -> Returning empty (dist == 0 immediately after uturn)");
+							this.stage.reset();
 							return Optional.empty();
 						} else {
 							decision = drone.flyForwards();
 						}
 						break;
 					default:
-						if(trvl_to_isl_count < dist){
+						if(this.stage.value() < dist){
 							decision = drone.flyForwards();
 						} else {
 							logger.info("Exiting FINAL_FRWD -> Returning empty");
+							this.stage.reset();
 							return Optional.empty();
 						}
 						break;
 				}
-				trvl_to_isl_count++;
-				break;
-				
-			default:
-				logger.error("phase is not in an acceptable state");
-
+				this.stage.next();
+			}
 		}
 		return Optional.of(decision);
 	}
-	
 }
