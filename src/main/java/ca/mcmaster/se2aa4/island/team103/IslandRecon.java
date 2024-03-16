@@ -34,18 +34,25 @@ public class IslandRecon implements DroneController {
 		Move
 	}
 
+	private enum SpecialTurnWaitPhase{
+		Echo,
+		Move
+	}
+
 	private enum TurnStages{
 		TurnStage1,
 		TurnStage2,
 		TurnStage3,
 		TurnStage4,
-		TurnStage5
+		TurnStage5,
 	}
 
 	private enum TurnStatus{
 		Left,
 		Right
 	}
+
+	private int counter = 0;
 
 	// High-level, overview phase
 	private HLPhase HLstatus = HLPhase.Echo;
@@ -54,6 +61,7 @@ public class IslandRecon implements DroneController {
 	private TravelPhase travelStatus = TravelPhase.Move;
 	private TurnWaitPhase turn_wait = TurnWaitPhase.Move;
 	private TurnStages turn_status = TurnStages.TurnStage1;
+	private SpecialTurnWaitPhase special_turnwait = SpecialTurnWaitPhase.Echo;
 
 	// Tracking next turn direction
 	private TurnStatus turn_direction;
@@ -66,6 +74,7 @@ public class IslandRecon implements DroneController {
 	private boolean counter_activator = false;
 	private int SCAN_NUM = 1;
 
+	// Tracker for handling special case on first method call.
 	private boolean first_iter = true;
 
 	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> respHistory){
@@ -76,6 +85,7 @@ public class IslandRecon implements DroneController {
 		// Tracking logs
 		logger.info("IN PHASE, {}", HLstatus);
 		logger.info("SCAN_NUM, {}", SCAN_NUM);
+		logger.info("COUNT,{}",counter);
 		if(counter_activator){
 			moves_since_last_special++;
 		}
@@ -218,18 +228,33 @@ public class IslandRecon implements DroneController {
 						turn_status = TurnStages.TurnStage3;
 						break;
 					case TurnStage3:
-						if(special_turn_direction.equals(TurnStatus.Left)){
-							decision = drone.turnLeft();
-
-						}else{
-							decision = drone.turnRight();	
+						switch(special_turnwait){
+							case Echo:
+								if(special_turn_direction.equals(TurnStatus.Left)){
+									decision = drone.echoLeft();
+								}else{
+									decision = drone.echoRight();
+								}
+								special_turnwait = SpecialTurnWaitPhase.Move;
+								break;
+							case Move:
+								if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE") || (respHistory.getLast().getJSONObject("extras").getString("found").equals("GROUND") && respHistory.getLast().getJSONObject("extras").getInt("range") > 2)){
+									if(special_turn_direction.equals(TurnStatus.Right)){
+										decision = drone.turnRight();
+									}else{
+										decision = drone.turnLeft();
+									}
+									turn_status = TurnStages.TurnStage4;
+								}else{
+									decision = drone.flyForwards();
+								}
+								special_turnwait = SpecialTurnWaitPhase.Echo;
+								break;
 						}
-						turn_status = TurnStages.TurnStage4;
 						break;
 					case TurnStage4:
 						if(special_turn_direction.equals(TurnStatus.Left)){
 							decision = drone.turnLeft();
-
 						}else{
 							decision = drone.turnRight();	
 						}
@@ -265,13 +290,30 @@ public class IslandRecon implements DroneController {
 						turn_status = TurnStages.TurnStage4;
 						break;
 					case TurnStage4:
-						if(special_turn_direction.equals(TurnStatus.Left)){
-							decision = drone.turnLeft();
-
-						}else{
-							decision = drone.turnRight();	
+						switch(special_turnwait){
+							case Echo:
+								counter++;
+								if(special_turn_direction.equals(TurnStatus.Left)){
+									decision = drone.echoLeft();
+								}else{
+									decision = drone.echoRight();
+								}
+								special_turnwait = SpecialTurnWaitPhase.Move;
+								break;
+							case Move:
+								if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE") || (respHistory.getLast().getJSONObject("extras").getString("found").equals("GROUND") && respHistory.getLast().getJSONObject("extras").getInt("range") > 2)){
+									if(special_turn_direction.equals(TurnStatus.Right)){
+										decision = drone.turnRight();
+									}else{
+										decision = drone.turnLeft();
+									}
+									turn_status = TurnStages.TurnStage5;
+								}else{
+									decision = drone.flyForwards();
+								}
+								special_turnwait = SpecialTurnWaitPhase.Echo;
+								break;
 						}
-						turn_status = TurnStages.TurnStage5;
 						break;
 					case TurnStage5:
 						if(special_turn_direction.equals(TurnStatus.Left)){

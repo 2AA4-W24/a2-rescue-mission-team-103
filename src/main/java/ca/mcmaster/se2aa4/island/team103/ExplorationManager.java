@@ -53,7 +53,6 @@ public class ExplorationManager {
 
 		if(status.equals("find-coast")){
 			Optional<JSONObject> output = islandMapper.nextAction(drone, respHistory);
-			logger.info("OUTPUT: {}",output);
 			if(output.isPresent()){
 				decision = output.get();
 			}else{
