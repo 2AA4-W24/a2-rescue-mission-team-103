@@ -29,6 +29,9 @@ public class IslandLocatorTest {
 		detection = new JSONObject();
 		expected = new JSONObject();
 		history = new ResponseHistory();
+		addOORtoHistory();
+		addOORtoHistory();
+		addOORtoHistory();
 		drone = new Drone(Direction.EAST,100000);
 		drone_reference = new Drone(Direction.EAST,100000);
 		locator = new IslandLocator(drone, history);
@@ -76,7 +79,7 @@ public class IslandLocatorTest {
 
 	public void searchFwrd(int dist) {
 		// Move forward a specified distance
-		// Drone MUST be in either SEARCH or FF state!!
+		// Drone MUST be in SEARCH state!!
 		// Last history MUST be OOR
 		for (int i = 0; i < dist; i++) {
 			locator.nextAction(drone, history);
@@ -98,29 +101,34 @@ public class IslandLocatorTest {
 
 	public void setupFinalForwards() {
 		// Handles drone from itialialization to FF, leaves drone after having drone perform FF scan
-		addOORtoHistory();
 		searchFwrd(5);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
+		addOORtoHistory();
+		addOORtoHistory();
 		addGroundtoHistory();
+		locator.nextAction(drone, history);
+		locator.nextAction(drone, history);
+		locator.nextAction(drone, history);
 		locator.nextAction(drone, history);
 		performUTURN();
 		locator.nextAction(drone, history);
 	}
 
 	public void setupUturnF() {
-		addOORtoHistory();
 		searchFwrd(3);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
+		addOORtoHistory();
 		addGroundtoHistory(2);
+		addOORtoHistory();
+		locator.nextAction(drone, history);
+		locator.nextAction(drone, history);
 		locator.nextAction(drone, history);
 		locator.nextAction(drone, history);
 		addGroundtoHistory(4);
+		logger.info("Added Ground to history");
 		locator.nextAction(drone, history);
 		locator.nextAction(drone, history);
 		locator.nextAction(drone, history);
+		locator.nextAction(drone, history);
+		logger.info("UTURNF prep complete");
 	}
 
 	@Test
@@ -154,8 +162,12 @@ public class IslandLocatorTest {
 
 	@Test
 	public void testFoundR() {
-		locator.nextAction(drone, history);
 		addGroundtoHistory();
+		addOORtoHistory();
+		addOORtoHistory();
+		locator.nextAction(drone, history);
+		locator.nextAction(drone, history);
+		locator.nextAction(drone, history);
 
 		result = locator.nextAction(drone, history);
 
@@ -167,13 +179,11 @@ public class IslandLocatorTest {
 	@Test
 	public void testFoundF() {
 		locator.nextAction(drone, history);
-
-		addOORtoHistory();
-
 		locator.nextAction(drone, history);
-
+		locator.nextAction(drone, history);
+		addOORtoHistory();
 		addGroundtoHistory(2);
-
+		addOORtoHistory();
 		result = locator.nextAction(drone, history);
 
 		expected = drone_reference.turnRight();
@@ -185,12 +195,11 @@ public class IslandLocatorTest {
 	@Test
 	public void testFoundL() {
 		locator.nextAction(drone, history);
+		locator.nextAction(drone, history);
+		locator.nextAction(drone, history);
 
 		addOORtoHistory();
-		
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-
+		addOORtoHistory();
 		addGroundtoHistory();
 
 		result = locator.nextAction(drone, history);

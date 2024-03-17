@@ -1,11 +1,13 @@
 package ca.mcmaster.se2aa4.island.team103;
 import org.json.JSONObject;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResponseHistory implements History<JSONObject> {
 	private List<JSONObject> responseHistory = new ArrayList<JSONObject>();
+	private final Logger logger = LogManager.getLogger();
 
 	public void addItem(JSONObject j){
 		responseHistory.add(j);
