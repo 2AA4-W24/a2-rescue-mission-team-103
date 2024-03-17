@@ -11,67 +11,71 @@ public class Slicer {
 	private int furtherDistance = 0; // Used for tracking moves beyond island edge for proper turaround.
 
 	private enum SliceStatus {
-		Scan,
-		Forward,
-		Decision,
-		TurnWait // continuing to travel once island is done for proper turnaround.
+		SCAN,
+		FORWARD,
+		DECISION,
+		TURNWAIT // continuing to travel once island is done for proper turnaround.
 	}
 
-	SliceStatus travelStatus = SliceStatus.Scan;
+	private final String RESPONSE = "response";
+	private final String EXTRAS = "extras";
+	private final String FOUND = "found";
+
+	SliceStatus travelStatus = SliceStatus.SCAN;
 
 	public JSONObject performSlice(Drone drone, TurnDirection turn, History<JSONObject> respHistory){
 		JSONObject decision = new JSONObject();
 		switch(travelStatus){
-			case Scan:
-				decision.put("response",drone.scan());
-				travelStatus = SliceStatus.Forward;
+			case SCAN:
+				decision.put(RESPONSE,drone.scan());
+				travelStatus = SliceStatus.FORWARD;
 				break;
-			case Forward:
-				JSONArray biomesObj = respHistory.getLast().getJSONObject("extras").getJSONArray("biomes");
+			case FORWARD:
+				JSONArray biomesObj = respHistory.getLast().getJSONObject(EXTRAS).getJSONArray("biomes");
 				if(biomesObj.getString(0).equals("OCEAN") && biomesObj.length() == 1){
 					decision.put("response",drone.echoForward());
-					travelStatus = SliceStatus.Decision;
+					travelStatus = SliceStatus.DECISION;
 					break;
 				}
-				if(travelStatus != SliceStatus.Decision){
-					decision.put("response",drone.flyForwards());
-					travelStatus = SliceStatus.Scan;
+				if(travelStatus != SliceStatus.DECISION){
+					decision.put(RESPONSE,drone.flyForwards());
+					travelStatus = SliceStatus.SCAN;
 				}
 				break;
-			case Decision:
-				if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE")){
-					if(turn.equals(TurnDirection.Right)){
-						decision.put("response",drone.echoRight());
+			case DECISION:
+				if(respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("OUT_OF_RANGE")){
+					if(turn.equals(TurnDirection.RIGHT)){
+						decision.put(RESPONSE,drone.echoRight());
 					}else{
-						decision.put("response",drone.echoLeft());
+						decision.put(RESPONSE,drone.echoLeft());
 					}
 					furtherDistance++;
-					travelStatus = SliceStatus.TurnWait;
+					travelStatus = SliceStatus.TURNWAIT;
 				}else{
 					decision.put("response",drone.flyForwards());
-					travelStatus = SliceStatus.Scan;
+					travelStatus = SliceStatus.SCAN;
 				}
 				break;
-			case TurnWait:
+			case TURNWAIT:
 				if(furtherDistance % 2 == 0){
-					if(turn.equals(TurnDirection.Right)){
-						decision.put("response",drone.echoRight());
+					if(turn.equals(TurnDirection.RIGHT)){
+						decision.put(RESPONSE,drone.echoRight());
 					}else{
-						decision.put("response",drone.echoLeft());
+						decision.put(RESPONSE,drone.echoLeft());
 					}
 					furtherDistance++;
 				}else{
-					if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE") || 
-					(respHistory.getLast().getJSONObject("extras").getString("found").equals("GROUND") && 
-					respHistory.getLast().getJSONObject("extras").getInt("range") > 2)){
+					if(respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("OUT_OF_RANGE") || 
+					(respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("GROUND") && 
+					respHistory.getLast().getJSONObject(EXTRAS).getInt("range") > 2)){
 						furtherDistance = 0;
 						decision.put("done",true);
 					}else{
-						decision.put("response",drone.flyForwards());
+						decision.put(RESPONSE,drone.flyForwards());
 						furtherDistance++;
 					}
 				}
-				travelStatus = SliceStatus.Scan;
+				travelStatus = SliceStatus.SCAN;
 				break;
 		}
 		return decision;

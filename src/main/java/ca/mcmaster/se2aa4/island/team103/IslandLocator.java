@@ -31,6 +31,11 @@ public class IslandLocator implements DroneController {
 	private int trvl_to_end_count = 0;
 	private int trvl_to_isl_count = 0;	
 
+	private final String GROUND = "GROUND";
+	private final String EXTRAS = "extras";
+	private final String RANGE = "range";
+	private final String FOUND = "found";
+
 	
 	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> history) {
 		/* */
@@ -46,8 +51,8 @@ public class IslandLocator implements DroneController {
 					case Action.ECHO_FORWARD:
 						last_result = history.getLast();
 						next_action = Action.ECHO_LEFT;
-						last_echo_found = last_result.getJSONObject("extras").getString("found");
-						if(last_echo_found.equals("GROUND")) {
+						last_echo_found = last_result.getJSONObject(EXTRAS).getString(FOUND);
+						if(last_echo_found.equals(GROUND)) {
 							phase = Phase.UTURN_R;
 							logger.info("Exiting Search Phase -> UTURN_R");
 							decision = drone.turnRight();
@@ -58,9 +63,9 @@ public class IslandLocator implements DroneController {
 					case Action.ECHO_LEFT:
 						next_action = Action.FORWARD;
 						last_result = history.getLast();
-						last_echo_found = last_result.getJSONObject("extras").getString("found");
-						last_echo_dist = last_result.getJSONObject("extras").getInt("range");
-						if(last_echo_found.equals("GROUND") && last_echo_dist == 2) {
+						last_echo_found = last_result.getJSONObject(EXTRAS).getString(FOUND);
+						last_echo_dist = last_result.getJSONObject(EXTRAS).getInt(RANGE);
+						if(last_echo_found.equals(GROUND) && last_echo_dist == 2) {
 							phase = Phase.TRAVEL_TO_END;
 							logger.info("Exiting Search Phase -> TRAVEL_TO_END");
 							decision = drone.turnRight();
@@ -71,8 +76,8 @@ public class IslandLocator implements DroneController {
 					case Action.FORWARD:
 						next_action = Action.ECHO_RIGHT;
 						last_result = history.getLast();
-						last_echo_found = last_result.getJSONObject("extras").getString("found");
-						if(last_echo_found.equals("GROUND")) {
+						last_echo_found = last_result.getJSONObject(EXTRAS).getString(FOUND);
+						if(last_echo_found.equals(GROUND)) {
 							phase = Phase.UTURN_L;
 							logger.info("Exiting Search Phase -> UTURN_L");
 							decision = drone.turnLeft();
@@ -92,7 +97,7 @@ public class IslandLocator implements DroneController {
 						break;
 					case 1:
 						last_result = history.getLast();
-						dist = last_result.getJSONObject("extras").getInt("range");
+						dist = last_result.getJSONObject(EXTRAS).getInt(RANGE);
 						if(dist <= 1) {
 							phase = Phase.UTURN_F;
 							logger.info("Exiting TRAVEL_TO_END -> UTURN_F, dist <= 1");
@@ -124,6 +129,8 @@ public class IslandLocator implements DroneController {
 						phase = Phase.FINAL_FRWD;
 						logger.info("Exiting UTURN_F -> FINAL_FRWD");
 						break;
+					default:
+						break;
 				}
 				uturn_stage++;
 				break;
@@ -143,6 +150,8 @@ public class IslandLocator implements DroneController {
 						decision = drone.turnRight();
 						phase = Phase.FINAL_FRWD;
 						logger.info("Exiting UTURN_R -> FINAL_FRWD");
+						break;
+					default:
 						break;
 				}
 				uturn_stage++;
@@ -164,6 +173,8 @@ public class IslandLocator implements DroneController {
 						phase = Phase.FINAL_FRWD;
 						logger.info("Exiting UTURN_L -> FINAL_FRWD");
 						break;
+					default:
+						break;
 				}
 				uturn_stage++;
 				break;
@@ -175,7 +186,7 @@ public class IslandLocator implements DroneController {
 						break;
 					case 1:
 						last_result = history.getLast();
-						dist = last_result.getJSONObject("extras").getInt("range");
+						dist = last_result.getJSONObject(EXTRAS).getInt(RANGE);
 						if(dist == 0) {
 							logger.info("Exiting FINAL_FRWD -> Returning empty (dist == 0 immediately after uturn)");
 							return Optional.empty();

@@ -13,17 +13,17 @@ public class IslandScanner implements DroneController {
 	private final Logger logger = LogManager.getLogger();
 
 	private enum ScannerPhase{
-		Echo,
-		Decision, // determining whether nav is over using an echo.
-		Slice, // moving across map and performing scans
-		Turn, // regular u-turn, to be completed at end of each slice.
-		Turnaround, // special turn at end of map to return.
-		Turnaround2 // second special turn (depending on the way interlaced scan works out (last
+		ECHO,
+		DECISION, // determining whether nav is over using an echo.
+		SLICE, // moving across map and performing scans
+		TURN, // regular u-turn, to be completed at end of each slice.
+		TURNAROUND, // special turn at end of map to return.
+		TURNAROUND2 // second special turn (depending on the way interlaced scan works out (last
 		            // vs. second to last strip of land))
 	}
 
-	private ScannerPhase phase = ScannerPhase.Echo;
-	private TurnDirection turn = TurnDirection.Left;
+	private ScannerPhase phase = ScannerPhase.ECHO;
+	private TurnDirection turn = TurnDirection.LEFT;
 	private boolean firstCall = true;
 	private int moves_since_last_special = 0;
 	private boolean counter_activator = false;
@@ -33,6 +33,9 @@ public class IslandScanner implements DroneController {
 	private Slicer slicer = new Slicer();
 	private Decider decider = new Decider();
 	private Turnaround turnaround = new Turnaround();
+
+	private final String RESPONSE = "response";
+	private final String DONE = "done";
 	
 	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> respHistory){
 
@@ -48,80 +51,80 @@ public class IslandScanner implements DroneController {
 		// Special block to be used on first call to set what direction the first u-turn should be.
 		if(firstCall){
 			if(drone.getHeading().equals(Direction.EAST) || drone.getHeading().equals(Direction.SOUTH)){
-				turn = TurnDirection.Left;
+				turn = TurnDirection.LEFT;
 			}else{
-				turn = TurnDirection.Right;
+				turn = TurnDirection.RIGHT;
 			}
 			firstCall = false;
 		}
 
-		if(phase.equals(ScannerPhase.Echo)){
-			phase = ScannerPhase.Decision;
+		if(phase.equals(ScannerPhase.ECHO)){
+			phase = ScannerPhase.DECISION;
 			decision = drone.echoForward();
 			return Optional.of(decision);
 		}
 
-		if(phase.equals(ScannerPhase.Decision)){
+		if(phase.equals(ScannerPhase.DECISION)){
 			response = decider.performDecision(drone, respHistory, scan_pass_num, turn, moves_since_last_special);
-			if(response.getString("done").equals("specialTurn")){
+			if(response.getString(DONE).equals("specialTurn")){
 				counter_activator = true;
 				scan_pass_num = 2;
-				phase = ScannerPhase.Turnaround; 
-			}else if(response.getString("done").equals("specialTurn2")){
-				if(turn.equals(TurnDirection.Left)){
-					turn = TurnDirection.Right;
+				phase = ScannerPhase.TURNAROUND; 
+			}else if(response.getString(DONE).equals("specialTurn2")){
+				if(turn.equals(TurnDirection.LEFT)){
+					turn = TurnDirection.RIGHT;
 				}else{
-					turn = TurnDirection.Left;
+					turn = TurnDirection.LEFT;
 				}
-				phase = ScannerPhase.Turnaround2;
-			}else if(response.getString("done").equals("proceed")){
-				phase = ScannerPhase.Slice;
+				phase = ScannerPhase.TURNAROUND2;
+			}else if(response.getString(DONE).equals("proceed")){
+				phase = ScannerPhase.SLICE;
 			}
-			else if(response.getString("done").equals("over")){
-				phase = ScannerPhase.Echo;
+			else if(response.getString(DONE).equals("over")){
+				phase = ScannerPhase.ECHO;
 				return Optional.empty();
 			}
 		}
-		if(phase.equals(ScannerPhase.Slice)){
+		if(phase.equals(ScannerPhase.SLICE)){
 			response = slicer.performSlice(drone, turn, respHistory);
 			if(response.has("done")){ 
-				phase = ScannerPhase.Turn; 
+				phase = ScannerPhase.TURN; 
 			}else{
-				decision = response.getJSONObject("response");
+				decision = response.getJSONObject(RESPONSE);
 				return Optional.of(decision);
 			}
 		}
-		if(phase.equals(ScannerPhase.Turn)){
+		if(phase.equals(ScannerPhase.TURN)){
 			response = turner.performUTurn(drone, turn);
-			decision = response.getJSONObject("response");
-			if(response.getBoolean("done")){
-				if(turn.equals(TurnDirection.Right)){
-					turn = TurnDirection.Left;
+			decision = response.getJSONObject(RESPONSE);
+			if(response.getBoolean(DONE)){
+				if(turn.equals(TurnDirection.RIGHT)){
+					turn = TurnDirection.LEFT;
 				}else{
-					turn = TurnDirection.Right;
+					turn = TurnDirection.RIGHT;
 				}
-				phase = ScannerPhase.Echo;
+				phase = ScannerPhase.ECHO;
 			}
 		}
-		if(phase.equals(ScannerPhase.Turnaround)){
+		if(phase.equals(ScannerPhase.TURNAROUND)){
 			response = turnaround.specialTurn(drone,respHistory,turn);
-			if(response.has("done")){
-				phase = ScannerPhase.Decision;
+			if(response.has(DONE)){
+				phase = ScannerPhase.DECISION;
 				decision = drone.echoForward();
 				return Optional.of(decision);
 			}else{
-				decision = response.getJSONObject("response");
+				decision = response.getJSONObject(RESPONSE);
 				return Optional.of(decision);
 			}
 		}
-		if(phase.equals(ScannerPhase.Turnaround2)){
+		if(phase.equals(ScannerPhase.TURNAROUND2)){
 			response = turnaround.specialTurn2(drone,respHistory,turn);
-			if(response.has("done")){
-				phase = ScannerPhase.Decision;
+			if(response.has(DONE)){
+				phase = ScannerPhase.DECISION;
 				decision = drone.echoForward();
 				return Optional.of(decision);
 			}else{
-				decision = response.getJSONObject("response");
+				decision = response.getJSONObject(RESPONSE);
 				return Optional.of(decision);
 			}
 		}
