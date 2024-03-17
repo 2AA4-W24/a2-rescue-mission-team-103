@@ -13,7 +13,7 @@ public class ExplorationManager {
 	private History<JSONObject> respHistory = new ResponseHistory();
 	private String status = "start";
 	private DroneController islandLocator;
-	private DroneController islandMapper = new IslandRecon();
+	private DroneController islandMapper = new IslandScanner();
 	private Drone drone;
 	private Direction start_heading;
 
@@ -30,9 +30,9 @@ public class ExplorationManager {
 			start_heading = Direction.EAST;
 		}
 		logger.info("Recieved start heading: {}", heading);
-		logger.info("Initializing dron with heading: {}", start_heading);
 		this.drone = new Drone(start_heading, battery_start_level);
 		this.islandLocator = new IslandLocator(this.drone, this.respHistory);
+		logger.info("Initializing drone with heading: {}", start_heading);
 	}
 	
 	public JSONObject getDecision() {
@@ -54,15 +54,14 @@ public class ExplorationManager {
 
 		if(status.equals("find-coast")){
 			Optional<JSONObject> output = islandMapper.nextAction(drone, respHistory);
-			logger.info("OUTPUT: {}",output);
 			if(output.isPresent()){
+				logger.info("HEADING {}", drone.getHeading());
 				decision = output.get();
 			}else{
 				logger.info("Island scanning complete, moving on.");
 				decision = drone.stop();
 			}
 		}
-
         return decision;
 	}
 
