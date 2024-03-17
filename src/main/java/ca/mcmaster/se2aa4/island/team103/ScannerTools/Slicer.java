@@ -17,9 +17,9 @@ public class Slicer {
 		TURNWAIT // continuing to travel once island is done for proper turnaround.
 	}
 
-	private final String RESPONSE = "response";
-	private final String EXTRAS = "extras";
-	private final String FOUND = "found";
+	private final static String RESPONSE = "response";
+	private final static String EXTRAS = "extras";
+	private final static String FOUND = "found";
 
 	SliceStatus travelStatus = SliceStatus.SCAN;
 
@@ -33,7 +33,7 @@ public class Slicer {
 			case FORWARD:
 				JSONArray biomesObj = respHistory.getLast().getJSONObject(EXTRAS).getJSONArray("biomes");
 				if(biomesObj.getString(0).equals("OCEAN") && biomesObj.length() == 1){
-					decision.put("response",drone.echoForward());
+					decision.put(RESPONSE,drone.echoForward());
 					travelStatus = SliceStatus.DECISION;
 					break;
 				}
@@ -52,7 +52,7 @@ public class Slicer {
 					furtherDistance++;
 					travelStatus = SliceStatus.TURNWAIT;
 				}else{
-					decision.put("response",drone.flyForwards());
+					decision.put(RESPONSE,drone.flyForwards());
 					travelStatus = SliceStatus.SCAN;
 				}
 				break;

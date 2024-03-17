@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ExplorationManager {
 
-	private final Logger logger = LogManager.getLogger();
+	private final static Logger logger = LogManager.getLogger();
 
 	private History<JSONObject> respHistory = new ResponseHistory();
 	private String status = "start";

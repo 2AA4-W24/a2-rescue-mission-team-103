@@ -10,7 +10,7 @@ import ca.mcmaster.se2aa4.island.team103.ScannerTools.*;
 
 public class IslandScanner implements DroneController {
 
-	private final Logger logger = LogManager.getLogger();
+	private final static Logger logger = LogManager.getLogger();
 
 	private enum ScannerPhase{
 		ECHO,
@@ -34,8 +34,8 @@ public class IslandScanner implements DroneController {
 	private Decider decider = new Decider();
 	private Turnaround turnaround = new Turnaround();
 
-	private final String RESPONSE = "response";
-	private final String DONE = "done";
+	private final static String RESPONSE = "response";
+	private final static String DONE = "done";
 	
 	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> respHistory){
 

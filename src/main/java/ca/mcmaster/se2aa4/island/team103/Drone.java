@@ -14,7 +14,7 @@ public class Drone {
     private Logger logger = LogManager.getLogger();
 	private Coordinate currentPos = new Coordinate(0,0);
 	private NavHistory coordHistory = new NavHistory();
-	private final String batteryOut = "OUT OF BATTERY";
+	private final static String BATTERYOUT = "OUT OF BATTERY";
 
     public Drone(Direction start_heading, int battery_level) {
         // Initializes starting heading
@@ -51,7 +51,7 @@ public class Drone {
         if (battery.canContinue()) {
             return controls.flyForward();
         } else {
-            logger.info(batteryOut);
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -83,7 +83,7 @@ public class Drone {
             }
 
         } else {
-            logger.info(batteryOut);
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -117,7 +117,7 @@ public class Drone {
             }
 
         } else {
-            logger.info(batteryOut);
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -129,7 +129,7 @@ public class Drone {
         if (battery.canContinue()) {
             return radar.scan();
         } else {
-            logger.info(batteryOut);
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -141,7 +141,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanLeft(heading);
         } else {
-            logger.info(batteryOut);
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -153,7 +153,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanRight(heading);
         } else {
-            logger.info(batteryOut);
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -165,7 +165,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanForward(heading);
         } else {
-            logger.info(batteryOut);
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }

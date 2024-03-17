@@ -20,7 +20,7 @@ public class IslandLocator implements DroneController {
 		FINAL_FRWD
 	}
 
-	private final Logger logger = LogManager.getLogger();
+	private final static Logger logger = LogManager.getLogger();
 	private Action next_action = Action.ECHO_RIGHT;
 	private Phase phase = Phase.SEARCH;
 	private JSONObject last_result;
@@ -31,10 +31,10 @@ public class IslandLocator implements DroneController {
 	private int trvl_to_end_count = 0;
 	private int trvl_to_isl_count = 0;	
 
-	private final String GROUND = "GROUND";
-	private final String EXTRAS = "extras";
-	private final String RANGE = "range";
-	private final String FOUND = "found";
+	private final static String GROUND = "GROUND";
+	private final static String EXTRAS = "extras";
+	private final static String RANGE = "range";
+	private final static String FOUND = "found";
 
 	
 	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> history) {
@@ -179,7 +179,7 @@ public class IslandLocator implements DroneController {
 				uturn_stage++;
 				break;
 			case Phase.FINAL_FRWD:
-				logger.info("Final frwd decision: {}", trvl_to_isl_count);
+				logger.info("final static frwd decision: {}", trvl_to_isl_count);
 				switch (trvl_to_isl_count) {
 					case 0:
 						decision = drone.echoForward();

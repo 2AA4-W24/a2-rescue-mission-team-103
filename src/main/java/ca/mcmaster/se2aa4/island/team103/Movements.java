@@ -4,10 +4,10 @@ import org.json.JSONObject;
 
 public class Movements {
 
-	private final String ACTION = "action";
-	private final String HEADING = "heading";
-	private final String DIRECTION = "direction";
-	private final String PARAMS = "parameters";
+	private final static String ACTION = "action";
+	private final static String HEADING = "heading";
+	private final static String DIRECTION = "direction";
+	private final static String PARAMS = "parameters";
 
     public JSONObject flyForward(){
         JSONObject fly = new JSONObject();

@@ -4,9 +4,9 @@ import org.json.JSONObject;
 
 public class Radar {
 
-	private final String ACTION = "action";
-	private final String DIRECTION = "direction";
-	private final String PARAMS = "parameters";
+	private final static String ACTION = "action";
+	private final static String DIRECTION = "direction";
+	private final static String PARAMS = "parameters";
 
 	public JSONObject scan() {
 		JSONObject scan = new JSONObject();
