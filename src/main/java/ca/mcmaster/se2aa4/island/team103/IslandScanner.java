@@ -66,13 +66,13 @@ public class IslandScanner implements DroneController {
 			if(response.getString("done").equals("specialTurn")){
 				counter_activator = true;
 				scan_pass_num = 2;
-				phase = ScannerPhase.Turnaround; 
-			}else if(response.getString("done").equals("specialTurn2")){
+				phase = ScannerPhase.Turnaround;
 				if(turn.equals(TurnDirection.Left)){
 					turn = TurnDirection.Right;
 				}else{
 					turn = TurnDirection.Left;
-				}
+				} 
+			}else if(response.getString("done").equals("specialTurn2")){
 				phase = ScannerPhase.Turnaround2;
 			}else if(response.getString("done").equals("proceed")){
 				phase = ScannerPhase.Slice;
@@ -107,7 +107,7 @@ public class IslandScanner implements DroneController {
 			response = turnaround.specialTurn(drone,respHistory,turn);
 			if(response.has("done")){
 				phase = ScannerPhase.Decision;
-				decision = drone.echoForward();
+				decision = drone.echoForward(); // CHANGE HERE FOR TESTING PURPOSES
 				return Optional.of(decision);
 			}else{
 				decision = response.getJSONObject("response");
