@@ -1,0 +1,201 @@
+@startuml
+class Explorer {
+  +manager: ExplorationManager
+  +siteTracker: SiteTracker
+  +takeDecision(): String
+  +deliverFinalReport(): String
+}
+
+class ExplorationManager {
+  +drone: Drone
+  +start_heading: Direction
+  +decision(): return
+  +navHistory(): return
+  +getDecision(): JSONObject
+  +getLastInfo(): JSONObject
+}
+
+interface History {
+}
+
+interface DroneController {
+}
+
+interface PointOfInterest {
+}
+
+class ResponseHistory {
+  +getLast(): JSONObject
+  +getSize(): int
+}
+
+class IslandLocator {
+  +last_result: JSONObject
+  +last_echo_found: String
+  +last_echo_dist: int
+  +dist: int
+}
+
+class IslandScanner {
+  +turn_direction: TurnStatus
+}
+
+class ActionUsage {
+  +echo_F: int
+  +echo_R: int
+  +echo_L: int
+  +scan: int
+  +turn_L: int
+  +turn_R: int
+  +fly: int
+  +summary: String
+  +getSummary(): String
+  +log(): void
+}
+
+class SiteTracker {
+  +site: PointOfInterest
+  +getClosestInlet(): String
+}
+
+class Site {
+  +id: String
+  +coord: Coordinate
+  +id(): String
+  +coord(): Coordinate
+}
+
+class Drone {
+  +heading: Direction
+  +battery: Battery
+  +flyForwards(): JSONObject
+  +turnRight(): JSONObject
+  +turnLeft(): JSONObject
+  +scan(): JSONObject
+  +echoLeft(): JSONObject
+  +echoRight(): JSONObject
+  +echoForward(): JSONObject
+  +stop(): JSONObject
+  +getHeading(): Direction
+}
+
+enum Direction {
+  North
+  South
+  East 
+  West
+}
+class Inlet {
+  +id: String
+  +coordinate: Coordinate
+  +id(): String
+  +coord(): Coordinate
+}
+class Movements {
+  +fly(): JSONObject
+  +north(): JSONObject
+  +south(): JSONObject
+  +east(): JSONObject
+  +west(): JSONObject
+  +output(): JSONObject
+  +flyForward(): JSONObject
+  +flyNorth(): JSONObject
+  +flySouth(): JSONObject
+  +flyEast(): JSONObject
+  +flyWest(): JSONObject
+  +stop(): JSONObject
+}
+class NavHistory {
+  +getLast(): Coordinate
+  +getFirst(): Coordinate
+  +getSize(): int
+}
+class Coordinate {
+  +x: int
+  +y: int
+  +x(): int
+  +y(): int
+  +toString(): String
+}
+class DistanceCalculation {
+  +closest_inlet(): return
+  +dist(): return
+}
+class Battery {
+  +value: int
+  +canContinue(): boolean
+  +getBattery(): int
+}
+class Radar {
+  +scan(): JSONObject
+}
+enum Action {
+  TRIGHT 
+  TLEFT 
+  FORWARD 
+  ECHO_FORWARD 
+  ECHO_RIGHT 
+  ECHO_LEFT 
+  SCAN
+}
+
+class Decider {}
+class Slicer {}
+class Turnaround {}
+class UTurn{}
+class Runner{}
+class EchoSearch{}
+class FinalForward{}
+class TravelToEnd{}
+interface Command{}
+class TurnLeft{}
+class UturnLeft{}
+class TurnRight{}
+class CommandHandler{}
+class TurnDirection{}
+class Counter{}
+
+Explorer *-- ExplorationManager
+ExplorationManager *-- DroneController
+DroneController *-- IslandScanner
+DroneController *-- IslandLocator
+ExplorationManager *-- History
+Explorer *-- SiteTracker
+SiteTracker *-- PointOfInterest
+SiteTracker *-- DistanceCalculation
+PointOfInterest *-- Site
+PointOfInterest *-- Inlet
+History *-- ResponseHistory
+History *-- NavHistory
+ExplorationManager *-- Drone
+Drone *-- ActionUsage
+Drone *-- Direction
+Drone *-- Movements
+Drone *-- History
+Drone *-- Battery
+NavHistory *-- Coordinate
+Drone *-- Radar
+ActionUsage *-- Action
+IslandScanner .. Decider
+IslandScanner .. Slicer
+IslandScanner .. Turnaround
+IslandScanner .. UTurn
+Runner .. Explorer
+Command .. EchoSearch
+Command .. FinalForward
+Command .. TravelToEnd
+Command .. TurnLeft
+Command .. UturnLeft
+Command .. TurnRight
+IslandLocator .. CommandHandler
+CommandHandler .. Command
+IslandScanner .. TurnDirection
+EchoSearch .. Counter
+FinalForward .. Counter
+TurnRight .. Counter
+TravelToEnd .. Counter
+TurnLeft .. Counter
+UturnLeft .. Counter
+
+
+@enduml

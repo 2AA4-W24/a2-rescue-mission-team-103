@@ -1,9 +1,0 @@
-@startuml
-
-skin rose
-
-Bob -> Alice: Hello!
-
-Test -> Team 103
-
-@enduml
