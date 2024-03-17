@@ -29,9 +29,12 @@ public class IslandLocatorTest {
 		detection = new JSONObject();
 		expected = new JSONObject();
 		history = new ResponseHistory();
+		addOORtoHistory();
+		addOORtoHistory();
+		addOORtoHistory();
 		drone = new Drone(Direction.EAST,100000);
 		drone_reference = new Drone(Direction.EAST,100000);
-		locator = new IslandLocator();
+		locator = new IslandLocator(drone, history);
 	}
 
 	public void addOORtoHistory() {
@@ -76,56 +79,61 @@ public class IslandLocatorTest {
 
 	public void searchFwrd(int dist) {
 		// Move forward a specified distance
-		// Drone MUST be in either SEARCH or FF state!!
+		// Drone MUST be in SEARCH state!!
 		// Last history MUST be OOR
 		for (int i = 0; i < dist; i++) {
-			locator.nextAction(drone, history);
-			locator.nextAction(drone, history);
-			locator.nextAction(drone, history);
-			locator.nextAction(drone, history);
+			locator.nextAction();
+			locator.nextAction();
+			locator.nextAction();
+			locator.nextAction();
 		}
 	}
 
 	public void performUTURN() {
 		// Causes drone to complete UTURN maneuver (UTURN_R or UTURN_L, NOT UTURN_F)
 		// Must be at the start of the maneurver already
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
 	}
 
 	public void setupFinalForwards() {
 		// Handles drone from itialialization to FF, leaves drone after having drone perform FF scan
-		addOORtoHistory();
 		searchFwrd(5);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
+		addOORtoHistory();
+		addOORtoHistory();
 		addGroundtoHistory();
-		locator.nextAction(drone, history);
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
 		performUTURN();
-		locator.nextAction(drone, history);
+		locator.nextAction();
 	}
 
 	public void setupUturnF() {
-		addOORtoHistory();
 		searchFwrd(3);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
+		addOORtoHistory();
 		addGroundtoHistory(2);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
+		addOORtoHistory();
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
 		addGroundtoHistory(4);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
+		logger.info("Added Ground to history");
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
+		logger.info("UTURNF prep complete");
 	}
 
 	@Test
 	public void testSearch() {
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 
 		expected = drone.echoRight();
 		assertTrue(result.isPresent());
@@ -133,19 +141,19 @@ public class IslandLocatorTest {
 
 		addOORtoHistory();
 		
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 
 		expected = drone.echoForward();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 
 		expected = drone.echoLeft();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 
 		expected = drone.flyForwards();
 		assertTrue(result.isPresent());
@@ -154,10 +162,14 @@ public class IslandLocatorTest {
 
 	@Test
 	public void testFoundR() {
-		locator.nextAction(drone, history);
 		addGroundtoHistory();
+		addOORtoHistory();
+		addOORtoHistory();
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
 
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 
 		expected = drone_reference.turnRight();
 		assertTrue(result.isPresent());
@@ -166,15 +178,13 @@ public class IslandLocatorTest {
 
 	@Test
 	public void testFoundF() {
-		locator.nextAction(drone, history);
-
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
 		addOORtoHistory();
-
-		locator.nextAction(drone, history);
-
 		addGroundtoHistory(2);
-
-		result = locator.nextAction(drone, history);
+		addOORtoHistory();
+		result = locator.nextAction();
 
 		expected = drone_reference.turnRight();
 		assertTrue(result.isPresent());
@@ -184,16 +194,15 @@ public class IslandLocatorTest {
 
 	@Test
 	public void testFoundL() {
-		locator.nextAction(drone, history);
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
 
 		addOORtoHistory();
-		
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-
+		addOORtoHistory();
 		addGroundtoHistory();
 
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 		expected = drone_reference.turnLeft();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
@@ -205,36 +214,36 @@ public class IslandLocatorTest {
 		// Tests FF edge case where drone is next to shore immidiately after performing UTURN
 		setupFinalForwards();
 		addGroundtoHistory(0);
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 		assertTrue(result.isEmpty());
 	}
 	
-	//@Test
+	@Test
 	public void testFFfar() {
 		// Tests FF normal case of shore 5 blocks away
 		setupFinalForwards();
 		addGroundtoHistory(5);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		locator.nextAction(drone, history);
-		result = locator.nextAction(drone, history);
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
+		locator.nextAction();
+		result = locator.nextAction();
 		expectedOp = Optional.empty();
 		assertEquals(expectedOp.toString(), result.toString());
 
 	}
 
 
-	//@Test
+	@Test
 	public void testUTURNF() {
 		drone_reference = new Drone(Direction.SOUTH,100000);
 		setupUturnF();
 
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 		expected = drone_reference.turnLeft();
 		assertEquals(expected.toString(), result.get().toString());
 
-		result = locator.nextAction(drone, history);
+		result = locator.nextAction();
 		expected = drone_reference.turnLeft();
 		assertEquals(expected.toString(), result.get().toString());	
 	}

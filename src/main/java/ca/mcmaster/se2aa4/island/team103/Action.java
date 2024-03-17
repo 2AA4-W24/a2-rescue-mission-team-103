@@ -8,5 +8,7 @@ enum Action {
 	ECHO_FORWARD,
 	ECHO_RIGHT,
 	ECHO_LEFT,
+	ECHO,
+	MOVE,
 	SCAN
 }
