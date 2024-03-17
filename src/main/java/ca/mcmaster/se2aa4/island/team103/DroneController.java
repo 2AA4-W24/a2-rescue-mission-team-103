@@ -4,5 +4,5 @@ import java.util.Optional;
 import org.json.JSONObject;
 
 public interface DroneController {
-	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> respHistory);
+	public Optional<JSONObject> nextAction();
 }

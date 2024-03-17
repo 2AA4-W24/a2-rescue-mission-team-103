@@ -13,7 +13,7 @@ public class ExplorationManager {
 	private History<JSONObject> respHistory = new ResponseHistory();
 	private String status = "start";
 	private DroneController islandLocator;
-	private DroneController islandMapper = new IslandScanner();
+	private DroneController islandMapper;
 	private Drone drone;
 	private Direction start_heading;
 
@@ -32,6 +32,7 @@ public class ExplorationManager {
 		logger.info("Recieved start heading: {}", heading);
 		this.drone = new Drone(start_heading, battery_start_level);
 		this.islandLocator = new IslandLocator(this.drone, this.respHistory);
+		this.islandMapper = new IslandScanner(this.drone, this.respHistory);
 		logger.info("Initializing drone with heading: {}", start_heading);
 	}
 	
@@ -43,7 +44,7 @@ public class ExplorationManager {
 			status = "find-island";
 		}
 		else if(status.equals("find-island")){
-			Optional<JSONObject> output = islandLocator.nextAction(drone, respHistory);
+			Optional<JSONObject> output = islandLocator.nextAction();
 			if(output.isPresent()) {
 				decision = output.get();
 			} else {
@@ -53,7 +54,7 @@ public class ExplorationManager {
 		}
 
 		if(status.equals("find-coast")){
-			Optional<JSONObject> output = islandMapper.nextAction(drone, respHistory);
+			Optional<JSONObject> output = islandMapper.nextAction();
 			if(output.isPresent()){
 				logger.info("HEADING {}", drone.getHeading());
 				decision = output.get();

@@ -33,7 +33,7 @@ public class IslandScannerTest {
 		history = new ResponseHistory();
 		drone = new Drone(Direction.EAST, 100000);
 		drone_reference = new Drone(Direction.EAST, 100000);
-		scanner = new IslandScanner();
+		scanner = new IslandScanner(drone, history);
 	}
 
 	public void addOORtoHistory() {
@@ -99,7 +99,7 @@ public class IslandScannerTest {
 
 	@Test
 	public void firstEchoTest(){
-		result = scanner.nextAction(drone, history);
+		result = scanner.nextAction();
 		expected = drone.echoForward();
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
@@ -107,34 +107,34 @@ public class IslandScannerTest {
 
 	@Test
 	public void StartofSlice(){
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addGroundtoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		expected = drone.scan();
 		assertEquals(expected.toString(), result.get().toString());
 	}
 
 	@Test
 	public void moveSlice(){
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addGroundtoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addOtherBiometoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		expected = drone.flyForwards();
 		assertEquals(expected.toString(), result.get().toString());
 	}
 
 	@Test
 	public void turnwaitSliceComponent(){
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addGroundtoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addOtherBiometoHistory();
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOceanBiometoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		expected = drone_reference.turnRight();
 		expected = drone_reference.echoLeft();
 		assertEquals(expected.toString(), result.get().toString());
@@ -142,17 +142,17 @@ public class IslandScannerTest {
 
 	@Test
 	public void endSlice(){
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addGroundtoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addOtherBiometoHistory();
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOceanBiometoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addOORtoHistory();
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 		expected = drone_reference.turnLeft();
 		
 		logger.info(history.getLast());
@@ -161,18 +161,18 @@ public class IslandScannerTest {
 
 	@Test
 	public void UTurnEast(){ // Ensuring U-Turn logic is successful.
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addGroundtoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addOtherBiometoHistory();
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOceanBiometoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addOORtoHistory();
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 
 		expected = drone_reference.turnLeft();
 		expected = drone_reference.turnLeft();
@@ -183,32 +183,32 @@ public class IslandScannerTest {
 	@Test
 	public void SpecialTurn(){ 
 		//Setup instructions
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addGroundtoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addOtherBiometoHistory();
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOceanBiometoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		addOORtoHistory();
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOORtoHistory();
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
 		// Performing special turn
 		List<Coordinate> oldHistory = drone.getNavHistory();
 		Coordinate c1 = oldHistory.get(oldHistory.size()-1);
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOORtoHistory();
 
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
-		result = scanner.nextAction(drone,history);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
 		List<Coordinate> newHistory = drone.getNavHistory();
 		Coordinate c2 = newHistory.get(newHistory.size()-1);
 		Coordinate reference = new Coordinate(c2.x(),c2.y()-1);

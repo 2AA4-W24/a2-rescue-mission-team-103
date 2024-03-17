@@ -28,13 +28,20 @@ public class IslandScanner implements DroneController {
 	private int moves_since_last_special = 0;
 	private boolean counter_activator = false;
 	private int scan_pass_num = 1;
+	private Drone drone;
+	private History<JSONObject> respHistory;
 
 	private UTurn turner = new UTurn();
 	private Slicer slicer = new Slicer();
 	private Decider decider = new Decider();
 	private Turnaround turnaround = new Turnaround();
+
+	public IslandScanner(Drone drone_in, History<JSONObject> history_in) {
+		this.drone = drone_in;
+		this.respHistory = history_in;
+	}
 	
-	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> respHistory){
+	public Optional<JSONObject> nextAction(){
 
 		logger.info("Scanning Phase: {}",phase);
 

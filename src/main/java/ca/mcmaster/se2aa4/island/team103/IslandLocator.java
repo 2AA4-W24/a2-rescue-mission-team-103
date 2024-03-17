@@ -44,7 +44,7 @@ public class IslandLocator implements DroneController {
 		this.echoSearch = new EchoSearch(this.drone);
 	}
 	
-	public Optional<JSONObject> nextAction(Drone temp_placeholder, History<JSONObject> temp_placeholder1) {
+	public Optional<JSONObject> nextAction() {
 		/* */
 		JSONObject decision = new JSONObject();
 		Optional<JSONObject> result;
