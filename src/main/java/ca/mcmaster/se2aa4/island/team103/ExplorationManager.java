@@ -11,7 +11,7 @@ public class ExplorationManager {
 	private final Logger logger = LogManager.getLogger();
 
 	private History<JSONObject> respHistory = new ResponseHistory();
-	private String status = "start";
+	private String status = "find-island";
 	private DroneController islandLocator;
 	private DroneController islandMapper;
 	private Drone drone;
@@ -39,11 +39,7 @@ public class ExplorationManager {
 	public JSONObject getDecision() {
 		JSONObject decision = new JSONObject();
 
-		if(status.equals("start")) {
-			decision = drone.scan();
-			status = "find-island";
-		}
-		else if(status.equals("find-island")){
+		if(status.equals("find-island")){
 			Optional<JSONObject> output = islandLocator.nextAction();
 			if(output.isPresent()) {
 				decision = output.get();

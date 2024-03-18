@@ -10,6 +10,7 @@ public class FinalForward implements Command {
     private Drone drone;
     private History<JSONObject> history;
     private final Logger logger = LogManager.getLogger();
+    private int distance = 0;
 
     public FinalForward(Drone drone_in, History<JSONObject> history_in) {
         this.drone = drone_in;
@@ -19,7 +20,6 @@ public class FinalForward implements Command {
     public Optional<JSONObject> execute() {
         Optional<JSONObject> decision;
         JSONObject last_result;
-        int distance = 0;
 
         switch (this.stage.value()) {
             case 0:
