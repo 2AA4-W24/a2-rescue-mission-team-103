@@ -36,6 +36,7 @@ public class IslandScanner implements DroneController {
 	private Decider decider = new Decider();
 	private Turnaround turnaround = new Turnaround();
 
+	private boolean flyNoScan = false;
 	public IslandScanner(Drone drone_in, History<JSONObject> history_in) {
 		this.drone = drone_in;
 		this.respHistory = history_in;
@@ -84,13 +85,18 @@ public class IslandScanner implements DroneController {
 			}else if(response.getString("done").equals("proceed")){
 				phase = ScannerPhase.Slice;
 			}
+			else if(response.getString("done").equals("proceedToLand")){
+				phase = ScannerPhase.Slice;
+				flyNoScan = true;
+			}
 			else if(response.getString("done").equals("over")){
 				phase = ScannerPhase.Echo;
 				return Optional.empty();
 			}
 		}
 		if(phase.equals(ScannerPhase.Slice)){
-			response = slicer.performSlice(drone, turn, respHistory);
+			response = slicer.performSlice(drone, turn, respHistory, flyNoScan);
+			flyNoScan = false;
 			if(response.has("done")){ 
 				phase = ScannerPhase.Turn; 
 			}else{

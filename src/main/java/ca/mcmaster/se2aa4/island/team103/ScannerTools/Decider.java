@@ -18,6 +18,9 @@ public class Decider {
 			else if(scan_pass == 2){
 				decision.put("done","over");
 			}
+		}else if(respHistory.getLast().getJSONObject("extras").getInt("range") > 1){
+			decision = drone.flyForwards();
+			decision.put("done","proceedToLand");
 		}else{
 			decision = drone.scan();
 			decision.put("done","proceed");
