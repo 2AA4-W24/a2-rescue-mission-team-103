@@ -2,43 +2,92 @@
 class Explorer {
   +manager: ExplorationManager
   +siteTracker: SiteTracker
+  +initialize(): void
   +takeDecision(): String
   +deliverFinalReport(): String
 }
 
 class ExplorationManager {
   +drone: Drone
+  +respHistory: ResponseHistory
+  +islandLocator: DroneController
+  +islandMapper: DroneController
   +start_heading: Direction
-  +decision(): return
-  +navHistory(): return
+  +addInfo(): void
+  +getLastInfo(): void
+  +getResponseReport(): List<JSONObject>
+  +getNavReport(): List<Coordinate>
   +getDecision(): JSONObject
   +getLastInfo(): JSONObject
 }
 
 interface History {
+  +addItem(T item): void
+	+getLast(): T
+	+getItems(int offset): List<T>
+	+getItems(int start, int end): List<T> 
+	+getSize():int 
 }
 
 interface DroneController {
+  +nextAction(): Optional<JSONObject>
 }
 
 interface PointOfInterest {
+  +id(): String
+  +coord(): Coordinate
 }
 
 class ResponseHistory {
+  +responseHistory: ArrayList<JSONObject>
+  +addItem(JSONObject j): void
   +getLast(): JSONObject
-  +getSize(): int
+  +getItems(int offset): List<JSONObject>
+	+getItems(int start, int end): List<JSONObject> 
+	+getItem(int index): JSONObject
+	+getSize():int
+}
+
+enum Phase{
+  SEARCH,
+	TRAVEL_TO_END,
+	UTURN_L,
+	TURN_R,
+	TURN_L,
+	FINAL_FRWD
 }
 
 class IslandLocator {
-  +last_result: JSONObject
-  +last_echo_found: String
-  +last_echo_dist: int
-  +dist: int
+  +next_action: Action
+  +phase: Phase
+  +drone: Drone
+  +history: History<JSONObject>
+  +commander: CommandHandler
+  +nextAction(): Optional<JSONObject>
+}
+
+IslandLocator .. Phase
+
+enum ScannerPhase{
+  ECHO,
+	DECISION,
+	SLICE,
+	TURN,
+  TURNAROUND,
+	TURNAROUND2
 }
 
 class IslandScanner {
-  +turn_direction: TurnStatus
+  +phase: ScannerPhase
+  +respHistory: History<JSONObject>
+  +turner: UTurn
+  +slicer: Slicer
+  +decider: Decider
+  +turnaround: Turnaround
+  +nextAction(): Optional<JSONObject>
 }
+
+IslandScanner .. ScannerPhase
 
 class ActionUsage {
   +echo_F: int
@@ -54,8 +103,13 @@ class ActionUsage {
 }
 
 class SiteTracker {
-  +site: PointOfInterest
+  +closest_inlet: PointOfInterest
+  +calculator: DistanceCalculation
+  +site: Optional<PointOfInterest>
+  +inlets: ArrayList<PointOfInterest>
   +getClosestInlet(): String
+  +addInlet(String id, Coordinate coord): void
+  +findPointsOfInterest(List<JSONObject> history, List<Coordinate> coordHistory): void
 }
 
 class Site {
@@ -68,6 +122,11 @@ class Site {
 class Drone {
   +heading: Direction
   +battery: Battery
+  +controls: Movements
+  +actions: ActionUsage
+  +radar: Radar
+  +currentPos: Coordinate
+  +coordHistory: NavHistory
   +flyForwards(): JSONObject
   +turnRight(): JSONObject
   +turnLeft(): JSONObject
@@ -77,27 +136,25 @@ class Drone {
   +echoForward(): JSONObject
   +stop(): JSONObject
   +getHeading(): Direction
+  +logCost(int cost): void
+  +getNavHistory(): List<Coordinate>
 }
 
 enum Direction {
-  North
-  South
-  East 
-  West
+  NORTH,
+  SOUTH,
+  EAST,
+  WEST
 }
+
 class Inlet {
   +id: String
   +coordinate: Coordinate
   +id(): String
   +coord(): Coordinate
 }
+
 class Movements {
-  +fly(): JSONObject
-  +north(): JSONObject
-  +south(): JSONObject
-  +east(): JSONObject
-  +west(): JSONObject
-  +output(): JSONObject
   +flyForward(): JSONObject
   +flyNorth(): JSONObject
   +flySouth(): JSONObject
@@ -105,10 +162,15 @@ class Movements {
   +flyWest(): JSONObject
   +stop(): JSONObject
 }
+
 class NavHistory {
+  +navHistory: ArrayList<Coordinate>
+  +addItem(Coordinate c): void
   +getLast(): Coordinate
-  +getFirst(): Coordinate
-  +getSize(): int
+  +getItems(int offset): List<Coordinate>
+	+getItems(int start, int end): List<Coordinate>
+	+getItem(int index): Coordinate
+	+getSize():int
 }
 class Coordinate {
   +x: int
@@ -116,19 +178,28 @@ class Coordinate {
   +x(): int
   +y(): int
   +toString(): String
+  +equalTo(Coordinate c): boolean
 }
+
 class DistanceCalculation {
-  +closest_inlet(): return
-  +dist(): return
+  +distance(Coordinate c1, Coordinate c2): double
+  +returnClosestInlet(List<PointOfInterest> inlets, PointOfInterest site): PointOfInterest
 }
+
 class Battery {
   +value: int
+  +log(int cost): cost
   +canContinue(): boolean
   +getBattery(): int
 }
+
 class Radar {
   +scan(): JSONObject
+  +echoForward(Direction d): JSONObject
+  +echoLeft(Direction d): JSONObject
+  +echoRight(Direction d): JSONObject
 }
+
 enum Action {
   TRIGHT 
   TLEFT 
@@ -139,21 +210,113 @@ enum Action {
   SCAN
 }
 
-class Decider {}
-class Slicer {}
-class Turnaround {}
-class UTurn{}
-class Runner{}
-class EchoSearch{}
-class FinalForward{}
-class TravelToEnd{}
-interface Command{}
-class TurnLeft{}
-class UturnLeft{}
-class TurnRight{}
-class CommandHandler{}
-class TurnDirection{}
-class Counter{}
+class Decider {
+  +performDecision(Drone drone, History<JSONObject> respHistory, int scanPass, TurnDirection turn, int): JSONObject
+  
+}
+class Slicer {
+  +furtherDistance: int
+  +travelStatus: SliceStatus
+  +performSlice(Drone drone, History<JSONObject> respHistory, TurnDirection turn
+}
+enum SliceStatus{
+  SCAN,
+  FORWARD,
+  DECISION,
+  TURNWAIT
+}
+Slicer .. SliceStatus
+class Turnaround {
+  +special_turnwait: TurnWait
+  +turn_status: TurnStatus
+  +specialTurn(Drone drone, History<JSONObject> respHistory, TurnDirection special_turn): JSONObject
+  +specialTurn2(Drone drone, History<JSONObject> respHistory, TurnDirection special_turn): JSONObject
+}
+enum TurnWait{
+  ECHO,
+  MOVE
+}
+enum TurnStatus{
+    TURNSTAGE1,
+		TURNSTAGE2,
+		TURNSTAGE3,
+		TURNSTAGE4,
+		TURNSTAGE5,
+		TURNSTAGE6,
+		TURNSTAGE7
+}
+Turnaround .. TurnWait
+Turnaround .. TurnStatus
+enum UTurnStatus{
+  UTURN1,
+  UTURN2
+}
+class UTurn{
+  +UTurnstatus: UTurnstatus
+  +performUTurn(Drone drone, TurnDirection turn): JSONObject
+}
+UTurn .. UTurnStatus
+class Runner{
+  +main(): void
+}
+class EchoSearch{
+  +drone: Drone 
+  +stage: Counter
+  +decision: Optional<JSONObject>
+  +history: History<JSONObject>
+  +execute(): Optional<JSONObject>
+}
+class FinalForward{
+  +drone: Drone 
+  +stage: Counter
+  +decision: Optional<JSONObject>
+  +history: History<JSONObject>
+  +execute(): Optional<JSONObject>
+}
+class TravelToEnd{
+  +drone: Drone 
+  +stage: Counter
+  +decision: Optional<JSONObject>
+  +history: History<JSONObject>
+  +distance: int
+  +execute(): Optional<JSONObject>
+}
+interface Command{
+  +execute(): Optional<JSONObject>
+}
+class TurnLeft{
+  +drone: Drone 
+  +stage: Counter
+  +decision: Optional<JSONObject>
+  +execute(): Optional<JSONObject>
+}
+class UturnLeft{
+  +drone: Drone 
+  +stage: Counter
+  +decision: Optional<JSONObject>
+  +execute(): Optional<JSONObject>
+}
+class TurnRight{
+  +drone: Drone 
+  +stage: Counter
+  +decision: Optional<JSONObject>
+  +execute(): Optional<JSONObject>
+}
+class CommandHandler{
+  +command: Command
+  +setCommand(Command command_in): void
+  +nextAction(): Optional<JSONObject>
+}
+enum TurnDirection{
+  LEFT,
+  RIGHT
+}
+class Counter{
+  +count: int
+  +next(): void
+  +reset(): void
+  +value(): int
+}
 
 Explorer *-- ExplorationManager
 ExplorationManager *-- DroneController
