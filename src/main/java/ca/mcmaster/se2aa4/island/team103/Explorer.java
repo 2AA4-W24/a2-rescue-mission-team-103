@@ -11,6 +11,8 @@ import org.json.JSONTokener;
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
+	private ExplorationManager manager; //Constructor is called in this.initialize() when initial info is available (heading etc.)
+	private SiteTracker siteTracker; //Constructor is called in deliverFinalReport()
 
     @Override
     public void initialize(String s) {
@@ -21,12 +23,12 @@ public class Explorer implements IExplorerRaid {
         Integer batteryLevel = info.getInt("budget");
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
+        manager = new ExplorationManager(direction, batteryLevel);
     }
 
     @Override
     public String takeDecision() {
-        JSONObject decision = new JSONObject();
-        decision.put("action", "stop"); // we stop the exploration immediately
+        JSONObject decision = manager.getDecision();
         logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
@@ -41,11 +43,17 @@ public class Explorer implements IExplorerRaid {
         logger.info("The status of the drone is {}", status);
         JSONObject extraInfo = response.getJSONObject("extras");
         logger.info("Additional information received: {}", extraInfo);
+		manager.addInfo(response);
     }
 
     @Override
     public String deliverFinalReport() {
-        return "no creek found";
+        logger.info("Compiling Final Report");
+		siteTracker = new SiteTracker();
+		siteTracker.findPointsOfInterest(manager.getResponseReport(),manager.getNavReport());
+        String closest_inlet = siteTracker.getClosestInlet();
+        logger.info("Closest Inlet: {}", closest_inlet);
+		return closest_inlet;
     }
 
 }
