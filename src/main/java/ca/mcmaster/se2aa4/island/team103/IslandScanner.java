@@ -28,6 +28,8 @@ public class IslandScanner implements DroneController {
 	private int moves_since_last_special = 0;
 	private boolean counter_activator = false;
 	private int scan_pass_num = 1;
+	private Drone drone;
+	private History<JSONObject> respHistory;
 
 	private UTurn turner = new UTurn();
 	private Slicer slicer = new Slicer();
@@ -36,8 +38,15 @@ public class IslandScanner implements DroneController {
 
 	private final static String RESPONSE = "response";
 	private final static String DONE = "done";
+
+	private boolean flyNoScan = false;
+  
+	public IslandScanner(Drone drone_in, History<JSONObject> history_in) {
+		this.drone = drone_in;
+		this.respHistory = history_in;
+	}
 	
-	public Optional<JSONObject> nextAction(Drone drone, History<JSONObject> respHistory){
+	public Optional<JSONObject> nextAction(){
 
 		logger.info("Scanning Phase: {}",phase);
 
@@ -69,24 +78,29 @@ public class IslandScanner implements DroneController {
 			if(response.getString(DONE).equals("specialTurn")){
 				counter_activator = true;
 				scan_pass_num = 2;
-				phase = ScannerPhase.TURNAROUND; 
-			}else if(response.getString(DONE).equals("specialTurn2")){
-				if(turn.equals(TurnDirection.LEFT)){
-					turn = TurnDirection.RIGHT;
+				phase = ScannerPhase.Turnaround;
+				if(turn.equals(TurnDirection.Left)){
+					turn = TurnDirection.Right;
 				}else{
-					turn = TurnDirection.LEFT;
-				}
-				phase = ScannerPhase.TURNAROUND2;
-			}else if(response.getString(DONE).equals("proceed")){
-				phase = ScannerPhase.SLICE;
+					turn = TurnDirection.Left;
+				} 
+			}else if(response.getString("done").equals("specialTurn2")){
+				phase = ScannerPhase.Turnaround2;
+			}else if(response.getString("done").equals("proceed")){
+				phase = ScannerPhase.Slice;
 			}
-			else if(response.getString(DONE).equals("over")){
-				phase = ScannerPhase.ECHO;
+			else if(response.getString("done").equals("proceedToLand")){
+				phase = ScannerPhase.Slice;
+				flyNoScan = true;
+			}
+			else if(response.getString("done").equals("over")){
+				phase = ScannerPhase.Echo;
 				return Optional.empty();
 			}
 		}
-		if(phase.equals(ScannerPhase.SLICE)){
-			response = slicer.performSlice(drone, turn, respHistory);
+		if(phase.equals(ScannerPhase.Slice)){
+			response = slicer.performSlice(drone, turn, respHistory, flyNoScan);
+			flyNoScan = false;
 			if(response.has("done")){ 
 				phase = ScannerPhase.TURN; 
 			}else{
@@ -109,7 +123,7 @@ public class IslandScanner implements DroneController {
 		if(phase.equals(ScannerPhase.TURNAROUND)){
 			response = turnaround.specialTurn(drone,respHistory,turn);
 			if(response.has(DONE)){
-				phase = ScannerPhase.DECISION;
+				phase = ScannerPhase.Decision;
 				decision = drone.echoForward();
 				return Optional.of(decision);
 			}else{
@@ -127,8 +141,7 @@ public class IslandScanner implements DroneController {
 				decision = response.getJSONObject(RESPONSE);
 				return Optional.of(decision);
 			}
-		}
-		
+    }
 		return Optional.of(decision);
 	}
 }

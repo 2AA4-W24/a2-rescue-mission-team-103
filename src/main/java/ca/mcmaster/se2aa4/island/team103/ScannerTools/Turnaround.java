@@ -38,16 +38,20 @@ public class Turnaround {
 				}
 				TURNSTATUS = TurnStatus.TURNSTAGE2;
 				break;
-			case TURNSTAGE2:
-				if(special_turn_direction.equals(TurnDirection.LEFT)){
-					decision.put(RESPONSE,drone.turnLeft());
+			case TurnStage2:
+				decision.put("response",drone.flyForwards());
+				turn_status = TurnStatus.TurnStage3;
+				break;
+			case TurnStage3:
+				if(special_turn_direction.equals(TurnDirection.Left)){
+					decision.put("response",drone.turnLeft());
 				}else{
 					decision.put(RESPONSE,drone.turnRight());	
 				}
-				TURNSTATUS = TurnStatus.TURNSTAGE3;
+				turn_status = TurnStatus.TurnStage4;
 				break;
-			case TURNSTAGE3:
-				switch(SPECIALTURNWAIT){
+			case TurnStage4:
+				switch(special_turnwait){
 					case Echo:
 						if(special_turn_direction.equals(TurnDirection.LEFT)){
 							decision.put(RESPONSE,drone.echoLeft());
@@ -63,7 +67,7 @@ public class Turnaround {
 							}else{
 								decision.put(RESPONSE,drone.turnLeft());
 							}
-							TURNSTATUS = TurnStatus.TURNSTAGE4;
+							turn_status = TurnStatus.TurnStage5;
 						}else{
 							decision.put(RESPONSE,drone.flyForwards());
 						}
@@ -71,13 +75,9 @@ public class Turnaround {
 						break;
 				}
 				break;
-			case TURNSTAGE4:
-				decision.put(RESPONSE,drone.flyForwards());
-				TURNSTATUS = TurnStatus.TURNSTAGE5;
-				break;
-			case TURNSTAGE5:
-				if(special_turn_direction.equals(TurnDirection.LEFT)){
-					decision.put(RESPONSE,drone.turnLeft());
+			case TurnStage5:
+				if(special_turn_direction.equals(TurnDirection.Left)){
+					decision.put("response",drone.turnLeft());
 				}else{
 					decision.put(RESPONSE,drone.turnRight());	
 				}
