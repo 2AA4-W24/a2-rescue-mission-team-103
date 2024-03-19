@@ -16,7 +16,7 @@ public class TurnRight implements Command {
     }
 
     public Optional<JSONObject> execute() {
-        logger.info("Entering ShiftRight Decision: {}", this.stage.value());
+        
         switch (this.stage.value()) {
             case 0:
                 this.decision = this.drone.turnRight();
@@ -35,6 +35,9 @@ public class TurnRight implements Command {
                 logger.info("ShiftRight Complete, returning empty");
                 this.stage.reset();
                 return Optional.empty();
+            default:
+                logger.error("Stage outside acceptable range");
+            
         }
         this.stage.next();
         return Optional.of(decision);

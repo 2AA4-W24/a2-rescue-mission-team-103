@@ -39,12 +39,12 @@ public class Turnaround {
 				TURNSTATUS = TurnStatus.TURNSTAGE2;
 				break;
 			case TURNSTAGE2:
-				decision.put("response",drone.flyForwards());
+				decision.put(RESPONSE,drone.flyForwards());
 				TURNSTATUS = TurnStatus.TURNSTAGE3;
 				break;
 			case TURNSTAGE3:
 				if(special_turn_direction.equals(TurnDirection.LEFT)){
-					decision.put("response",drone.turnLeft());
+					decision.put(RESPONSE,drone.turnLeft());
 				}else{
 					decision.put(RESPONSE,drone.turnRight());	
 				}
@@ -77,7 +77,7 @@ public class Turnaround {
 				break;
 			case TURNSTAGE5:
 				if(special_turn_direction.equals(TurnDirection.LEFT)){
-					decision.put("response",drone.turnLeft());
+					decision.put(RESPONSE,drone.turnLeft());
 				}else{
 					decision.put(RESPONSE,drone.turnRight());	
 				}

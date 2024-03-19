@@ -5,8 +5,6 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ca.mcmaster.se2aa4.island.team103.Command;
-
 public class EchoSearch implements Command {
     private Counter stage = new Counter();
     private Optional<JSONObject> decision;
@@ -36,6 +34,9 @@ public class EchoSearch implements Command {
             case 3:
                 this.stage.reset();
                 return Optional.empty();
+            
+            default:
+                logger.error("Stage outside acceptable range");
         }
         this.stage.next();
         return decision;

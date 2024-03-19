@@ -34,6 +34,8 @@ public class TurnLeft implements Command {
                 logger.info("ShiftLeft Complete, returning empty");
                 stage.reset();
                 return Optional.empty();
+            default:
+                logger.error("Stage outside acceptable range");
         }
         this.stage.next();
         return Optional.of(decision);

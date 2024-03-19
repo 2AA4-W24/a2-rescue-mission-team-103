@@ -22,6 +22,7 @@ public class Slicer {
 	private final static String RESPONSE = "response";
 	private final static String EXTRAS = "extras";
 	private final static String FOUND = "found";
+	private final static String RANGE = "range";
 
 	SliceStatus travelStatus = SliceStatus.SCAN;
 
@@ -38,7 +39,7 @@ public class Slicer {
 		JSONObject decision = new JSONObject();
 		if(distanceToLand >= 1){
 			logger.info("INDIST");
-			decision.put("response",drone.flyForwards());
+			decision.put(RESPONSE,drone.flyForwards());
 			travelStatus = SliceStatus.SCAN;
 			distanceToLand--;
 			return decision;
@@ -71,14 +72,14 @@ public class Slicer {
 					}
 					furtherDistance++;
 					travelStatus = SliceStatus.TURNWAIT;
-				}else if(respHistory.getLast().getJSONObject("extras").getInt("range") > 1){
+				}else if(respHistory.getLast().getJSONObject(EXTRAS).getInt(RANGE) > 1){
 					logger.info("IN branch now");
-					distanceToLand = respHistory.getLast().getJSONObject("extras").getInt("range");
-					decision.put("response",drone.flyForwards());
+					distanceToLand = respHistory.getLast().getJSONObject(EXTRAS).getInt(RANGE);
+					decision.put(RESPONSE,drone.flyForwards());
 					distanceToLand--;
 				}
 				else{
-					decision.put("response",drone.flyForwards());
+					decision.put(RESPONSE,drone.flyForwards());
 					travelStatus = SliceStatus.SCAN;
 				}
 				break;
@@ -93,7 +94,7 @@ public class Slicer {
 				}else{
 					if(respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("OUT_OF_RANGE") || 
 					(respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("GROUND") && 
-					respHistory.getLast().getJSONObject(EXTRAS).getInt("range") > 2)){
+					respHistory.getLast().getJSONObject(EXTRAS).getInt(RANGE) > 2)){
 						furtherDistance = 0;
 						decision.put("done",true);
 					}else{

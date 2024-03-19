@@ -28,6 +28,8 @@ public class UturnLeft implements Command{
                 this.stage.reset();
                 logger.info("ForwardUturn Complete, returning empty");
                 return Optional.empty();
+            default:
+                logger.error("Stage outside acceptable range");
         }
         this.stage.next();
         return Optional.of(decision);
