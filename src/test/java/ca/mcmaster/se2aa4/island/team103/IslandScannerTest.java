@@ -28,7 +28,6 @@ public class IslandScannerTest {
 
 	@BeforeEach
 	public void reset() {
-		detection = new JSONObject();
 		expected = new JSONObject();
 		history = new ResponseHistory();
 		drone = new Drone(Direction.EAST, 100000);
@@ -42,26 +41,6 @@ public class IslandScannerTest {
 		extras = new JSONObject();
 		extras.put("found", "OUT_OF_RANGE");
 		extras.put("range", 10);
-		last_history.put("extras", extras);
-		history.addItem(last_history);
-	}
-
-	public void addGroundtoHistory() {
-		// Adds a simulated GROUND response to history
-		last_history = new JSONObject();
-		extras = new JSONObject();
-		extras.put("found", "GROUND");
-		extras.put("range", 10);
-		last_history.put("extras", extras);
-		history.addItem(last_history);
-	}
-
-	public void addOORtoHistory(int dist) {
-		// Adds a simulated out_of_range response to history with option for custom distance
-		last_history = new JSONObject();
-		extras = new JSONObject();
-		extras.put("found", "OUT_OF_RANGE");
-		extras.put("range", dist);
 		last_history.put("extras", extras);
 		history.addItem(last_history);
 	}
@@ -96,7 +75,7 @@ public class IslandScannerTest {
 		last_history.put("extras", extras);
 		history.addItem(last_history);
 	}
-	/*
+	
 	@Test
 	public void firstEchoTest(){
 		result = scanner.nextAction();
@@ -104,31 +83,53 @@ public class IslandScannerTest {
 		assertTrue(result.isPresent());
 		assertEquals(expected.toString(), result.get().toString());
 	}
-
+	
 	@Test
 	public void StartofSlice(){
 		result = scanner.nextAction();
-		addGroundtoHistory();
+		addGroundtoHistory(1);
+		result = scanner.nextAction();
+		expected = drone.scan();
+		assertEquals(expected.toString(), result.get().toString());
+	}
+	
+	@Test
+	public void moveSlice(){
+		result = scanner.nextAction();
+		addGroundtoHistory(1);
+		result = scanner.nextAction();
+		addOtherBiometoHistory();
+		result = scanner.nextAction();
 		result = scanner.nextAction();
 		expected = drone.scan();
 		assertEquals(expected.toString(), result.get().toString());
 	}
 
 	@Test
-	public void moveSlice(){
+	public void SliceStartWithDistance(){
 		result = scanner.nextAction();
-		addGroundtoHistory();
-		result = scanner.nextAction();
-		addOtherBiometoHistory();
+		addGroundtoHistory(3);
 		result = scanner.nextAction();
 		expected = drone.flyForwards();
 		assertEquals(expected.toString(), result.get().toString());
 	}
 
 	@Test
+	public void SliceWithDistance(){ // Case when land is not immediately present after turnaround.
+		result = scanner.nextAction();
+		addGroundtoHistory(3);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		expected = drone.scan();
+		assertEquals(expected.toString(), result.get().toString());
+	}
+	
+	@Test
 	public void turnwaitSliceComponent(){
 		result = scanner.nextAction();
-		addGroundtoHistory();
+		addGroundtoHistory(1);
 		result = scanner.nextAction();
 		addOtherBiometoHistory();
 		result = scanner.nextAction();
@@ -139,11 +140,11 @@ public class IslandScannerTest {
 		expected = drone_reference.echoLeft();
 		assertEquals(expected.toString(), result.get().toString());
 	}
-
+	
 	@Test
 	public void endSlice(){
 		result = scanner.nextAction();
-		addGroundtoHistory();
+		addGroundtoHistory(1);
 		result = scanner.nextAction();
 		addOtherBiometoHistory();
 		result = scanner.nextAction();
@@ -158,11 +159,11 @@ public class IslandScannerTest {
 		logger.info(history.getLast());
 		assertEquals(expected.toString(), result.get().toString());
 	}
-
+	
 	@Test
 	public void UTurnEast(){ // Ensuring U-Turn logic is successful.
 		result = scanner.nextAction();
-		addGroundtoHistory();
+		addGroundtoHistory(1);
 		result = scanner.nextAction();
 		addOtherBiometoHistory();
 		result = scanner.nextAction();
@@ -181,10 +182,52 @@ public class IslandScannerTest {
 	}
 
 	@Test
-	public void SpecialTurn(){ 
+	public void SpecialTurn(){
+		logger.info("STARTING"); 
 		//Setup instructions
 		result = scanner.nextAction();
-		addGroundtoHistory();
+		addGroundtoHistory(1);
+		result = scanner.nextAction();
+		addOtherBiometoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOceanBiometoHistory();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		// Performing special turn
+		
+		List<Coordinate> oldHistory = drone.getNavHistory();
+		Coordinate c1 = oldHistory.get(oldHistory.size()-1);
+		
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		
+		List<Coordinate> newHistory = drone.getNavHistory();
+		Coordinate c2 = newHistory.get(newHistory.size()-1);
+		Coordinate reference = new Coordinate(c1.x(),c1.y()+1);
+		assertEquals(c2.toString(),reference.toString());
+	}
+	
+	@Test
+	public void SpecialTurnW(){ 
+
+		drone = new Drone(Direction.WEST, 100000);
+		scanner = new IslandScanner(drone, history);
+
+		//Setup instructions
+		result = scanner.nextAction();
+		addGroundtoHistory(1);
 		result = scanner.nextAction();
 		addOtherBiometoHistory();
 		result = scanner.nextAction();
@@ -200,10 +243,10 @@ public class IslandScannerTest {
 		// Performing special turn
 		List<Coordinate> oldHistory = drone.getNavHistory();
 		Coordinate c1 = oldHistory.get(oldHistory.size()-1);
+		
 		result = scanner.nextAction();
 		result = scanner.nextAction();
 		addOORtoHistory();
-
 		result = scanner.nextAction();
 		result = scanner.nextAction();
 		result = scanner.nextAction();
@@ -211,9 +254,103 @@ public class IslandScannerTest {
 		result = scanner.nextAction();
 		List<Coordinate> newHistory = drone.getNavHistory();
 		Coordinate c2 = newHistory.get(newHistory.size()-1);
-		Coordinate reference = new Coordinate(c2.x(),c2.y()-1);
+		Coordinate reference = new Coordinate(c1.x(),c1.y()+1);
+		assertEquals(c2.toString(),reference.toString());
+	}
+	
+	@Test
+	public void SpecialTurn2(){ 
+		//Setup instructions
+		result = scanner.nextAction();
+		addGroundtoHistory(1);
+		result = scanner.nextAction();
+		addOtherBiometoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOceanBiometoHistory();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+
+		// Performing special turn1
+		List<Coordinate> oldHistory = drone.getNavHistory();
+		Coordinate c1 = oldHistory.get(oldHistory.size()-1);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+
+		// Performing special turn2
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+
+		List<Coordinate> newHistory = drone.getNavHistory();
+		Coordinate c2 = newHistory.get(newHistory.size()-1);
+		Coordinate reference = new Coordinate(c2.x(),c2.y()-3);
 		assertEquals(c1.toString(),reference.toString());
 	}
-	*/
 	
+	@Test
+	public void SpecialTurn2West(){ 
+		drone = new Drone(Direction.WEST, 100000);
+		scanner = new IslandScanner(drone, history);
+		//Setup instructions
+		result = scanner.nextAction();
+		addGroundtoHistory(1);
+		result = scanner.nextAction();
+		addOtherBiometoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOceanBiometoHistory();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+
+		// Performing special turn1
+		List<Coordinate> oldHistory = drone.getNavHistory();
+		Coordinate c1 = oldHistory.get(oldHistory.size()-1);
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+
+		// Performing special turn2
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		addOORtoHistory();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+		result = scanner.nextAction();
+
+		List<Coordinate> newHistory = drone.getNavHistory();
+		Coordinate c2 = newHistory.get(newHistory.size()-1);
+		Coordinate reference = new Coordinate(c2.x(),c2.y()-3);
+		assertEquals(c1.toString(),reference.toString());
+	}
 }
