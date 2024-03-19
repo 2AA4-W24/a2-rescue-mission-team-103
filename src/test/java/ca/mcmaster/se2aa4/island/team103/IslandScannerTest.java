@@ -24,7 +24,7 @@ public class IslandScannerTest {
 	Optional<JSONObject> result;
 	JSONObject last_history;
 	JSONObject extras;
-	final Logger logger = LogManager.getLogger();
+	final static Logger logger = LogManager.getLogger();
 
 	@BeforeEach
 	public void reset() {

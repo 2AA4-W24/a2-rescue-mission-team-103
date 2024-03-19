@@ -21,6 +21,7 @@ public class IslandLocator implements DroneController {
 
 	private final Logger logger = LogManager.getLogger();
 	private Action next_action = Action.ECHO;
+
 	private Phase phase = Phase.SEARCH;
 	private Drone drone;
 	private History<JSONObject> history;
@@ -32,7 +33,11 @@ public class IslandLocator implements DroneController {
 	private Command travelToEnd;
 	private Command echoSearch;
 	
-
+	private final static String GROUND = "GROUND";
+	private final static String EXTRAS = "extras";
+	private final static String RANGE = "range";
+	private final static String FOUND = "found";
+  
 	public IslandLocator(Drone drone_in, History<JSONObject> history_in) {
 		this.drone = drone_in;
 		this.history = history_in;
@@ -49,7 +54,7 @@ public class IslandLocator implements DroneController {
 		JSONObject decision = new JSONObject();
 		Optional<JSONObject> result;
 		List<JSONObject> echo_results;
-			
+    
 		if (this.phase == Phase.SEARCH) {
 
 			if (next_action == Action.ECHO) {
@@ -72,21 +77,21 @@ public class IslandLocator implements DroneController {
 				List<Integer> echo_range = new ArrayList<Integer>(3);
 
 				for (int i = 0; i < echo_results.size(); i++) {
-					echo_found.add(echo_results.get(i).getJSONObject("extras").getString("found"));
-					echo_range.add(echo_results.get(i).getJSONObject("extras").getInt("range"));
+					echo_found.add(echo_results.get(i).getJSONObject(EXTRAS).getString(FOUND));
+					echo_range.add(echo_results.get(i).getJSONObject(EXTRAS).getInt(RANGE));
 				}
 
-				if (echo_found.get(0).equals("GROUND")) {
+				if (echo_found.get(0).equals(GROUND)) {
 					this.phase = Phase.TURN_R;
 					logger.info("Exiting Search Phase -> TURN_R");
 					decision = drone.turnRight();
 				}
-				else if (echo_found.get(1).equals("GROUND") && echo_range.get(1) == 2) {
+				else if (echo_found.get(1).equals(GROUND) && echo_range.get(1) == 2) {
 					this.phase = Phase.TRAVEL_TO_END;
 					logger.info("Exiting Search Phase -> TRAVEL_TO_END");
 					decision = drone.turnRight();
 				}
-				else if (echo_found.get(2).equals("GROUND")) {
+				else if (echo_found.get(2).equals(GROUND)) {
 					this.phase = Phase.TURN_L;
 					logger.info("Exiting Search Phase -> TURN_L");
 					decision = drone.turnLeft();

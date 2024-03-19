@@ -8,32 +8,35 @@ import ca.mcmaster.se2aa4.island.team103.TurnDirection;
 public class UTurn {
 
 	private enum UTurnStatus{
-		UTurn1,
-		UTurn2
+		UTURN1,
+		UTURN2
 	}
 
-	UTurnStatus UTurnstatus = UTurnStatus.UTurn1;
+	private final static String RESPONSE = "response";
+	private final static String DONE = "done";
+
+	UTurnStatus UTurnstatus = UTurnStatus.UTURN1;
 
 	public JSONObject performUTurn(Drone drone, TurnDirection turn){
 		JSONObject decision = new JSONObject();
-		if(UTurnstatus.equals(UTurnStatus.UTurn1)){
-			if(turn.equals(TurnDirection.Left)){
-				decision.put("response",drone.turnLeft());
-				decision.put("done",false);
+		if(UTurnstatus.equals(UTurnStatus.UTURN1)){
+			if(turn.equals(TurnDirection.LEFT)){
+				decision.put(RESPONSE,drone.turnLeft());
+				decision.put(DONE,false);
 			}else{
-				decision.put("response",drone.turnRight());
-				decision.put("done",false);
+				decision.put(RESPONSE,drone.turnRight());
+				decision.put(DONE,false);
 			}
-			UTurnstatus = UTurnStatus.UTurn2;
+			UTurnstatus = UTurnStatus.UTURN2;
 		}else{
-			if(turn.equals(TurnDirection.Left)){
-				decision.put("response",drone.turnLeft());
-				decision.put("done",true);
+			if(turn.equals(TurnDirection.LEFT)){
+				decision.put(RESPONSE,drone.turnLeft());
+				decision.put(DONE,true);
 			}else{
-				decision.put("response",drone.turnRight());
-				decision.put("done",true);
+				decision.put(RESPONSE,drone.turnRight());
+				decision.put(DONE,true);
 			}
-			UTurnstatus = UTurnStatus.UTurn1;
+			UTurnstatus = UTurnStatus.UTURN1;
 		}
 		
 		return decision;

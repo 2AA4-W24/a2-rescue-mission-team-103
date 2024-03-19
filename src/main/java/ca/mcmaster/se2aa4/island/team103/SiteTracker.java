@@ -11,7 +11,7 @@ public class SiteTracker {
 	private List<PointOfInterest> inlets = new ArrayList<PointOfInterest>();
 	private Optional<PointOfInterest> site = Optional.empty();
 	private DistanceCalculation calculator = new DistanceCalculation();
-	private final Logger logger = LogManager.getLogger();
+	private final static Logger logger = LogManager.getLogger();
 	private PointOfInterest closest_inlet;
 
 	private void addInlet(String id, Coordinate coord) {

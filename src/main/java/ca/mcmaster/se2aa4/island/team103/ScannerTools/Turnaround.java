@@ -5,13 +5,13 @@ import ca.mcmaster.se2aa4.island.team103.*;
 
 public class Turnaround {
 	private enum TurnStatus{
-		TurnStage1,
-		TurnStage2,
-		TurnStage3,
-		TurnStage4,
-		TurnStage5,
-		TurnStage6,
-		TurnStage7
+		TURNSTAGE1,
+		TURNSTAGE2,
+		TURNSTAGE3,
+		TURNSTAGE4,
+		TURNSTAGE5,
+		TURNSTAGE6,
+		TURNSTAGE7
 	}
 
 	private enum TurnWait {
@@ -19,20 +19,24 @@ public class Turnaround {
 		Move
 	}
 
-	TurnStatus turn_status = TurnStatus.TurnStage1;
-	TurnWait special_turnwait = TurnWait.Echo;
+	private final static String RESPONSE = "response";
+	private final static String EXTRAS = "extras";
+	private final static String FOUND = "found";
+
+	TurnStatus TURNSTATUS = TurnStatus.TURNSTAGE1;
+	TurnWait SPECIALTURNWAIT = TurnWait.Echo;
 	
 
 	public JSONObject specialTurn(Drone drone, History<JSONObject> respHistory, TurnDirection special_turn_direction){
 		JSONObject decision = new JSONObject();
-		switch(turn_status){
-			case TurnStage1:
-				if(special_turn_direction.equals(TurnDirection.Left)){
-					decision.put("response",drone.turnLeft());
+		switch(TURNSTATUS){
+			case TURNSTAGE1:
+				if(special_turn_direction.equals(TurnDirection.LEFT)){
+					decision.put(RESPONSE,drone.turnLeft());
 				}else{
-					decision.put("response",drone.turnRight());	
+					decision.put(RESPONSE,drone.turnRight());	
 				}
-				turn_status = TurnStatus.TurnStage2;
+				TURNSTATUS = TurnStatus.TURNSTAGE2;
 				break;
 			case TurnStage2:
 				decision.put("response",drone.flyForwards());
@@ -42,32 +46,32 @@ public class Turnaround {
 				if(special_turn_direction.equals(TurnDirection.Left)){
 					decision.put("response",drone.turnLeft());
 				}else{
-					decision.put("response",drone.turnRight());	
+					decision.put(RESPONSE,drone.turnRight());	
 				}
 				turn_status = TurnStatus.TurnStage4;
 				break;
 			case TurnStage4:
 				switch(special_turnwait){
 					case Echo:
-						if(special_turn_direction.equals(TurnDirection.Left)){
-							decision.put("response",drone.echoLeft());
+						if(special_turn_direction.equals(TurnDirection.LEFT)){
+							decision.put(RESPONSE,drone.echoLeft());
 						}else{
-							decision.put("response",drone.echoRight());
+							decision.put(RESPONSE,drone.echoRight());
 						}
-						special_turnwait = TurnWait.Move;
+						SPECIALTURNWAIT = TurnWait.Move;
 						break;
 					case Move:
-						if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE") || (respHistory.getLast().getJSONObject("extras").getString("found").equals("GROUND") && respHistory.getLast().getJSONObject("extras").getInt("range") > 2)){
-							if(special_turn_direction.equals(TurnDirection.Right)){
-								decision.put("response",drone.turnRight());
+						if(respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("OUT_OF_RANGE") || (respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("GROUND") && respHistory.getLast().getJSONObject(EXTRAS).getInt("range") > 2)){
+							if(special_turn_direction.equals(TurnDirection.RIGHT)){
+								decision.put(RESPONSE,drone.turnRight());
 							}else{
-								decision.put("response",drone.turnLeft());
+								decision.put(RESPONSE,drone.turnLeft());
 							}
 							turn_status = TurnStatus.TurnStage5;
 						}else{
-							decision.put("response",drone.flyForwards());
+							decision.put(RESPONSE,drone.flyForwards());
 						}
-						special_turnwait = TurnWait.Echo;
+						SPECIALTURNWAIT = TurnWait.Echo;
 						break;
 				}
 				break;
@@ -75,15 +79,15 @@ public class Turnaround {
 				if(special_turn_direction.equals(TurnDirection.Left)){
 					decision.put("response",drone.turnLeft());
 				}else{
-					decision.put("response",drone.turnRight());	
+					decision.put(RESPONSE,drone.turnRight());	
 				}
-				turn_status = TurnStatus.TurnStage6;
+				TURNSTATUS = TurnStatus.TURNSTAGE6;
 				break;
-			case TurnStage6:
+			case TURNSTAGE6:
 				decision.put("done",true);
-				turn_status = TurnStatus.TurnStage1;
+				TURNSTATUS = TurnStatus.TURNSTAGE1;
 				break;
-			case TurnStage7:
+			case TURNSTAGE7:
 				break;
 		}
 		return decision;
@@ -91,67 +95,67 @@ public class Turnaround {
 
 	public JSONObject specialTurn2(Drone drone, History<JSONObject> respHistory, TurnDirection special_turn_direction){
 		JSONObject decision = new JSONObject();
-		switch(turn_status){
-			case TurnStage1:
-				if(special_turn_direction.equals(TurnDirection.Left)){
-					decision.put("response",drone.turnLeft());
+		switch(TURNSTATUS){
+			case TURNSTAGE1:
+				if(special_turn_direction.equals(TurnDirection.LEFT)){
+					decision.put(RESPONSE,drone.turnLeft());
 				}else{
-					decision.put("response",drone.turnRight());	
+					decision.put(RESPONSE,drone.turnRight());	
 				}
-				turn_status = TurnStatus.TurnStage2;
+				TURNSTATUS = TurnStatus.TURNSTAGE2;
 				break;
-			case TurnStage2:
-				decision.put("response",drone.flyForwards());
-				turn_status = TurnStatus.TurnStage3;
+			case TURNSTAGE2:
+				decision.put(RESPONSE,drone.flyForwards());
+				TURNSTATUS = TurnStatus.TURNSTAGE3;
 				break;
-			case TurnStage3:
-				decision.put("response",drone.flyForwards());
-				turn_status = TurnStatus.TurnStage4;
+			case TURNSTAGE3:
+				decision.put(RESPONSE,drone.flyForwards());
+				TURNSTATUS = TurnStatus.TURNSTAGE4;
 				break;
-			case TurnStage4:
-				if(special_turn_direction.equals(TurnDirection.Left)){
-					decision.put("response",drone.turnLeft());
+			case TURNSTAGE4:
+				if(special_turn_direction.equals(TurnDirection.LEFT)){
+					decision.put(RESPONSE,drone.turnLeft());
 				}else{
-					decision.put("response",drone.turnRight());	
+					decision.put(RESPONSE,drone.turnRight());	
 				}
-				turn_status = TurnStatus.TurnStage5;
+				TURNSTATUS = TurnStatus.TURNSTAGE5;
 				break;
-			case TurnStage5:
-				switch(special_turnwait){
+			case TURNSTAGE5:
+				switch(SPECIALTURNWAIT){
 					case Echo:
-						if(special_turn_direction.equals(TurnDirection.Left)){
-							decision.put("response",drone.echoLeft());
+						if(special_turn_direction.equals(TurnDirection.LEFT)){
+							decision.put(RESPONSE,drone.echoLeft());
 						}else{
-							decision.put("response",drone.echoRight());
+							decision.put(RESPONSE,drone.echoRight());
 						}
-						special_turnwait = TurnWait.Move;
+						SPECIALTURNWAIT = TurnWait.Move;
 						break;
 					case Move:
-						if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE") || (respHistory.getLast().getJSONObject("extras").getString("found").equals("GROUND") && respHistory.getLast().getJSONObject("extras").getInt("range") > 2)){
-							if(special_turn_direction.equals(TurnDirection.Right)){
-								decision.put("response",drone.turnRight());
+						if(respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("OUT_OF_RANGE") || (respHistory.getLast().getJSONObject(EXTRAS).getString(FOUND).equals("GROUND") && respHistory.getLast().getJSONObject(EXTRAS).getInt("range") > 2)){
+							if(special_turn_direction.equals(TurnDirection.RIGHT)){
+								decision.put(RESPONSE,drone.turnRight());
 							}else{
-								decision.put("response",drone.turnLeft());
+								decision.put(RESPONSE,drone.turnLeft());
 							}
-							turn_status = TurnStatus.TurnStage6;
+							TURNSTATUS = TurnStatus.TURNSTAGE6;
 						}else{
-							decision.put("response",drone.flyForwards());
+							decision.put(RESPONSE,drone.flyForwards());
 						}
-						special_turnwait = TurnWait.Echo;
+						SPECIALTURNWAIT = TurnWait.Echo;
 						break;
 				}
 				break;
-			case TurnStage6:
-				if(special_turn_direction.equals(TurnDirection.Left)){
-					decision.put("response",drone.turnLeft());
+			case TURNSTAGE6:
+				if(special_turn_direction.equals(TurnDirection.LEFT)){
+					decision.put(RESPONSE,drone.turnLeft());
 				}else{
-					decision.put("response",drone.turnRight());
+					decision.put(RESPONSE,drone.turnRight());
 				}
-				turn_status = TurnStatus.TurnStage7;
+				TURNSTATUS = TurnStatus.TURNSTAGE7;
 				break;
-			case TurnStage7:
+			case TURNSTAGE7:
 				decision.put("done",true);
-				turn_status = TurnStatus.TurnStage1;
+				TURNSTATUS = TurnStatus.TURNSTAGE1;
 				break;
 		}
 		return decision;
