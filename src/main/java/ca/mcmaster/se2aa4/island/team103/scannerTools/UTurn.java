@@ -12,8 +12,8 @@ public class UTurn {
 		UTURN2
 	}
 
-	private final static String RESPONSE = "response";
-	private final static String DONE = "done";
+	private static final String RESPONSE = "response";
+	private static final String DONE = "done";
 
 	UTurnStatus UTurnstatus = UTurnStatus.UTURN1;
 

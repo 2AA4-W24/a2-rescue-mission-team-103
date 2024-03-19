@@ -1,6 +1,7 @@
 package ca.mcmaster.se2aa4.island.team103;
-import ca.mcmaster.se2aa4.island.team103.DroneCommands.*;
-import ca.mcmaster.se2aa4.island.team103.IslandLocatorPhases.*;
+import ca.mcmaster.se2aa4.island.team103.droneCommands.*;
+import ca.mcmaster.se2aa4.island.team103.islandLocatorPhases.*;
+
 import java.util.List;
 import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
@@ -28,22 +29,22 @@ public class IslandLocator implements DroneController {
 	private CommandHandler commander = new CommandHandler();
 	private Command turnRight;
 	private Command turnLeft;
-	private Command Uturn;
+	private Command uturn;
 	private Command forwardToCoast;
 	private Command travelToEnd;
 	private Command echoSearch;
 	
-	private final static String GROUND = "GROUND";
-	private final static String EXTRAS = "extras";
-	private final static String RANGE = "range";
-	private final static String FOUND = "found";
+	private static final String GROUND = "GROUND";
+	private static final String EXTRAS = "extras";
+	private static final String RANGE = "range";
+	private static final String FOUND = "found";
   
 	public IslandLocator(Drone drone_in, History<JSONObject> history_in) {
 		this.drone = drone_in;
 		this.history = history_in;
 		this.turnRight = new TurnRight(this.drone);
 		this.turnLeft = new TurnLeft(this.drone);
-		this.Uturn = new UturnLeft(this.drone);
+		this.uturn = new UturnLeft(this.drone);
 		this.forwardToCoast = new FinalForward(this.drone, this.history);
 		this.travelToEnd = new TravelToEnd(this.drone, this.history);
 		this.echoSearch = new EchoSearch(this.drone);
@@ -73,8 +74,8 @@ public class IslandLocator implements DroneController {
 
 				next_action = Action.ECHO;
 				echo_results = history.getItems(-3);
-				List<String> echo_found = new ArrayList<String>(3);
-				List<Integer> echo_range = new ArrayList<Integer>(3);
+				List<String> echo_found = new ArrayList<>(3);
+				List<Integer> echo_range = new ArrayList<>(3);
 
 				for (int i = 0; i < echo_results.size(); i++) {
 					echo_found.add(echo_results.get(i).getJSONObject(EXTRAS).getString(FOUND));
@@ -116,7 +117,7 @@ public class IslandLocator implements DroneController {
 			}
 			
 			if (this.phase == Phase.UTURN_L) {
-				commander.setCommand(this.Uturn);
+				commander.setCommand(this.uturn);
 				result = commander.nextAction();
 
 				if (result.isPresent()) {

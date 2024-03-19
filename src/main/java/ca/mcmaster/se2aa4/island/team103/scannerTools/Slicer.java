@@ -19,10 +19,10 @@ public class Slicer {
 		TURNWAIT // continuing to travel once island is done for proper turnaround.
 	}
 
-	private final static String RESPONSE = "response";
-	private final static String EXTRAS = "extras";
-	private final static String FOUND = "found";
-	private final static String RANGE = "range";
+	private static final String RESPONSE = "response";
+	private static final String EXTRAS = "extras";
+	private static final String FOUND = "found";
+	private static final String RANGE = "range";
 
 	SliceStatus travelStatus = SliceStatus.SCAN;
 

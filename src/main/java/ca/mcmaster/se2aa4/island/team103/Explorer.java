@@ -10,9 +10,8 @@ import org.json.JSONTokener;
 
 public class Explorer implements IExplorerRaid {
 
-    private final static Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 	private ExplorationManager manager; //Constructor is called in this.initialize() when initial info is available (heading etc.)
-	private SiteTracker siteTracker; //Constructor is called in deliverFinalReport()
 
     @Override
     public void initialize(String s) {
@@ -48,6 +47,7 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
+        SiteTracker siteTracker;
         logger.info("Compiling final static Report");
 		siteTracker = new SiteTracker();
 		siteTracker.findPointsOfInterest(manager.getResponseReport(),manager.getNavReport());

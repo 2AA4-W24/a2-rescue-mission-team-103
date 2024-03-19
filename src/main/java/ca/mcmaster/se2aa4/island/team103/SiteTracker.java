@@ -8,11 +8,10 @@ import java.util.Optional;
 import org.json.JSONObject;
 
 public class SiteTracker {
-	private List<PointOfInterest> inlets = new ArrayList<PointOfInterest>();
+	private List<PointOfInterest> inlets = new ArrayList<>();
 	private Optional<PointOfInterest> site = Optional.empty();
 	private DistanceCalculation calculator = new DistanceCalculation();
-	private final static Logger logger = LogManager.getLogger();
-	private PointOfInterest closest_inlet;
+	private static final Logger logger = LogManager.getLogger();
 
 	private void addInlet(String id, Coordinate coord) {
 		PointOfInterest new_inlet = new Inlet(id, coord);
@@ -26,6 +25,7 @@ public class SiteTracker {
 	}
 
 	public String getClosestInlet() {
+		PointOfInterest closest_inlet;
 		
 		if (site.isPresent()) {
 			closest_inlet = calculator.returnClosestInlet(inlets, site.get());

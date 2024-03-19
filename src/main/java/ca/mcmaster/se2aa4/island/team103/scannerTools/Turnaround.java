@@ -19,9 +19,9 @@ public class Turnaround {
 		MOVE
 	}
 
-	private final static String RESPONSE = "response";
-	private final static String EXTRAS = "extras";
-	private final static String FOUND = "found";
+	private static final String RESPONSE = "response";
+	private static final String EXTRAS = "extras";
+	private static final String FOUND = "found";
 
 	TurnStatus TURNSTATUS = TurnStatus.TURNSTAGE1;
 	TurnWait SPECIALTURNWAIT = TurnWait.ECHO;
