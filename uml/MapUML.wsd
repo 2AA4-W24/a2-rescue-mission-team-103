@@ -1,0 +1,90 @@
+@startuml
+
+class ExplorationManager {
+  -respHistory: History<JSONObject>
+  -start_heading: Direction
+  -drone: Drone
+  +addReponse(JSONObject response): void
+  +getResponseReport(): List<JSONObject>
+  +getNavReport(): List<Coordinate>
+  +getLastResponse(): JSONObject
+}
+
+interface History {
+  +addItem(T item): void
+	+getLast(): T
+	+getItems(int offset): List<T>
+	+getItems(int start, int end): List<T> 
+	+getSize():int 
+}
+
+class NavHistory {
+  -navHistory: ArrayList<Coordinate>
+  +addItem(Coordinate c): void
+  +getLast(): Coordinate
+  +getItems(int offset): List<Coordinate>
+    +getItems(int start, int end): List<Coordinate>
+	+getItem(int index): Coordinate
+	+getSize():int
+}
+
+class ResponseHistory {
+  -responseHistory: ArrayList<JSONObject>
+  +addItem(JSONObject j): void
+  +getLast(): JSONObject
+  +getItems(int offset): List<JSONObject>
+	+getItems(int start, int end): List<JSONObject> 
+	+getItem(int index): JSONObject
+	+getSize():int
+}
+
+
+class Coordinate {
+  -x: int
+  -y: int
+  +x(): int
+  +y(): int
+  +toString(): String
+  +equalTo(Coordinate c): boolean
+}
+
+class SiteTracker {
+  -inlets: List<PointOfInterest>
+  -site: Optional<PointOfIntrest>
+  -calculator: DistanceCalculation
+  -closest_inlet: PointOfInterest
+  +getClosestInlet(): String
+  +addInlet(String id, Coordinate coord): void
+  +addRescueSite(String id, Coordinate coord): void
+  +getClosestInlet(): String
+  +findPointsOfInterest(List<JSONObject> history, List<Coordinate> coordHistory): void
+}
+
+interface PointOfInterest {
+  +id(): String
+  +coord(): Coordinate
+}
+
+class Site {
+  -id: String
+  -coord: Coordinate
+  +id(): String
+  +coord(): Coordinate
+}
+
+class Inlet {
+  -id: String
+  -coordinate: Coordinate
+  +id(): String
+  +coord(): Coordinate
+}
+
+ExplorationManager *--> SiteTracker
+SiteTracker *--> "*" PointOfInterest
+PointOfInterest <|.. Site
+PointOfInterest <|.. Inlet
+ExplorationManager *--> History
+History <|.. ResponseHistory
+History <|.. NavHistory
+NavHistory *--> "*" Coordinate
+@enduml
