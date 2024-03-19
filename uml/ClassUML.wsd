@@ -66,7 +66,7 @@ class IslandLocator {
   +nextAction(): Optional<JSONObject>
 }
 
-IslandLocator .. Phase
+IslandLocator *--> Phase
 
 enum ScannerPhase{
   ECHO,
@@ -260,47 +260,59 @@ class Runner{
   +main(): void
 }
 class EchoSearch{
+  /'
   +drone: Drone 
   +stage: Counter
   +decision: Optional<JSONObject>
   +history: History<JSONObject>
   +execute(): Optional<JSONObject>
+  '/
 }
 class FinalForward{
+  /'
   +drone: Drone 
   +stage: Counter
   +decision: Optional<JSONObject>
   +history: History<JSONObject>
   +execute(): Optional<JSONObject>
+  '/
 }
 class TravelToEnd{
+  /'
   +drone: Drone 
   +stage: Counter
   +decision: Optional<JSONObject>
   +history: History<JSONObject>
   +distance: int
   +execute(): Optional<JSONObject>
+  '/
 }
 interface Command{
   +execute(): Optional<JSONObject>
 }
 class TurnLeft{
+  /'
   +drone: Drone 
   +stage: Counter
   +decision: Optional<JSONObject>
   +execute(): Optional<JSONObject>
+  '/
 }
 class UturnLeft{
+  /'
   +drone: Drone 
   +stage: Counter
   +decision: Optional<JSONObject>
   +execute(): Optional<JSONObject>
+  '/
 }
 class TurnRight{
+  /'
   +drone: Drone 
   +stage: Counter
   +decision: Optional<JSONObject>
   +execute(): Optional<JSONObject>
+  '/
 }
 class CommandHandler{
   +command: Command
@@ -344,21 +356,32 @@ IslandScanner .. Slicer
 IslandScanner .. Turnaround
 IslandScanner .. UTurn
 Runner .. Explorer
-Command .. EchoSearch
-Command .. FinalForward
-Command .. TravelToEnd
-Command .. TurnLeft
-Command .. UturnLeft
-Command .. TurnRight
-IslandLocator .. CommandHandler
-CommandHandler .. Command
+Command <|.. EchoSearch
+Command <|.. FinalForward
+Command <|.. TravelToEnd
+Command <|.. TurnLeft
+Command <|.. UturnLeft
+Command <|.. TurnRight
+CommandHandler <-- EchoSearch
+CommandHandler <-- FinalForward
+CommandHandler <-- TravelToEnd
+CommandHandler <-- TurnLeft
+CommandHandler <-- UturnLeft
+CommandHandler <-- TurnRight
+IslandLocator ..> EchoSearch
+IslandLocator ..> FinalForward
+IslandLocator ..> TravelToEnd
+IslandLocator ..> TurnLeft
+IslandLocator ..> UturnLeft
+IslandLocator ..> TurnRight
+IslandLocator *--> CommandHandler
 IslandScanner .. TurnDirection
-EchoSearch .. Counter
-FinalForward .. Counter
-TurnRight .. Counter
-TravelToEnd .. Counter
-TurnLeft .. Counter
-UturnLeft .. Counter
+EchoSearch *--> Counter
+FinalForward *--> Counter
+TurnRight *--> Counter
+TravelToEnd *--> Counter
+TurnLeft *--> Counter
+UturnLeft *--> Counter
 
 
 @enduml
