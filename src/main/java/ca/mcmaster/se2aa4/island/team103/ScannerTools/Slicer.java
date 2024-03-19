@@ -31,7 +31,7 @@ public class Slicer {
 
 	public JSONObject performSlice(Drone drone, TurnDirection turn, History<JSONObject> respHistory, boolean flyNoScan){
 		if(flyNoScan){
-			travelStatus = SliceStatus.Decision;
+			travelStatus = SliceStatus.DECISION;
 		}
 		logger.info("LL Slicer Phase: {}",travelStatus);
 		logger.info("distanceToLand: {}",distanceToLand);
@@ -39,7 +39,7 @@ public class Slicer {
 		if(distanceToLand >= 1){
 			logger.info("INDIST");
 			decision.put("response",drone.flyForwards());
-			travelStatus = SliceStatus.Scan;
+			travelStatus = SliceStatus.SCAN;
 			distanceToLand--;
 			return decision;
 		}else{

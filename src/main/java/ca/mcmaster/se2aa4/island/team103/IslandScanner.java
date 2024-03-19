@@ -78,27 +78,27 @@ public class IslandScanner implements DroneController {
 			if(response.getString(DONE).equals("specialTurn")){
 				counter_activator = true;
 				scan_pass_num = 2;
-				phase = ScannerPhase.Turnaround;
-				if(turn.equals(TurnDirection.Left)){
-					turn = TurnDirection.Right;
+				phase = ScannerPhase.TURNAROUND;
+				if(turn.equals(TurnDirection.LEFT)){
+					turn = TurnDirection.RIGHT;
 				}else{
-					turn = TurnDirection.Left;
+					turn = TurnDirection.LEFT;
 				} 
 			}else if(response.getString("done").equals("specialTurn2")){
-				phase = ScannerPhase.Turnaround2;
+				phase = ScannerPhase.TURNAROUND2;
 			}else if(response.getString("done").equals("proceed")){
-				phase = ScannerPhase.Slice;
+				phase = ScannerPhase.SLICE;
 			}
 			else if(response.getString("done").equals("proceedToLand")){
-				phase = ScannerPhase.Slice;
+				phase = ScannerPhase.SLICE;
 				flyNoScan = true;
 			}
 			else if(response.getString("done").equals("over")){
-				phase = ScannerPhase.Echo;
+				phase = ScannerPhase.ECHO;
 				return Optional.empty();
 			}
 		}
-		if(phase.equals(ScannerPhase.Slice)){
+		if(phase.equals(ScannerPhase.SLICE)){
 			response = slicer.performSlice(drone, turn, respHistory, flyNoScan);
 			flyNoScan = false;
 			if(response.has("done")){ 
@@ -123,7 +123,7 @@ public class IslandScanner implements DroneController {
 		if(phase.equals(ScannerPhase.TURNAROUND)){
 			response = turnaround.specialTurn(drone,respHistory,turn);
 			if(response.has(DONE)){
-				phase = ScannerPhase.Decision;
+				phase = ScannerPhase.DECISION;
 				decision = drone.echoForward();
 				return Optional.of(decision);
 			}else{
