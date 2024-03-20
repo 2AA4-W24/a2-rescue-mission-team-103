@@ -1,0 +1,32 @@
+@startuml
+loop
+Explorer -> ExplorationManager: getDecision()
+activate Explorer #abc4c3
+ExplorationManager -> IslandScanner: nextAction()
+activate ExplorationManager #abc4c3 
+IslandScanner -> Decider: performDecision()
+activate Decider #abc4c3
+IslandScanner <-- Decider: JSONObject
+deactivate Decider
+IslandScanner -> Slicer: performSlice()
+activate Slicer #abc4c3
+IslandScanner <-- Slicer: JSONObject
+deactivate Slicer
+IslandScanner -> UTurn: performUTurn()
+activate UTurn #abc4c3
+IslandScanner <-- UTurn: JSONObject
+deactivate UTurn
+IslandScanner -> SpecialTurn: specialTurn()
+activate SpecialTurn #abc4c3
+IslandScanner <-- SpecialTurn: JSONObject
+deactivate SpecialTurn
+IslandScanner -> SpecialTurn2: specialTurn2()
+activate SpecialTurn2 #abc4c3
+IslandScanner <-- SpecialTurn2: JSONObject
+deactivate SpecialTurn2
+ExplorationManager <-- IslandScanner: JSON Response
+deactivate ExplorationManager
+Explorer <-- ExplorationManager: JSON Response
+deactivate Explorer
+end
+@enduml
