@@ -1,9 +1,37 @@
 @startuml SequenceDiagram
-activate Runner #abc4c3
-Runner -> Explorer: takeDecision()
+activate GameEngine #abc4c3
+GameEngine -> Explorer **: initialize()
+activate Explorer #abc4c3
+Explorer -> ExplorationManager **: new
+activate ExplorationManager #abc4c3
+ExplorationManager -> IslandLocator **: new
+activate IslandLocator #abc4c3
+IslandLocator -> CommandHandler **: new
+IslandLocator -> EchoSearch **: new
+IslandLocator -> TravelToEnd **: new
+IslandLocator -> UturnLeft **: new
+IslandLocator -> TurnRight **: new
+IslandLocator -> TurnLeft **: new
+IslandLocator -> FinalForward **: new
+ExplorationManager <-- IslandLocator: IslandLocator
+deactivate IslandLocator #abc4c3
+ExplorationManager -> IslandScanner **: new
+activate IslandScanner #abc4c3
+IslandScanner -> Decider **: new
+IslandScanner -> Slicer **: new
+IslandScanner -> UTurn **: new
+IslandScanner -> SpecialTurn **: new
+IslandScanner -> SpecialTurn2 **: new
+ExplorationManager <-- IslandScanner: IslandScanner
+deactivate IslandScanner
+Explorer <-- ExplorationManager: ExplorationManager
+deactivate ExplorationManager
+deactivate Explorer
+
+GameEngine -> Explorer: takeDecision()
+activate Explorer #abc4c3
 
 loop
-activate Explorer #abc4c3
 Explorer -> ExplorationManager: getDecision()
 activate ExplorationManager #abc4c3
 
@@ -15,9 +43,9 @@ activate CommandHandler #abc4c3
 IslandLocator -> CommandHandler: nextAction()
 CommandHandler -> EchoSearch: execute()
 activate EchoSearch #abc4c3
-CommandHandler <- EchoSearch: Optional<JSONObject>
+CommandHandler <-- EchoSearch: Optional<JSONObject>
 deactivate EchoSearch
-IslandLocator <- CommandHandler: Optional<JSONObject>
+IslandLocator <-- CommandHandler: Optional<JSONObject>
 deactivate CommandHandler
 
 IslandLocator -> CommandHandler: setCommand(travelToEnd)
@@ -25,9 +53,9 @@ activate CommandHandler #abc4c3
 IslandLocator -> CommandHandler: nextAction()
 CommandHandler -> TravelToEnd: execute()
 activate TravelToEnd #abc4c3
-CommandHandler <- TravelToEnd: Optional<JSONObject>
+CommandHandler <-- TravelToEnd: Optional<JSONObject>
 deactivate TravelToEnd
-IslandLocator <- CommandHandler: Optional<JSONObject>
+IslandLocator <-- CommandHandler: Optional<JSONObject>
 deactivate CommandHandler
 
 IslandLocator -> CommandHandler: setCommand(Uturn)
@@ -35,9 +63,9 @@ activate CommandHandler #abc4c3
 IslandLocator -> CommandHandler: nextAction()
 CommandHandler -> UturnLeft: execute()
 activate UturnLeft #abc4c3
-CommandHandler <- UturnLeft: Optional<JSONObject>
+CommandHandler <-- UturnLeft: Optional<JSONObject>
 deactivate UturnLeft
-IslandLocator <- CommandHandler: Optional<JSONObject>
+IslandLocator <-- CommandHandler: Optional<JSONObject>
 deactivate CommandHandler
 
 IslandLocator -> CommandHandler: setCommand(turnRight)
@@ -45,9 +73,9 @@ activate CommandHandler #abc4c3
 IslandLocator -> CommandHandler: nextAction()
 CommandHandler -> TurnRight: execute()
 activate TurnRight #abc4c3
-CommandHandler <- TurnRight: Optional<JSONObject>
+CommandHandler <-- TurnRight: Optional<JSONObject>
 deactivate TurnRight
-IslandLocator <- CommandHandler: Optional<JSONObject>
+IslandLocator <-- CommandHandler: Optional<JSONObject>
 deactivate CommandHandler
 
 IslandLocator -> CommandHandler: setCommand(turnLeft)
@@ -55,9 +83,9 @@ activate CommandHandler #abc4c3
 IslandLocator -> CommandHandler: nextAction()
 CommandHandler -> TurnLeft: execute()
 activate TurnLeft #abc4c3
-CommandHandler <- TurnLeft: Optional<JSONObject>
+CommandHandler <-- TurnLeft: Optional<JSONObject>
 deactivate TurnLeft
-IslandLocator <- CommandHandler: Optional<JSONObject>
+IslandLocator <-- CommandHandler: Optional<JSONObject>
 deactivate CommandHandler
 
 IslandLocator -> CommandHandler: setCommand(forwardToCoast)
@@ -65,12 +93,12 @@ activate CommandHandler #abc4c3
 IslandLocator -> CommandHandler: nextAction()
 CommandHandler -> FinalForward: execute()
 activate FinalForward #abc4c3
-CommandHandler <- FinalForward: Optional<JSONObject>
+CommandHandler <-- FinalForward: Optional<JSONObject>
 deactivate FinalForward
-IslandLocator <- CommandHandler: Optional<JSONObject>
+IslandLocator <-- CommandHandler: Optional<JSONObject>
 deactivate CommandHandler
 
-ExplorationManager <- IslandLocator: Optional<JSONObject>
+ExplorationManager <-- IslandLocator: Optional<JSONObject>
 deactivate IslandLocator
 
 
@@ -118,9 +146,9 @@ deactivate ExplorationManager
 Explorer <-- ExplorationManager
 deactivate Explorer
 end
-Runner <-- Explorer
+GameEngine <-- Explorer
 
-Runner -> Explorer: deliverFinalReport()
+GameEngine -> Explorer: deliverFinalReport()
 activate Explorer #abc4c3
 Explorer -> SiteTracker: findPointsOfInterest()
 activate SiteTracker #abc4c3
@@ -142,5 +170,5 @@ activate SiteTracker #abc4c3
 Explorer <-- SiteTracker: String id of Closest Inlet
 deactivate SiteTracker
 deactivate Explorer
-deactivate Runner
+deactivate GameEngine
 @enduml
