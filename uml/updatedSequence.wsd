@@ -1,0 +1,79 @@
+@startuml
+Runner -> Explorer: takeDecision()
+activate Runner #abc4c3
+loop
+Explorer -> ExplorationManager: getDecision()
+activate Explorer #abc4c3
+ExplorationManager -> IslandScanner: nextAction()
+activate ExplorationManager #abc4c3 
+IslandScanner -> Decider: performDecision()
+activate IslandScanner #abc4c3
+activate Decider #abc4c3
+IslandScanner <-- Decider: JSONObject
+deactivate Decider
+IslandScanner -> Slicer: performSlice()
+activate Slicer #abc4c3
+IslandScanner <-- Slicer: JSONObject
+deactivate Slicer
+IslandScanner -> UTurn: performUTurn()
+activate UTurn #abc4c3
+IslandScanner <-- UTurn: JSONObject
+deactivate UTurn
+IslandScanner -> SpecialTurn: specialTurn()
+activate SpecialTurn #abc4c3
+IslandScanner <-- SpecialTurn: JSONObject
+deactivate SpecialTurn
+IslandScanner -> SpecialTurn2: specialTurn2()
+activate SpecialTurn2 #abc4c3
+IslandScanner <-- SpecialTurn2: JSONObject
+deactivate SpecialTurn2
+deactivate IslandScanner
+ExplorationManager <-- IslandScanner: JSON Response
+deactivate ExplorationManager
+Explorer <-- ExplorationManager: JSON Response
+deactivate Explorer
+Explorer -> ExplorationManager: acknowledgeResults()
+activate Explorer #abc4c3
+ExplorationManager -> History: addItem()
+activate ExplorationManager #abc4c3
+activate History #abc4c3
+History -> NavHistory: addItem()
+activate NavHistory #abc4c3
+History <-- NavHistory
+deactivate NavHistory
+History -> ResponseHistory: addItem()
+activate ResponseHistory #abc4c3
+History <-- ResponseHistory
+deactivate ResponseHistory
+deactivate History
+ExplorationManager <-- History
+deactivate ExplorationManager
+Explorer <-- ExplorationManager
+deactivate Explorer
+end
+Runner <-- Explorer
+
+Runner -> Explorer: deliverFinalReport()
+activate Explorer #abc4c3
+Explorer -> SiteTracker: findPointsOfInterest()
+activate SiteTracker #abc4c3
+loop
+SiteTracker -> Inlet: addInlet()
+activate Inlet #abc4c3
+SiteTracker <-- Inlet: new Inlet()
+deactivate Inlet
+SiteTracker -> Site: addSite()
+activate Site #abc4c3
+SiteTracker <-- Site: new Site()
+deactivate Site
+end
+Explorer <-- SiteTracker: List<Inlet>, Site
+deactivate SiteTracker
+
+Explorer -> SiteTracker: getClosestInlet()
+activate SiteTracker #abc4c3
+Explorer <-- SiteTracker: String id of Closest Inlet
+deactivate SiteTracker
+deactivate Explorer
+deactivate Runner
+@enduml
