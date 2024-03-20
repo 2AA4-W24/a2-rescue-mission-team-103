@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team103.DroneCommands;
+package ca.mcmaster.se2aa4.island.team103.droneCommands;
 import ca.mcmaster.se2aa4.island.team103.*;
 import java.util.Optional;
 import org.json.JSONObject;

@@ -76,7 +76,6 @@ public class ExplorationManager {
 	}
 
 	public List<Coordinate> getNavReport(){
-		List<Coordinate> navHistory = drone.getNavHistory();
-		return navHistory;
+		return drone.getNavHistory();
 	}
 }

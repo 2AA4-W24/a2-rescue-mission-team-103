@@ -5,7 +5,7 @@ import ca.mcmaster.se2aa4.island.team103.*;
 
 public class Decider {
 
-	public JSONObject performDecision(Drone drone, History<JSONObject> respHistory, int scan_pass, TurnDirection turn, int moves_since_last_special){
+	public JSONObject performDecision(Drone drone, History<JSONObject> respHistory, int scan_pass, int moves_since_last_special){
 		JSONObject decision = new JSONObject();
 
 		if(respHistory.getLast().getJSONObject("extras").getString("found").equals("OUT_OF_RANGE")){

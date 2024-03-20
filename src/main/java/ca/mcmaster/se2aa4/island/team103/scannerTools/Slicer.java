@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team103.ScannerTools;
+package ca.mcmaster.se2aa4.island.team103.scannerTools;
 
 
 import org.apache.logging.log4j.LogManager;
@@ -105,11 +105,6 @@ public class Slicer {
 				travelStatus = SliceStatus.SCAN;
 				break;
 		}
-		return decision;
-	}
-
-	public JSONObject flyForwardsNoScan(Drone drone, int n){
-		JSONObject decision = new JSONObject();
 		return decision;
 	}
 }

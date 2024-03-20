@@ -14,7 +14,7 @@ public class Drone {
     private Logger logger = LogManager.getLogger();
 	private Coordinate currentPos = new Coordinate(0,0);
 	private NavHistory coordHistory = new NavHistory();
-	private final static String BATTERYOUT = "OUT OF BATTERY";
+	private static final String BATTERYOUT = "OUT OF BATTERY";
 
     public Drone(Direction start_heading, int battery_level) {
         // Initializes starting heading

@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team103.DroneCommands;
+package ca.mcmaster.se2aa4.island.team103.droneCommands;
 import ca.mcmaster.se2aa4.island.team103.*;
 import java.util.Optional;
 import org.json.JSONObject;
@@ -23,8 +23,7 @@ public class TurnLeft implements Command {
             case 1:
                 this.decision = this.drone.flyForwards();
                 break;
-            case 2:
-            case 3:
+            case 2, 3:
                 this.decision = this.drone.turnLeft();
                 break;
             case 4:

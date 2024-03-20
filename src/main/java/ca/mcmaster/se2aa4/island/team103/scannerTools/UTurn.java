@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team103.ScannerTools;
+package ca.mcmaster.se2aa4.island.team103.scannerTools;
 
 import org.json.JSONObject;
 

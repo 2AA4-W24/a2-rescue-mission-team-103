@@ -10,7 +10,7 @@ import ca.mcmaster.se2aa4.island.team103.scannerTools.*;
 
 public class IslandScanner implements DroneController {
 
-	private final static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 
 	private enum ScannerPhase{
 		ECHO,
@@ -36,8 +36,8 @@ public class IslandScanner implements DroneController {
 	private Decider decider = new Decider();
 	private Turnaround turnaround = new Turnaround();
 
-	private final static String RESPONSE = "response";
-	private final static String DONE = "done";
+	private static final String RESPONSE = "response";
+	private static final String DONE = "done";
 
 	private boolean flyNoScan = false;
   
@@ -54,7 +54,7 @@ public class IslandScanner implements DroneController {
 			moves_since_last_special++;
 		}
 
-		JSONObject response = new JSONObject();
+		JSONObject response;
 		JSONObject decision = new JSONObject();
 
 		// Special block to be used on first call to set what direction the first u-turn should be.
@@ -74,7 +74,7 @@ public class IslandScanner implements DroneController {
 		}
 
 		if(phase.equals(ScannerPhase.DECISION)){
-			response = decider.performDecision(drone, respHistory, scan_pass_num, turn, moves_since_last_special);
+			response = decider.performDecision(drone, respHistory, scan_pass_num, moves_since_last_special);
 			if(response.getString(DONE).equals("specialTurn")){
 				counter_activator = true;
 				scan_pass_num = 2;

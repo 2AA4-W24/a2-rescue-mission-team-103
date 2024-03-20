@@ -24,8 +24,7 @@ public class TurnRight implements Command {
             case 1:
                 this.decision = this.drone.flyForwards();
                 break;
-            case 2:
-            case 3:
+            case 2, 3:
                 this.decision = this.drone.turnRight();
                 break;
             case 4:

@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 // Testing of NavHistory and Coordinate systems.
-public class CoordinateTest {
+class CoordinateTest {
 	Drone drone;
 	Coordinate expected;
 
 	@Test
-	public void TRightFacingE() {
+	void TRightFacingE() {
 		drone = new Drone(Direction.EAST, 100000);
 		drone.turnRight();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -19,7 +19,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void TRightFacingS() {
+	void TRightFacingS() {
 		drone = new Drone(Direction.SOUTH, 100000);
 		drone.turnRight();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -29,7 +29,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void TRightFacingW() {
+	void TRightFacingW() {
 		drone = new Drone(Direction.WEST, 100000);
 		drone.turnRight();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -39,7 +39,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void TRightFacingN() {
+	void TRightFacingN() {
 		drone = new Drone(Direction.NORTH, 100000);
 		drone.turnRight();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -49,7 +49,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void TLeftFacingE() {
+	void TLeftFacingE() {
 		drone = new Drone(Direction.EAST, 100000);
 		drone.turnLeft();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -59,7 +59,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void TLeftFacingS() { 
+	void TLeftFacingS() { 
 		drone = new Drone(Direction.SOUTH, 100000);
 		drone.turnLeft();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -69,7 +69,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void TLeftFacingW() {
+	void TLeftFacingW() {
 		drone = new Drone(Direction.WEST, 100000);
 		drone.turnLeft();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -79,7 +79,7 @@ public class CoordinateTest {
 	}
 	
 	@Test
-	public void TLeftFacingN() {
+	void TLeftFacingN() {
 		drone = new Drone(Direction.NORTH, 100000);
 		drone.turnLeft();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -89,7 +89,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void ForwardsFacingE() {
+	void ForwardsFacingE() {
 		drone = new Drone(Direction.EAST, 100000);
 		drone.flyForwards();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -99,7 +99,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void ForwardsFacingS() {
+	void ForwardsFacingS() {
 		drone = new Drone(Direction.SOUTH, 100000);
 		drone.flyForwards();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -109,7 +109,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void ForwardsFacingW() {
+	void ForwardsFacingW() {
 		drone = new Drone(Direction.WEST, 100000);
 		drone.flyForwards();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -119,7 +119,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void ForwardsFacingN() {
+	void ForwardsFacingN() {
 		drone = new Drone(Direction.NORTH, 100000);
 		drone.flyForwards();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -129,7 +129,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void Echo() {
+	void Echo() {
 		drone = new Drone(Direction.NORTH, 100000);
 		drone.echoForward();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);
@@ -139,7 +139,7 @@ public class CoordinateTest {
 	}
 
 	@Test
-	public void Scan() {
+	void Scan() {
 		drone = new Drone(Direction.NORTH, 100000);
 		drone.scan();
 		Coordinate result = drone.getNavHistory().get(drone.getNavHistory().size()-1);

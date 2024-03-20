@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class IslandLocatorTest {
+class IslandLocatorTest {
 
 	JSONObject detection;
 	JSONObject expected;
@@ -132,7 +132,7 @@ public class IslandLocatorTest {
 	}
 
 	@Test
-	public void testSearch() {
+	void testSearch() {
 		result = locator.nextAction();
 
 		expected = drone.echoRight();
@@ -161,7 +161,7 @@ public class IslandLocatorTest {
 	} 
 
 	@Test
-	public void testFoundR() {
+	void testFoundR() {
 		addGroundtoHistory();
 		addOORtoHistory();
 		addOORtoHistory();
@@ -177,7 +177,7 @@ public class IslandLocatorTest {
 	}
 
 	@Test
-	public void testFoundF() {
+	void testFoundF() {
 		locator.nextAction();
 		locator.nextAction();
 		locator.nextAction();
@@ -193,7 +193,7 @@ public class IslandLocatorTest {
 	}
 
 	@Test
-	public void testFoundL() {
+	void testFoundL() {
 		locator.nextAction();
 		locator.nextAction();
 		locator.nextAction();
@@ -210,7 +210,7 @@ public class IslandLocatorTest {
 	
 
 	@Test
-	public void testFFclose() {
+	void testFFclose() {
 		// Tests FF edge case where drone is next to shore immidiately after performing UTURN
 		setupFinalForwards();
 		addGroundtoHistory(0);
@@ -219,7 +219,7 @@ public class IslandLocatorTest {
 	}
 	
 	@Test
-	public void testFFfar() {
+	void testFFfar() {
 		// Tests FF normal case of shore 5 blocks away
 		setupFinalForwards();
 		addGroundtoHistory(5);
@@ -235,7 +235,7 @@ public class IslandLocatorTest {
 
 
 	@Test
-	public void testUTURNF() {
+	void testUTURNF() {
 		drone_reference = new Drone(Direction.SOUTH,100000);
 		setupUturnF();
 

@@ -12,7 +12,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class IslandScannerTest {
+class IslandScannerTest {
 
 	JSONObject detection;
 	JSONObject expected;
@@ -77,7 +77,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void firstEchoTest(){
+	void firstEchoTest(){
 		result = scanner.nextAction();
 		expected = drone.echoForward();
 		assertTrue(result.isPresent());
@@ -85,7 +85,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void StartofSlice(){
+	void StartofSlice(){
 		result = scanner.nextAction();
 		addGroundtoHistory(1);
 		result = scanner.nextAction();
@@ -94,7 +94,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void moveSlice(){
+	void moveSlice(){
 		result = scanner.nextAction();
 		addGroundtoHistory(1);
 		result = scanner.nextAction();
@@ -106,7 +106,7 @@ public class IslandScannerTest {
 	}
 
 	@Test
-	public void SliceStartWithDistance(){
+	void SliceStartWithDistance(){
 		result = scanner.nextAction();
 		addGroundtoHistory(3);
 		result = scanner.nextAction();
@@ -115,7 +115,7 @@ public class IslandScannerTest {
 	}
 
 	@Test
-	public void SliceWithDistance(){ // Case when land is not immediately present after turnaround.
+	void SliceWithDistance(){ // Case when land is not immediately present after turnaround.
 		result = scanner.nextAction();
 		addGroundtoHistory(3);
 		result = scanner.nextAction();
@@ -127,7 +127,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void turnwaitSliceComponent(){
+	void turnwaitSliceComponent(){
 		result = scanner.nextAction();
 		addGroundtoHistory(1);
 		result = scanner.nextAction();
@@ -142,7 +142,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void endSlice(){
+	void endSlice(){
 		result = scanner.nextAction();
 		addGroundtoHistory(1);
 		result = scanner.nextAction();
@@ -161,7 +161,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void UTurnEast(){ // Ensuring U-Turn logic is successful.
+	void UTurnEast(){ // Ensuring U-Turn logic is successful.
 		result = scanner.nextAction();
 		addGroundtoHistory(1);
 		result = scanner.nextAction();
@@ -182,7 +182,7 @@ public class IslandScannerTest {
 	}
 
 	@Test
-	public void SpecialTurn(){
+	void SpecialTurn(){
 		logger.info("STARTING"); 
 		//Setup instructions
 		result = scanner.nextAction();
@@ -220,7 +220,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void SpecialTurnW(){ 
+	void SpecialTurnW(){ 
 
 		drone = new Drone(Direction.WEST, 100000);
 		scanner = new IslandScanner(drone, history);
@@ -259,7 +259,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void SpecialTurn2(){ 
+	void SpecialTurn2(){ 
 		//Setup instructions
 		result = scanner.nextAction();
 		addGroundtoHistory(1);
@@ -306,7 +306,7 @@ public class IslandScannerTest {
 	}
 	
 	@Test
-	public void SpecialTurn2West(){ 
+	void SpecialTurn2West(){ 
 		drone = new Drone(Direction.WEST, 100000);
 		scanner = new IslandScanner(drone, history);
 		//Setup instructions
