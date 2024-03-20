@@ -1,13 +1,82 @@
-@startuml
-Runner -> Explorer: takeDecision()
+@startuml SequenceDiagram
 activate Runner #abc4c3
+Runner -> Explorer: takeDecision()
+
 loop
-Explorer -> ExplorationManager: getDecision()
 activate Explorer #abc4c3
+Explorer -> ExplorationManager: getDecision()
+activate ExplorationManager #abc4c3
+
+ExplorationManager -> IslandLocator: nextAction()
+activate IslandLocator #abc4c3
+
+IslandLocator -> CommandHandler: setCommand(echoSearch)
+activate CommandHandler #abc4c3
+IslandLocator -> CommandHandler: nextAction()
+CommandHandler -> EchoSearch: execute()
+activate EchoSearch #abc4c3
+CommandHandler <- EchoSearch: Optional<JSONObject>
+deactivate EchoSearch
+IslandLocator <- CommandHandler: Optional<JSONObject>
+deactivate CommandHandler
+
+IslandLocator -> CommandHandler: setCommand(travelToEnd)
+activate CommandHandler #abc4c3
+IslandLocator -> CommandHandler: nextAction()
+CommandHandler -> TravelToEnd: execute()
+activate TravelToEnd #abc4c3
+CommandHandler <- TravelToEnd: Optional<JSONObject>
+deactivate TravelToEnd
+IslandLocator <- CommandHandler: Optional<JSONObject>
+deactivate CommandHandler
+
+IslandLocator -> CommandHandler: setCommand(Uturn)
+activate CommandHandler #abc4c3
+IslandLocator -> CommandHandler: nextAction()
+CommandHandler -> UturnLeft: execute()
+activate UturnLeft #abc4c3
+CommandHandler <- UturnLeft: Optional<JSONObject>
+deactivate UturnLeft
+IslandLocator <- CommandHandler: Optional<JSONObject>
+deactivate CommandHandler
+
+IslandLocator -> CommandHandler: setCommand(turnRight)
+activate CommandHandler #abc4c3
+IslandLocator -> CommandHandler: nextAction()
+CommandHandler -> TurnRight: execute()
+activate TurnRight #abc4c3
+CommandHandler <- TurnRight: Optional<JSONObject>
+deactivate TurnRight
+IslandLocator <- CommandHandler: Optional<JSONObject>
+deactivate CommandHandler
+
+IslandLocator -> CommandHandler: setCommand(turnLeft)
+activate CommandHandler #abc4c3
+IslandLocator -> CommandHandler: nextAction()
+CommandHandler -> TurnLeft: execute()
+activate TurnLeft #abc4c3
+CommandHandler <- TurnLeft: Optional<JSONObject>
+deactivate TurnLeft
+IslandLocator <- CommandHandler: Optional<JSONObject>
+deactivate CommandHandler
+
+IslandLocator -> CommandHandler: setCommand(forwardToCoast)
+activate CommandHandler #abc4c3
+IslandLocator -> CommandHandler: nextAction()
+CommandHandler -> FinalForward: execute()
+activate FinalForward #abc4c3
+CommandHandler <- FinalForward: Optional<JSONObject>
+deactivate FinalForward
+IslandLocator <- CommandHandler: Optional<JSONObject>
+deactivate CommandHandler
+
+ExplorationManager <- IslandLocator: Optional<JSONObject>
+deactivate IslandLocator
+
+
 ExplorationManager -> IslandScanner: nextAction()
-activate ExplorationManager #abc4c3 
-IslandScanner -> Decider: performDecision()
 activate IslandScanner #abc4c3
+IslandScanner -> Decider: performDecision()
 activate Decider #abc4c3
 IslandScanner <-- Decider: JSONObject
 deactivate Decider
@@ -27,15 +96,13 @@ IslandScanner -> SpecialTurn2: specialTurn2()
 activate SpecialTurn2 #abc4c3
 IslandScanner <-- SpecialTurn2: JSONObject
 deactivate SpecialTurn2
-deactivate IslandScanner
 ExplorationManager <-- IslandScanner: JSON Response
-deactivate ExplorationManager
+deactivate IslandScanner
 Explorer <-- ExplorationManager: JSON Response
-deactivate Explorer
+deactivate ExplorationManager
 Explorer -> ExplorationManager: acknowledgeResults()
-activate Explorer #abc4c3
-ExplorationManager -> History: addItem()
 activate ExplorationManager #abc4c3
+ExplorationManager -> History: addItem()
 activate History #abc4c3
 History -> NavHistory: addItem()
 activate NavHistory #abc4c3
