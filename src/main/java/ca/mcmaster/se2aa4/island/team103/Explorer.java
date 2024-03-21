@@ -47,11 +47,8 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        SiteTracker siteTracker;
         logger.info("Compiling final static Report");
-		siteTracker = new SiteTracker();
-		siteTracker.findPointsOfInterest(manager.getResponseReport(),manager.getNavReport());
-        String closest_inlet = siteTracker.getClosestInlet();
+        String closest_inlet = manager.getFinalReport();
         logger.info("Closest Inlet: {}", closest_inlet);
 		return closest_inlet;
     }

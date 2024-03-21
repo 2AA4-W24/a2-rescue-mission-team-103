@@ -36,7 +36,7 @@ public class SiteTracker {
 		return closest_inlet.id();
 	}
 
-	public void findPointsOfInterest(List<JSONObject> history, List<Coordinate> coordHistory){
+	public void compilePointsOfInterest(List<JSONObject> history, List<Coordinate> coordHistory){
 		for(int i=0; i<history.size(); i++){
 			JSONObject current_obj = history.get(i);
 			JSONObject extras = current_obj.getJSONObject("extras");

@@ -62,6 +62,12 @@ public class ExplorationManager {
         return decision;
 	}
 
+	public String getFinalReport() {
+		SiteTracker tracker = new SiteTracker();
+		tracker.compilePointsOfInterest(getResponseReport(), getNavReport());
+		return tracker.getClosestInlet();
+	}
+
 	public void addInfo(JSONObject response){
 		respHistory.addItem(response);
 		drone.logCost(response.getInt("cost"));
@@ -71,11 +77,11 @@ public class ExplorationManager {
 		return respHistory.getLast();
 	}
 
-	public List<JSONObject> getResponseReport(){
+	private List<JSONObject> getResponseReport(){
 		return respHistory.getItems(0,respHistory.getSize());
 	}
 
-	public List<Coordinate> getNavReport(){
+	private List<Coordinate> getNavReport(){
 		return drone.getNavHistory();
 	}
 }
