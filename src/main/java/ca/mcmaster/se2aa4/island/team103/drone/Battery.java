@@ -8,10 +8,12 @@ public class Battery {
 		this.value = starting_level;
 	}
 
+	// Logging cost of action
 	public void log(int cost) {
 		value -= cost;
 	}
 
+	// Method for stopping drone if low battery.
 	public boolean canContinue() {
 		if (this.value > 50) {
 			return true;

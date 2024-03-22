@@ -38,6 +38,7 @@ public class SiteTracker {
 		return closest_inlet.id();
 	}
 
+	// Creating list of all inlets and a site to be used to find the closest inlet.
 	public void compilePointsOfInterest(List<JSONObject> history, List<Coordinate> coordHistory){
 		for(int i=0; i<history.size(); i++){
 			JSONObject current_obj = history.get(i);

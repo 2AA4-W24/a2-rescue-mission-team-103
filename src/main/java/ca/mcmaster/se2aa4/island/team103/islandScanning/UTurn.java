@@ -16,6 +16,7 @@ public class UTurn {
 
 	UTurnStatus UTurnstatus = UTurnStatus.UTURN1;
 
+	// Method for performing a regular U-Turn at the end of each strip of land.
 	public JSONObject performUTurn(Drone drone, TurnDirection turn){
 		JSONObject decision = new JSONObject();
 		if(UTurnstatus.equals(UTurnStatus.UTURN1)){

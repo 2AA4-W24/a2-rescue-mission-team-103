@@ -27,6 +27,8 @@ public class Turnaround {
 	TurnWait SPECIALTURNWAIT = TurnWait.ECHO;
 	
 
+	// Special UTurn that does not miss a strip of land to be done at the end of the first scan pass. Uses a Turn-Forward-Turn-Turn-Turn structure, along
+	// with a special TurnWait section such that the turn does not cause the drone to miss land.
 	public JSONObject specialTurn(Drone drone, History<JSONObject> respHistory, TurnDirection special_turn_direction){
 		JSONObject decision = new JSONObject();
 		switch(TURNSTATUS){
@@ -103,6 +105,7 @@ public class Turnaround {
 		return decision;
 	}
 
+	// Boundary case where if the first scan pass goes until the last column, a second special turn will be required. Requires an extra forward move.
 	public JSONObject specialTurn2(Drone drone, History<JSONObject> respHistory, TurnDirection special_turn_direction){
 		JSONObject decision = new JSONObject();
 		switch(TURNSTATUS){

@@ -6,6 +6,7 @@ import ca.mcmaster.se2aa4.island.team103.history.Coordinate;
 
 public class DistanceCalculation {
 
+	// Returns id of closest inlet.
 	public PointOfInterest returnClosestInlet(List<PointOfInterest> inlets, PointOfInterest site){
 		double min_dist = Integer.MAX_VALUE;
 		PointOfInterest closest_inlet = new Inlet("00000000-1111-2222-3333-44444444444", new Coordinate(0,0));
@@ -19,6 +20,7 @@ public class DistanceCalculation {
 		return closest_inlet;
 	}
 
+	// Simple formula for calculating distance value between two points.
 	public double distance(Coordinate c1, Coordinate c2){
 		int x_component = c2.x()-c1.x();
 		int y_component = c2.y()-c1.y();

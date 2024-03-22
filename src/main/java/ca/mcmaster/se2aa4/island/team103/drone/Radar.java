@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.island.team103.drone;
 import org.json.JSONObject;
 
 public class Radar {
-
+	// General methods for drone radar, including scanning and echo commands.
 	private static final String ACTION = "action";
 	private static final String DIRECTION = "direction";
 	private static final String PARAMS = "parameters";

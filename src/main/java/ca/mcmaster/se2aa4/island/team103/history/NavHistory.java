@@ -28,11 +28,6 @@ public class NavHistory implements History<Coordinate> {
 		}
 	}
 
-	public List<Coordinate> getItems(int start, int end) {
-		/* Gets items from start (inclusive) to end (exclusive)*/
-		return history.subList(start, end);
-	}
-
 	public int getSize(){
 		return history.size();
 	}

@@ -12,7 +12,8 @@ import ca.mcmaster.se2aa4.island.team103.drone.DroneController;
 import ca.mcmaster.se2aa4.island.team103.history.History;
 
 public class IslandScanner implements DroneController {
-
+	// Overall class for handling the scanning of the island.
+	
 	private static final Logger logger = LogManager.getLogger();
 
 	private enum ScannerPhase{
@@ -25,15 +26,20 @@ public class IslandScanner implements DroneController {
 		            // vs. second to last strip of land))
 	}
 
+	// Phase & direction tracking
 	private ScannerPhase phase = ScannerPhase.ECHO;
 	private TurnDirection turn = TurnDirection.LEFT;
+	
+	// Special tracker variables for handling special turns at end of island, as well as first method setup needed.
 	private boolean firstCall = true;
 	private int moves_since_last_special = 0;
 	private boolean counter_activator = false;
 	private int scan_pass_num = 1;
+	
 	private Drone drone;
 	private History<JSONObject> respHistory;
 
+	// Objects to handle each component of the scanning.
 	private UTurn turner = new UTurn();
 	private Slicer slicer = new Slicer();
 	private Decider decider = new Decider();
@@ -70,12 +76,14 @@ public class IslandScanner implements DroneController {
 			firstCall = false;
 		}
 
+		// Starting with echo, and heading to decision.
 		if(phase.equals(ScannerPhase.ECHO)){
 			phase = ScannerPhase.DECISION;
 			decision = drone.echoForward();
 			return Optional.of(decision);
 		}
 
+		// Deciding what to do next (special turn, end, or continue.)
 		if(phase.equals(ScannerPhase.DECISION)){
 			response = decider.performDecision(drone, respHistory, scan_pass_num, moves_since_last_special);
 			if(response.getString(DONE).equals("specialTurn")){
@@ -101,6 +109,8 @@ public class IslandScanner implements DroneController {
 				return Optional.empty();
 			}
 		}
+
+		// Slice is the usual navigation of travelling forwards across a strip of land and scanning.
 		if(phase.equals(ScannerPhase.SLICE)){
 			response = slicer.performSlice(drone, turn, respHistory, flyNoScan);
 			flyNoScan = false;
@@ -111,6 +121,8 @@ public class IslandScanner implements DroneController {
 				return Optional.of(decision);
 			}
 		}
+
+		// U-Turn done at the end of each slice of land.
 		if(phase.equals(ScannerPhase.TURN)){
 			response = turner.performUTurn(drone, turn);
 			decision = response.getJSONObject(RESPONSE);
@@ -123,6 +135,9 @@ public class IslandScanner implements DroneController {
 				phase = ScannerPhase.ECHO;
 			}
 		}
+
+		// Special turn used at the end of the island to go back to the starting point (sometimes require two depending on alignment)
+		// as well as where first scan ends.
 		if(phase.equals(ScannerPhase.TURNAROUND)){
 			response = turnaround.specialTurn(drone,respHistory,turn);
 			if(response.has(DONE)){

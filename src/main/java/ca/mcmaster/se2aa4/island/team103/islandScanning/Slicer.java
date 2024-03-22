@@ -32,14 +32,15 @@ public class Slicer {
 	private final Logger logger = LogManager.getLogger();
 
 	public JSONObject performSlice(Drone drone, TurnDirection turn, History<JSONObject> respHistory, boolean flyNoScan){
+		
+		JSONObject decision = new JSONObject();
+		
+		// In the case land is not immediately present, can proceed until the island without scanning.
 		if(flyNoScan){
 			travelStatus = SliceStatus.DECISION;
 		}
-		logger.info("LL Slicer Phase: {}",travelStatus);
-		logger.info("distanceToLand: {}",distanceToLand);
-		JSONObject decision = new JSONObject();
+		
 		if(distanceToLand >= 1){
-			logger.info("INDIST");
 			decision.put(RESPONSE,drone.flyForwards());
 			travelStatus = SliceStatus.SCAN;
 			distanceToLand--;
@@ -47,6 +48,8 @@ public class Slicer {
 		}else{
 			distanceToLand = 0;
 		}
+
+		// Handling phases of a slice (scanning, moving, and deciding when to turn around.)
 		switch(travelStatus){
 			case SCAN:
 				decision.put(RESPONSE,drone.scan());
@@ -85,6 +88,8 @@ public class Slicer {
 				}
 				break;
 			case TURNWAIT:
+				// To ensure that land is not being missed, continue travelling forward while land exists to the direction the drone is about to turn.
+				// As soon as we will not be missing land in the next slice, we can turn around.
 				if(furtherDistance % 2 == 0){
 					if(turn.equals(TurnDirection.RIGHT)){
 						decision.put(RESPONSE,drone.echoRight());

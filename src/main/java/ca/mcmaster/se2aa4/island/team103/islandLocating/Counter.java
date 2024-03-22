@@ -1,6 +1,6 @@
 package ca.mcmaster.se2aa4.island.team103.islandLocating;
 
-
+// Counter object used for island locating phase.
 public class Counter {
     private int count;
 

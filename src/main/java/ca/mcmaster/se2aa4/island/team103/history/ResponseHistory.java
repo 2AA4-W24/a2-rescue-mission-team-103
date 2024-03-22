@@ -25,11 +25,6 @@ public class ResponseHistory implements History<JSONObject> {
 		}
 	}
 
-	public List<JSONObject> getItems(int start, int end) {
-		/* Gets items from start (inclusive) to end (exclusive)*/
-		return history.subList(start, end);
-	}
-
 	public JSONObject getItem(int index){
 		return history.get(index);
 	}

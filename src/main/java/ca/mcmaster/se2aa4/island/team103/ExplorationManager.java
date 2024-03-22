@@ -22,11 +22,17 @@ public class ExplorationManager {
 	private final static Logger logger = LogManager.getLogger();
 
 	private History<JSONObject> respHistory = new ResponseHistory();
-	private String status = "find-island";
 	private DroneController islandLocator;
 	private DroneController islandMapper;
 	private Drone drone;
 	private Direction start_heading;
+
+	private enum ExplorationPhase{
+		FINDISLAND,
+		SCANISLAND
+	}
+	
+	private ExplorationPhase status = ExplorationPhase.FINDISLAND;
 
 	public ExplorationManager(String heading, Integer battery_start_level) {
 		
@@ -47,23 +53,23 @@ public class ExplorationManager {
 		logger.info("Initializing drone with heading: {}", start_heading);
 	}
 	
+	// Primary method for getting drone decision. Either in island finding phase, or
 	public JSONObject getDecision() {
 		JSONObject decision = new JSONObject();
 
-		if(status.equals("find-island")){
+		if(status.equals(ExplorationPhase.FINDISLAND)){
 			Optional<JSONObject> output = islandLocator.nextAction();
 			if(output.isPresent()) {
 				decision = output.get();
 			} else {
 				logger.info("Island found, moving on.");
-				status = "find-coast";
+				status = ExplorationPhase.SCANISLAND;
 			}
 		}
 
-		if(status.equals("find-coast")){
+		if(status.equals(ExplorationPhase.SCANISLAND)){
 			Optional<JSONObject> output = islandMapper.nextAction();
 			if(output.isPresent()){
-				logger.info("HEADING {}", drone.getHeading());
 				decision = output.get();
 			}else{
 				logger.info("Island scanning complete, moving on.");
@@ -73,23 +79,21 @@ public class ExplorationManager {
         return decision;
 	}
 
+	// Getting site and inlet coordinates, and returning closest creek found.
 	public String getFinalReport() {
 		SiteTracker tracker = new SiteTracker();
 		tracker.compilePointsOfInterest(getResponseReport(), getNavReport());
 		return tracker.getClosestInlet();
 	}
 
+	// Associated methods for getting history (both response and navigation)
 	public void addInfo(JSONObject response){
 		respHistory.addItem(response);
 		drone.logCost(response.getInt("cost"));
 	}
 
-	public JSONObject getLastInfo(){
-		return respHistory.getLast();
-	}
-
 	private List<JSONObject> getResponseReport(){
-		return respHistory.getItems(0,respHistory.getSize());
+		return respHistory.getItems(0);
 	}
 
 	private List<Coordinate> getNavReport(){

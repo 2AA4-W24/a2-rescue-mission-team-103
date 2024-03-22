@@ -29,7 +29,8 @@ public class Drone {
         coordHistory.addItem(new Coordinate(0,0));
     }
 
-    public void logCost(int cost) {
+    // Logging battery
+	public void logCost(int cost) {
         battery.log(cost);
         logger.info("Battery Remaining: {}", battery.getBattery());
     }
@@ -66,6 +67,7 @@ public class Drone {
     public JSONObject turnRight() {
         actions.log(Action.TRIGHT);
         if (battery.canContinue()) {
+			// Appending proper new coordinate to navigation history
             if(heading == Direction.NORTH) {
 				currentPos = new Coordinate(currentPos.x()+1,currentPos.y()-1);
 				coordHistory.addItem(currentPos);

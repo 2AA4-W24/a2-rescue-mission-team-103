@@ -6,6 +6,7 @@ import ca.mcmaster.se2aa4.island.team103.history.History;
 
 public class Decider {
 
+	// Handling specific case of after the U-Turn, deciding whether to continue with island scanning, turn around, or stop the drone.
 	public JSONObject performDecision(Drone drone, History<JSONObject> respHistory, int scan_pass, int moves_since_last_special){
 		JSONObject decision = new JSONObject();
 

@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 public class Movements {
 
+	// Handles all movements of the drone including turning and flying forwards.
 	private static final String ACTION = "action";
 	private static final String HEADING = "heading";
 	private static final String DIRECTION = "direction";
