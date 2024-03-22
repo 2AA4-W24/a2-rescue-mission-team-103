@@ -3,6 +3,17 @@ package ca.mcmaster.se2aa4.island.team103;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+
+import ca.mcmaster.se2aa4.island.team103.drone.Direction;
+import ca.mcmaster.se2aa4.island.team103.drone.Drone;
+import ca.mcmaster.se2aa4.island.team103.drone.DroneController;
+import ca.mcmaster.se2aa4.island.team103.history.Coordinate;
+import ca.mcmaster.se2aa4.island.team103.history.History;
+import ca.mcmaster.se2aa4.island.team103.history.ResponseHistory;
+import ca.mcmaster.se2aa4.island.team103.islandLocating.IslandLocator;
+import ca.mcmaster.se2aa4.island.team103.islandScanning.IslandScanner;
+import ca.mcmaster.se2aa4.island.team103.siteTracking.SiteTracker;
+
 import java.util.Optional;
 import java.util.List;
 

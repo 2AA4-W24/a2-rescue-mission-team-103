@@ -2,6 +2,10 @@ package ca.mcmaster.se2aa4.island.team103;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import ca.mcmaster.se2aa4.island.team103.drone.Direction;
+import ca.mcmaster.se2aa4.island.team103.drone.Drone;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.json.JSONObject;
