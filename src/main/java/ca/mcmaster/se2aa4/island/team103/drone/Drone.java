@@ -1,5 +1,11 @@
-package ca.mcmaster.se2aa4.island.team103;
+package ca.mcmaster.se2aa4.island.team103.drone;
 import org.json.JSONObject;
+
+import ca.mcmaster.se2aa4.island.team103.history.Action;
+import ca.mcmaster.se2aa4.island.team103.history.ActionUsage;
+import ca.mcmaster.se2aa4.island.team103.history.Coordinate;
+import ca.mcmaster.se2aa4.island.team103.history.NavHistory;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.List;
@@ -14,6 +20,7 @@ public class Drone {
     private Logger logger = LogManager.getLogger();
 	private Coordinate currentPos = new Coordinate(0,0);
 	private NavHistory coordHistory = new NavHistory();
+	private static final String BATTERYOUT = "OUT OF BATTERY";
 
     public Drone(Direction start_heading, int battery_level) {
         // Initializes starting heading
@@ -22,7 +29,8 @@ public class Drone {
         coordHistory.addItem(new Coordinate(0,0));
     }
 
-    public void logCost(int cost) {
+    // Logging battery
+	public void logCost(int cost) {
         battery.log(cost);
         logger.info("Battery Remaining: {}", battery.getBattery());
     }
@@ -50,7 +58,7 @@ public class Drone {
         if (battery.canContinue()) {
             return controls.flyForward();
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -59,6 +67,7 @@ public class Drone {
     public JSONObject turnRight() {
         actions.log(Action.TRIGHT);
         if (battery.canContinue()) {
+			// Appending proper new coordinate to navigation history
             if(heading == Direction.NORTH) {
 				currentPos = new Coordinate(currentPos.x()+1,currentPos.y()-1);
 				coordHistory.addItem(currentPos);
@@ -82,7 +91,7 @@ public class Drone {
             }
 
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -116,7 +125,7 @@ public class Drone {
             }
 
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -128,7 +137,7 @@ public class Drone {
         if (battery.canContinue()) {
             return radar.scan();
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -140,7 +149,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanLeft(heading);
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -152,7 +161,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanRight(heading);
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }
@@ -164,7 +173,7 @@ public class Drone {
 		if (battery.canContinue()) {
             return radar.scanForward(heading);
         } else {
-            logger.error("OUT OF BATTERY");
+            logger.info(BATTERYOUT);
             logger.info(actions.getSummary());
             return controls.stop();
         }

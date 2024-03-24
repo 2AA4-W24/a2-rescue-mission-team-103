@@ -1,6 +1,6 @@
-package ca.mcmaster.se2aa4.island.team103;
+package ca.mcmaster.se2aa4.island.team103.history;
 
-enum Action {
+public enum Action {
 	// Enum used to represent actions (turn right, left, echo, scan)
 	TRIGHT,
 	TLEFT,
@@ -8,5 +8,7 @@ enum Action {
 	ECHO_FORWARD,
 	ECHO_RIGHT,
 	ECHO_LEFT,
+	ECHO,
+	MOVE,
 	SCAN
 }

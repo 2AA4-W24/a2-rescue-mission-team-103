@@ -2,11 +2,15 @@ package ca.mcmaster.se2aa4.island.team103;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import ca.mcmaster.se2aa4.island.team103.drone.Direction;
+import ca.mcmaster.se2aa4.island.team103.drone.Drone;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.json.JSONObject;
 
-public class DroneTest {
+class DroneTest {
 	Drone drone;
 	JSONObject expected;
 	JSONObject result;
@@ -19,7 +23,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void TRightFacingE() {
+	void TRightFacingE() {
 		drone = new Drone(Direction.EAST, 100000);
 		parameters.put("direction", "S");
 		expected.put("action", "heading");
@@ -29,7 +33,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void TRightFacingS() {
+	void TRightFacingS() {
 		drone = new Drone(Direction.SOUTH,100000);
 		parameters.put("direction", "W");
 		expected.put("action", "heading");
@@ -39,7 +43,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void TRightFacingW() {
+	void TRightFacingW() {
 		drone = new Drone(Direction.WEST,100000);
 		parameters.put("direction", "N");
 		expected.put("action", "heading");
@@ -49,7 +53,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void TRightFacingN() {
+	void TRightFacingN() {
 		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "E");
 		expected.put("action", "heading");
@@ -59,7 +63,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void TLeftFacingE() {
+	void TLeftFacingE() {
 		drone = new Drone(Direction.EAST,100000);
 		parameters.put("direction", "N");
 		expected.put("action", "heading");
@@ -69,7 +73,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void TLeftFacingS() {
+	void TLeftFacingS() {
 		drone = new Drone(Direction.SOUTH,100000);
 		parameters.put("direction", "E");
 		expected.put("action", "heading");
@@ -79,7 +83,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void TLeftFacingW() {
+	void TLeftFacingW() {
 		drone = new Drone(Direction.WEST,100000);
 		parameters.put("direction", "S");
 		expected.put("action", "heading");
@@ -89,7 +93,7 @@ public class DroneTest {
 	}
 	
 	@Test
-	public void TLeftFacingN() {
+	void TLeftFacingN() {
 		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "W");
 		expected.put("action", "heading");
@@ -99,7 +103,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void Forwards() {
+	void Forwards() {
 		drone = new Drone(Direction.NORTH,100000);
 		expected.put("action", "fly");
 		result = drone.flyForwards();
@@ -107,7 +111,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void scan() {
+	void scan() {
 		drone = new Drone(Direction.NORTH,100000);	
 		expected.put("action", "scan");
 		result = drone.scan();
@@ -115,7 +119,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void echoLeft() {
+	void echoLeft() {
 		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "W");
 		expected.put("action", "echo");
@@ -125,7 +129,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void echoRight() {
+	void echoRight() {
 		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "E");
 		expected.put("action", "echo");
@@ -135,7 +139,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void echoForw() {
+	void echoForw() {
 		drone = new Drone(Direction.NORTH,100000);
 		parameters.put("direction", "N");
 		expected.put("action", "echo");
@@ -145,7 +149,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void outOfBatteryFF() {
+	void outOfBatteryFF() {
 		drone = new Drone(Direction.NORTH,50);
 		expected.put("action", "stop");
 		result = drone.flyForwards();
@@ -153,7 +157,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void outOfBatteryTR() {
+	void outOfBatteryTR() {
 		drone = new Drone(Direction.NORTH,50);
 		expected.put("action", "stop");
 		result = drone.turnRight();
@@ -161,7 +165,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void outOfBatteryEF() {
+	void outOfBatteryEF() {
 		drone = new Drone(Direction.NORTH,50);
 		expected.put("action", "stop");
 		result = drone.echoForward();
@@ -169,7 +173,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void outOfBatterySC() {
+	void outOfBatterySC() {
 		drone = new Drone(Direction.NORTH,50);
 		expected.put("action", "stop");
 		result = drone.scan();
@@ -177,7 +181,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void almostOutOfBatteryFF() {
+	void almostOutOfBatteryFF() {
 		drone = new Drone(Direction.NORTH,51);
 		expected.put("action", "fly");
 		result = drone.flyForwards();
@@ -185,7 +189,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void almostOutOfBatteryTR() {
+	void almostOutOfBatteryTR() {
 		drone = new Drone(Direction.NORTH,51);
 		parameters.put("direction", "E");
 		expected.put("action", "heading");
@@ -195,7 +199,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void almostOutOfBatteryEF() {
+	void almostOutOfBatteryEF() {
 		drone = new Drone(Direction.NORTH,51);
 		parameters.put("direction", "N");
 		expected.put("action", "echo");
@@ -205,7 +209,7 @@ public class DroneTest {
 	}
 
 	@Test
-	public void almostOutOfBatterySC() {
+	void almostOutOfBatterySC() {
 		drone = new Drone(Direction.NORTH,51);
 		expected.put("action", "scan");
 		result = drone.scan();

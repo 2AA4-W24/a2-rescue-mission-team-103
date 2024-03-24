@@ -1,12 +1,16 @@
-package ca.mcmaster.se2aa4.island.team103;
+package ca.mcmaster.se2aa4.island.team103.drone;
 
 import org.json.JSONObject;
 
 public class Radar {
+	// General methods for drone radar, including scanning and echo commands.
+	private static final String ACTION = "action";
+	private static final String DIRECTION = "direction";
+	private static final String PARAMS = "parameters";
 
 	public JSONObject scan() {
 		JSONObject scan = new JSONObject();
-		scan.put("action","scan");
+		scan.put(ACTION,"scan");
 		return scan;
 	}
 
@@ -16,20 +20,20 @@ public class Radar {
 		JSONObject parameters = new JSONObject();
 		switch(current_heading) {
 			case Direction.NORTH:
-				parameters.put("direction", "N");
+				parameters.put(DIRECTION, "N");
 				break;
 			case Direction.EAST:
-				parameters.put("direction", "E");
+				parameters.put(DIRECTION, "E");
 				break;
 			case Direction.SOUTH:
-				parameters.put("direction", "S");
+				parameters.put(DIRECTION, "S");
 				break;
 			case Direction.WEST:
-				parameters.put("direction", "W");
+				parameters.put(DIRECTION, "W");
 				break;
 		}
-		scan.put("action", "echo");
-		scan.put("parameters", parameters);
+		scan.put(ACTION, "echo");
+		scan.put(PARAMS, parameters);
 		return scan;
 	}
 
@@ -39,20 +43,20 @@ public class Radar {
 		JSONObject parameters = new JSONObject();
 		switch(current_heading) {
 			case Direction.NORTH:
-				parameters.put("direction", "W");
+				parameters.put(DIRECTION, "W");
 				break;
 			case Direction.EAST:
-				parameters.put("direction", "N");
+				parameters.put(DIRECTION, "N");
 				break;
 			case Direction.SOUTH:
-				parameters.put("direction", "E");
+				parameters.put(DIRECTION, "E");
 				break;
 			case Direction.WEST:
-				parameters.put("direction", "S");
+				parameters.put(DIRECTION, "S");
 				break;
 		}
-		scan.put("action", "echo");
-		scan.put("parameters", parameters);
+		scan.put(ACTION, "echo");
+		scan.put(PARAMS, parameters);
 		return scan;
 	}
 
@@ -62,20 +66,20 @@ public class Radar {
 		JSONObject parameters = new JSONObject();
 		switch(current_heading) {
 			case Direction.NORTH:
-				parameters.put("direction", "E");
+				parameters.put(DIRECTION, "E");
 				break;
 			case Direction.EAST:
-				parameters.put("direction", "S");
+				parameters.put(DIRECTION, "S");
 				break;
 			case Direction.SOUTH:
-				parameters.put("direction", "W");
+				parameters.put(DIRECTION, "W");
 				break;
 			case Direction.WEST:
-				parameters.put("direction", "N");
+				parameters.put(DIRECTION, "N");
 				break;
 		}
-		scan.put("action", "echo");
-		scan.put("parameters", parameters);
+		scan.put(ACTION, "echo");
+		scan.put(PARAMS, parameters);
 		return scan;
 	}
 }

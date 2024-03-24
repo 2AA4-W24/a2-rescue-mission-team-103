@@ -1,4 +1,4 @@
-package ca.mcmaster.se2aa4.island.team103;
+package ca.mcmaster.se2aa4.island.team103.drone;
 
 public class Battery {
 	// For tracking battery percentage and ensuring that power is not too low to continue.
@@ -8,10 +8,12 @@ public class Battery {
 		this.value = starting_level;
 	}
 
+	// Logging cost of action
 	public void log(int cost) {
 		value -= cost;
 	}
 
+	// Method for stopping drone if low battery.
 	public boolean canContinue() {
 		if (this.value > 50) {
 			return true;

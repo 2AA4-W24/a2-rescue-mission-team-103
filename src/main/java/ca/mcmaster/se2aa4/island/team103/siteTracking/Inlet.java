@@ -1,4 +1,6 @@
-package ca.mcmaster.se2aa4.island.team103;
+package ca.mcmaster.se2aa4.island.team103.siteTracking;
+
+import ca.mcmaster.se2aa4.island.team103.history.Coordinate;
 
 public class Inlet implements PointOfInterest {
 	private String id;

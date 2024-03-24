@@ -1,4 +1,6 @@
-package ca.mcmaster.se2aa4.island.team103;
+package ca.mcmaster.se2aa4.island.team103.history;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ActionUsage {
 	int echo_F = 0;
@@ -9,6 +11,7 @@ public class ActionUsage {
 	int turn_R = 0;
 	int fly = 0;
 	String summary;
+	private final Logger logger = LogManager.getLogger();
 
 	public void log(Action action) {
 		switch (action) {
@@ -33,6 +36,8 @@ public class ActionUsage {
 			case Action.FORWARD:
 				this.fly++;
 				break;
+			default:
+				logger.warn("Attempting to log unsupported action");
 		}
 	}
 
