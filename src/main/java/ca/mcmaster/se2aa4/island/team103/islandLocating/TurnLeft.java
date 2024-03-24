@@ -19,19 +19,19 @@ public class TurnLeft implements Command {
     public Optional<JSONObject> execute() {
         // Performs an on-spot left turn via Left->Left->Forwards->Left->Left->Left
         switch (this.stage.value()) {
-            case 0:
+            case 0, 1:
                 this.decision = this.drone.turnLeft();
                 break;
-            case 1:
+            case 2:
                 this.decision = this.drone.flyForwards();
                 break;
-            case 2, 3:
-                this.decision = this.drone.turnLeft();
-                break;
-            case 4:
+            case 3, 4:
                 this.decision = this.drone.turnLeft();
                 break;
             case 5:
+                this.decision = this.drone.turnLeft();
+                break;
+            case 6:
                 logger.info("TurnLeft Complete, returning empty");
                 stage.reset();
                 return Optional.empty();

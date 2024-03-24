@@ -20,19 +20,19 @@ public class TurnRight implements Command {
         // Performs on-spot right turn via Right->Right->Forwards->Right->Right->Right
         
         switch (this.stage.value()) {
-            case 0:
+            case 0, 1:
                 this.decision = this.drone.turnRight();
                 break;
-            case 1:
+            case 2:
                 this.decision = this.drone.flyForwards();
                 break;
-            case 2, 3:
-                this.decision = this.drone.turnRight();
-                break;
-            case 4:
+            case 3, 4:
                 this.decision = this.drone.turnRight();
                 break;
             case 5:
+                this.decision = this.drone.turnRight();
+                break;
+            case 6:
                 logger.info("TurnRight Complete, returning empty");
                 this.stage.reset();
                 return Optional.empty();

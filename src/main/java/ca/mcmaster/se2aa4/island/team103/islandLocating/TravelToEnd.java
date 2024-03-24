@@ -20,16 +20,20 @@ public class TravelToEnd implements Command {
     }
 
     public Optional<JSONObject> execute() {
-        // Flies until it reaches the edge of the map.
+        // Turns right, then flies until it reaches the edge of the map.
         Optional<JSONObject> decision;
         JSONObject last_result;
 
         switch (this.stage.value()) {
             case 0:
-                decision = Optional.of(drone.echoForward());
+                decision = Optional.of(drone.turnRight());
                 break;
 
             case 1:
+                decision = Optional.of(drone.echoForward());
+                break;
+
+            case 2:
                 last_result = this.history.getLast();
                 distance = last_result.getJSONObject("extras").getInt("range");
 
@@ -43,7 +47,7 @@ public class TravelToEnd implements Command {
                 break;
 
             default:
-                if(this.stage.value() < distance) {
+                if(this.stage.value() - 1 < distance) {
                     decision = Optional.of(drone.flyForwards());
                 } else {
                     logger.info("Exiting TravelToEnd -> Returning empty");
