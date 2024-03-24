@@ -87,7 +87,7 @@ public class IslandLocator implements DroneController {
 			}
 				
 			if (next_action == Action.MOVE) {
-				// Movement sub-phase. Makes a decision on what to do next based on the results of the Echo sub-phase.
+				// Movement sub-phase. Makes a decision on whether to exit phase or continue based on Echo results.
 
 				next_action = Action.ECHO;
 				echo_results = history.getItems(-3);
@@ -102,88 +102,83 @@ public class IslandLocator implements DroneController {
 				if (echo_found.get(0).equals(GROUND)) {
 					this.phase = Phase.TURN_R;
 					logger.info("Exiting Search Phase -> TURN_R");
-					decision = drone.turnRight();
 				}
 				else if (echo_found.get(1).equals(GROUND) && echo_range.get(1) == 2) {
 					this.phase = Phase.TRAVEL_TO_END;
 					logger.info("Exiting Search Phase -> TRAVEL_TO_END");
-					decision = drone.turnRight();
 				}
 				else if (echo_found.get(2).equals(GROUND)) {
 					this.phase = Phase.TURN_L;
 					logger.info("Exiting Search Phase -> TURN_L");
-					decision = drone.turnLeft();
 				}
 				else {
 					decision = drone.flyForwards();
 				}
 			}
+		}
 
-		} else {
+		if (this.phase == Phase.TRAVEL_TO_END) {
+			// Travel to End phase. Travels to end of map in case of meeting island head-on.
+			commander.setCommand(travelToEnd);
+			result = commander.nextAction();
 
-			if (this.phase == Phase.TRAVEL_TO_END) {
-				// Travel to End phase. Travels to end of map in case of meeting island head-on.
-				commander.setCommand(travelToEnd);
-				result = commander.nextAction();
-	
-				if (result.isPresent()) {
-					decision = result.get();
-				} else {
-					this.phase = Phase.UTURN_L;
-					logger.info("Exiting TRAVEL_TO_END -> UTURN_L");
-				}
+			if (result.isPresent()) {
+				decision = result.get();
+			} else {
+				this.phase = Phase.UTURN_L;
+				logger.info("Exiting TRAVEL_TO_END -> UTURN_L");
 			}
+		}
+		
+		if (this.phase == Phase.UTURN_L) {
+			// Left Uturn Phase. Performs simple Uturn via Left->Left.
+			commander.setCommand(this.uturn);
+			result = commander.nextAction();
+
+			if (result.isPresent()) {
+				decision = result.get();
+			} else {
+				this.phase = Phase.FINAL_FRWD;
+				logger.info("Exiting UTURN_L -> FINAL_FRWD");
+			}
+		}
+
+		if (this.phase == Phase.TURN_R) {
+			// Turn Right Phase. Performs special on-spot right turn.
+			commander.setCommand(this.turnRight);
+			result = commander.nextAction();
+
+			if (result.isPresent()) {
+				decision = result.get();
+			} else {
+				this.phase = Phase.FINAL_FRWD;
+				logger.info("Exiting TURN_R -> FINAL_FRWD");
+			}
+		}
+
+		if (this.phase == Phase.TURN_L) {
+			// Turn Left Phase. Performs special on-spot left turn.
+			commander.setCommand(this.turnLeft);
+			result = commander.nextAction();
+
+			if (result.isPresent()) {
+				decision = result.get();
+			} else {
+				this.phase = Phase.FINAL_FRWD;
+				logger.info("Exiting TURN_L -> FINAL_FRWD");
+			}
+		}
 			
-			if (this.phase == Phase.UTURN_L) {
-				// Left Uturn Phase. Performs simple Uturn via Left->Left.
-				commander.setCommand(this.uturn);
-				result = commander.nextAction();
-
-				if (result.isPresent()) {
-					decision = result.get();
-				} else {
-					this.phase = Phase.FINAL_FRWD;
-					logger.info("Exiting UTURN_L -> FINAL_FRWD");
-				}
-			}
-
-			if (this.phase == Phase.TURN_R) {
-				// Turn Right Phase. Performs special on-spot right turn.
-				commander.setCommand(this.turnRight);
-				result = commander.nextAction();
-
-				if (result.isPresent()) {
-					decision = result.get();
-				} else {
-					this.phase = Phase.FINAL_FRWD;
-					logger.info("Exiting TURN_R -> FINAL_FRWD");
-				}
-			}
-
-			if (this.phase == Phase.TURN_L) {
-				// Turn Left Phase. Performs special on-spot left turn.
-				commander.setCommand(this.turnLeft);
-				result = commander.nextAction();
-
-				if (result.isPresent()) {
-					decision = result.get();
-				} else {
-					this.phase = Phase.FINAL_FRWD;
-					logger.info("Exiting TURN_L -> FINAL_FRWD");
-				}
-			}
-				
-			if (this.phase == Phase.FINAL_FRWD) {
-				// Forward to Coast phase. Flies forwards until it encounters coast. Terminal phase, returns Optional.empty() once complete.
-				commander.setCommand(this.forwardToCoast);
-				result = commander.nextAction();
-				
-				if (result.isPresent()) {
-					decision = result.get();
-				} else {
-					logger.info("Exiting FINAL_FRWD -> IslandRecon");
-					return Optional.empty();
-				}
+		if (this.phase == Phase.FINAL_FRWD) {
+			// Forward to Coast phase. Flies forwards until it encounters coast. Terminal phase, returns Optional.empty() once complete.
+			commander.setCommand(this.forwardToCoast);
+			result = commander.nextAction();
+			
+			if (result.isPresent()) {
+				decision = result.get();
+			} else {
+				logger.info("Exiting FINAL_FRWD -> IslandRecon");
+				return Optional.empty();
 			}
 		}
 		return Optional.of(decision);

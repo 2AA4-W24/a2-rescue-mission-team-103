@@ -63,11 +63,12 @@ public class ExplorationManager {
 				decision = output.get();
 			} else {
 				logger.info("Island found, moving on.");
+				decision = drone.scan();
 				status = ExplorationPhase.SCANISLAND;
 			}
 		}
 
-		if(status.equals(ExplorationPhase.SCANISLAND)){
+		else if(status.equals(ExplorationPhase.SCANISLAND)){
 			Optional<JSONObject> output = islandMapper.nextAction();
 			if(output.isPresent()){
 				decision = output.get();
