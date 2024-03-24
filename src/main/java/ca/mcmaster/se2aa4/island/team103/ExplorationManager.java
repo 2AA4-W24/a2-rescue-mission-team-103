@@ -53,7 +53,7 @@ public class ExplorationManager {
 		logger.info("Initializing drone with heading: {}", start_heading);
 	}
 	
-	// Primary method for getting drone decision. Either in island finding phase, or
+	// Primary method for getting drone decision. Either in island finding phase, or scanning island.
 	public JSONObject getDecision() {
 		JSONObject decision = new JSONObject();
 
