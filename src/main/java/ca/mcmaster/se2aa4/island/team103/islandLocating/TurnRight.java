@@ -17,6 +17,7 @@ public class TurnRight implements Command {
     }
 
     public Optional<JSONObject> execute() {
+        // Performs on-spot right turn via Right->Right->Forwards->Right->Right->Right
         
         switch (this.stage.value()) {
             case 0:
@@ -32,7 +33,7 @@ public class TurnRight implements Command {
                 this.decision = this.drone.turnRight();
                 break;
             case 5:
-                logger.info("ShiftRight Complete, returning empty");
+                logger.info("TurnRight Complete, returning empty");
                 this.stage.reset();
                 return Optional.empty();
             default:

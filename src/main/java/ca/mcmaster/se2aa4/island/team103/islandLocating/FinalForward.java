@@ -20,6 +20,8 @@ public class FinalForward implements Command {
     }
 
     public Optional<JSONObject> execute() {
+        // Flies forwards until it reaches land, uses stage object as phase counter.
+
         Optional<JSONObject> decision;
         JSONObject last_result;
 
@@ -31,7 +33,8 @@ public class FinalForward implements Command {
             case 1:
                 last_result = this.history.getLast();
                 distance = last_result.getJSONObject("extras").getInt("range");
-                if(distance == 0) {
+                
+                if (distance == 0) {
                     logger.info("Exiting FINAL_FRWD -> Returning empty (dist == 0 immediately after uturn)");
                     this.stage.reset();
                     return Optional.empty();
@@ -41,7 +44,7 @@ public class FinalForward implements Command {
                 break;
 
             default:
-                if(this.stage.value() < distance){
+                if (this.stage.value() < distance) {
                     decision = Optional.of(drone.flyForwards());
                 } else {
                     logger.info("Exiting FINAL_FRWD -> Returning empty");

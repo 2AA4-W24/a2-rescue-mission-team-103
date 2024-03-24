@@ -12,12 +12,12 @@ public class EchoSearch implements Command {
     private Drone drone;
     private final Logger logger = LogManager.getLogger();
 
-    // Methods for echo search command (echoing in a specific direction depending on what is needed.)
 	public EchoSearch (Drone drone_in) {
         this.drone = drone_in;
     }
 
     public Optional<JSONObject> execute() {
+        // Echoes in all three directions. Storing of results is handled by Exploration Manager.
 
         switch (this.stage.value()) {
 

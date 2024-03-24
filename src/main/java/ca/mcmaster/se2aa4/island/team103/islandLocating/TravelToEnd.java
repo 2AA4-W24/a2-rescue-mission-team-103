@@ -20,6 +20,7 @@ public class TravelToEnd implements Command {
     }
 
     public Optional<JSONObject> execute() {
+        // Flies until it reaches the edge of the map.
         Optional<JSONObject> decision;
         JSONObject last_result;
 
