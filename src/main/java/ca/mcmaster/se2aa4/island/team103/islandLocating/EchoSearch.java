@@ -12,7 +12,8 @@ public class EchoSearch implements Command {
     private Drone drone;
     private final Logger logger = LogManager.getLogger();
 
-    public EchoSearch (Drone drone_in) {
+    // Methods for echo search command (echoing in a specific direction depending on what is needed.)
+	public EchoSearch (Drone drone_in) {
         this.drone = drone_in;
     }
 

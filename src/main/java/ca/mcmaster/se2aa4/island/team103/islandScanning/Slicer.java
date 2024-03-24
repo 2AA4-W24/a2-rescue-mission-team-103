@@ -1,8 +1,5 @@
 package ca.mcmaster.se2aa4.island.team103.islandScanning;
 
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,8 +25,6 @@ public class Slicer {
 	SliceStatus travelStatus = SliceStatus.SCAN;
 
 	private int distanceToLand = 0;
-	
-	private final Logger logger = LogManager.getLogger();
 
 	public JSONObject performSlice(Drone drone, TurnDirection turn, History<JSONObject> respHistory, boolean flyNoScan){
 		
@@ -77,7 +72,6 @@ public class Slicer {
 					furtherDistance++;
 					travelStatus = SliceStatus.TURNWAIT;
 				}else if(respHistory.getLast().getJSONObject(EXTRAS).getInt(RANGE) > 1){
-					logger.info("IN branch now");
 					distanceToLand = respHistory.getLast().getJSONObject(EXTRAS).getInt(RANGE);
 					decision.put(RESPONSE,drone.flyForwards());
 					distanceToLand--;

@@ -41,6 +41,7 @@ public class IslandLocator implements DroneController {
 	private static final String RANGE = "range";
 	private static final String FOUND = "found";
   
+	// Class to handle finding the island, composed of several smaller objects for each component of island finding.
 	public IslandLocator(Drone drone_in, History<JSONObject> history_in) {
 		this.drone = drone_in;
 		this.history = history_in;
