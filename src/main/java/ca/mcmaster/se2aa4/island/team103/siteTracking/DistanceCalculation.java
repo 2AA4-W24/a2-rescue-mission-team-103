@@ -9,7 +9,7 @@ public class DistanceCalculation {
 	// Returns id of closest inlet.
 	public PointOfInterest returnClosestInlet(List<PointOfInterest> inlets, PointOfInterest site){
 		double min_dist = Integer.MAX_VALUE;
-		PointOfInterest closest_inlet = new Inlet("00000000-1111-2222-3333-44444444444", new Coordinate(0,0));
+		PointOfInterest closest_inlet = new Inlet("", new Coordinate(0,0));
 		for(int i=0; i<inlets.size(); i++){
 			double current_distance = distance(inlets.get(i).coord(),site.coord());
 			if(current_distance < min_dist){

@@ -152,4 +152,11 @@ class CoordinateTest {
 		assertEquals(expected.toString(),result.toString());
 		assertTrue(expected.equalTo(result));
 	}
+
+	@Test
+	void notEqual(){
+		Coordinate c1 = new Coordinate(1,2);
+		Coordinate c2 = new Coordinate(2,3);
+		assertFalse(c1.equalTo(c2));
+	}
 }

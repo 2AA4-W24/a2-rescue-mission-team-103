@@ -28,12 +28,17 @@ public class SiteTracker {
 
 	public String getClosestInlet() {
 		PointOfInterest closest_inlet;
-		
 		if (site.isPresent()) {
 			closest_inlet = calculator.returnClosestInlet(inlets, site.get());
 		} else {
-			logger.warn("Site is not present, returning first inlet");
-			closest_inlet = inlets.get(0);
+			if(inlets.size() >= 1){
+				logger.warn("Site is not present, returning first inlet.");
+				closest_inlet = inlets.get(0);
+			}else{
+				logger.warn("Site is not present, nor are any creeks.");
+				return "no creek found";
+			}
+			
 		}
 		return closest_inlet.id();
 	}
@@ -47,7 +52,6 @@ public class SiteTracker {
 				if(extras.getJSONArray("creeks").length() > 0){
 					String id = extras.getJSONArray("creeks").getString(0);
 					addInlet(id,new Coordinate(coordHistory.get(i).x(),coordHistory.get(i).y()));
-					
 				}else if(extras.getJSONArray("sites").length() > 0){
 					String id = extras.getJSONArray("sites").getString(0);
 					addRescueSite(id,new Coordinate(coordHistory.get(i).x(),coordHistory.get(i).y()));

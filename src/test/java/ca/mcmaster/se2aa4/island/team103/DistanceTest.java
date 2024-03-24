@@ -34,6 +34,7 @@ class DistanceTest {
 		PointOfInterest result = calculator.returnClosestInlet(inlets,s1);
 		String s = s1.id();
 		assertEquals(i1.id(),result.id());
+		assertTrue(!s.isEmpty());
 	}
 
 }
