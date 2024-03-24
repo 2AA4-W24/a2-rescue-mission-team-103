@@ -17,6 +17,7 @@ public class UturnLeft implements Command{
     }
     
     public Optional<JSONObject> execute() {
+        // Performs basic Uturn via Left->Left
 
         switch (this.stage.value()) {
             case 0:
@@ -27,7 +28,7 @@ public class UturnLeft implements Command{
                 break;
             case 2:
                 this.stage.reset();
-                logger.info("ForwardUturn Complete, returning empty");
+                logger.info("UturnLeft Complete, returning empty");
                 return Optional.empty();
             default:
                 logger.error("Stage outside acceptable range");

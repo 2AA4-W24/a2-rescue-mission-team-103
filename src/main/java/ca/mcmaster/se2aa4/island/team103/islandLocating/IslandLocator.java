@@ -41,7 +41,7 @@ public class IslandLocator implements DroneController {
 	private static final String RANGE = "range";
 	private static final String FOUND = "found";
   
-	// Class to handle finding the island, composed of several smaller objects for each component of island finding.
+	// Class to handle finding the island, which uses different Commands to delegate the workload
 	public IslandLocator(Drone drone_in, History<JSONObject> history_in) {
 		this.drone = drone_in;
 		this.history = history_in;
@@ -54,14 +54,27 @@ public class IslandLocator implements DroneController {
 	}
 	
 	public Optional<JSONObject> nextAction() {
-		/* */
+		/* Returns the next action the drone should take 
+		 * Broken into 5 distinct phases, with two sub-phases.
+		 * 
+		 * - Search Phase (Phase.SEARCH)
+		 * 		- Echo Search Sub-phase (Phase.SEARCH + Action.ECHO) -> Command: EchoSearch
+		 * 		- Movement Sub-phase (Phase.SEARCH + Action.MOVE) -> Responsibility of IslandLocator as it requires knowledge that Commands aren't given
+		 * - Travel to End Phase (Phase.TRAVEL_TO_END) -> Command: TravelToEnd
+		 * - Left Uturn Phase (Phase.UTURN_L) -> Command: UturnLeft
+		 * - Right Turn Phase (Phase.TURN_R) -> Command: TurnRight
+		 * - Left Turn Phase (Phase.TURN_L) -> Command: TurnLeft
+		 * - Forwards to Coast Phase (Phase.FINAL_FRWD) -> Command: FinalFoward
+		*/
 		JSONObject decision = new JSONObject();
 		Optional<JSONObject> result;
 		List<JSONObject> echo_results;
     
 		if (this.phase == Phase.SEARCH) {
+			/*  The initial phase of the drone. Searches left, right and forwards for island while moving forwards */
 
-			if (next_action == Action.ECHO) {
+			if (next_action == Action.ECHO) {	
+				// Echo sub-phase - sends an echo in all three directions.
 				
 				commander.setCommand(echoSearch);
 				result = commander.nextAction();
@@ -74,6 +87,7 @@ public class IslandLocator implements DroneController {
 			}
 				
 			if (next_action == Action.MOVE) {
+				// Movement sub-phase. Makes a decision on what to do next based on the results of the Echo sub-phase.
 
 				next_action = Action.ECHO;
 				echo_results = history.getItems(-3);
@@ -108,6 +122,7 @@ public class IslandLocator implements DroneController {
 		} else {
 
 			if (this.phase == Phase.TRAVEL_TO_END) {
+				// Travel to End phase. Travels to end of map in case of meeting island head-on.
 				commander.setCommand(travelToEnd);
 				result = commander.nextAction();
 	
@@ -120,6 +135,7 @@ public class IslandLocator implements DroneController {
 			}
 			
 			if (this.phase == Phase.UTURN_L) {
+				// Left Uturn Phase. Performs simple Uturn via Left->Left.
 				commander.setCommand(this.uturn);
 				result = commander.nextAction();
 
@@ -132,6 +148,7 @@ public class IslandLocator implements DroneController {
 			}
 
 			if (this.phase == Phase.TURN_R) {
+				// Turn Right Phase. Performs special on-spot right turn.
 				commander.setCommand(this.turnRight);
 				result = commander.nextAction();
 
@@ -144,6 +161,7 @@ public class IslandLocator implements DroneController {
 			}
 
 			if (this.phase == Phase.TURN_L) {
+				// Turn Left Phase. Performs special on-spot left turn.
 				commander.setCommand(this.turnLeft);
 				result = commander.nextAction();
 
@@ -156,6 +174,7 @@ public class IslandLocator implements DroneController {
 			}
 				
 			if (this.phase == Phase.FINAL_FRWD) {
+				// Forward to Coast phase. Flies forwards until it encounters coast. Terminal phase, returns Optional.empty() once complete.
 				commander.setCommand(this.forwardToCoast);
 				result = commander.nextAction();
 				
