@@ -57,7 +57,12 @@ class SiteTracker {
   +addInlet(String id, Coordinate coord): void
   +addRescueSite(String id, Coordinate coord): void
   +getClosestInlet(): String
-  +findPointsOfInterest(List<JSONObject> history, List<Coordinate> coordHistory): void
+  +compilePointsOfInterest(List<JSONObject> history, List<Coordinate> coordHistory): void
+}
+
+class DistanceCalculation {
+  +returnClosestInlet(List<PointOfInterest> inlets, PointOfInterest site): PointOfInterest
+  -distance(Coordinate c1, Coordinate c2): double
 }
 
 interface PointOfInterest {
@@ -81,6 +86,7 @@ class Inlet {
 
 ExplorationManager *--> SiteTracker
 SiteTracker *--> "*" PointOfInterest
+SiteTracker *--> DistanceCalculation
 PointOfInterest <|.. Site
 PointOfInterest <|.. Inlet
 ExplorationManager *--> History

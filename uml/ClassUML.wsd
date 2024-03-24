@@ -154,8 +154,8 @@ class CommandHandler{
   +nextAction(): Optional<JSONObject>
 }
 
-Explorer *-- ExplorationManager
-Explorer *-- SiteTracker
+Explorer *--> ExplorationManager
+ExplorationManager *--> SiteTracker
 
 ExplorationManager *--> DroneController
 ExplorationManager *--> History
