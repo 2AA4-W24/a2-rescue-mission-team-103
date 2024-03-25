@@ -21,7 +21,7 @@ public class Drone {
 	private Coordinate currentPos = new Coordinate(0,0);
 	private NavHistory coordHistory = new NavHistory();
 	private static final String BATTERYOUT = "OUT OF BATTERY";
-    private boolean ready;
+    private boolean ready = true;
 
     public Drone(Direction start_heading, int battery_level) {
         // Initializes starting heading
