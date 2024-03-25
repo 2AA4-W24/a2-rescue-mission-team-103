@@ -21,6 +21,7 @@ public class Drone {
 	private Coordinate currentPos = new Coordinate(0,0);
 	private NavHistory coordHistory = new NavHistory();
 	private static final String BATTERYOUT = "OUT OF BATTERY";
+    private boolean ready;
 
     public Drone(Direction start_heading, int battery_level) {
         // Initializes starting heading
@@ -36,6 +37,11 @@ public class Drone {
     }
 
     public JSONObject flyForwards() {
+        if (!ready) {
+            logger.error("Calling command turnRight but Drone not ready.");
+            return null;
+        }
+        ready = false;
         actions.log(Action.FORWARD);
 		switch(heading){
 			case Direction.NORTH:
@@ -65,6 +71,11 @@ public class Drone {
     }
 
     public JSONObject turnRight() {
+        if (!ready) {
+            logger.error("Calling command turnRight but Drone not ready.");
+            return null;
+        }
+        ready = false;
         actions.log(Action.TRIGHT);
         if (battery.canContinue()) {
 			// Appending proper new coordinate to navigation history
@@ -98,6 +109,11 @@ public class Drone {
     }
 
     public JSONObject turnLeft() {
+        if (!ready) {
+            logger.error("Calling command turnRight but Drone not ready.");
+            return null;
+        }
+        ready = false;
         actions.log(Action.TLEFT);
 
         if (battery.canContinue()) {
@@ -132,6 +148,11 @@ public class Drone {
     }
 
     public JSONObject scan() {
+        if (!ready) {
+            logger.error("Calling command turnRight but Drone not ready.");
+            return null;
+        }
+        ready = false;
 		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.SCAN);
         if (battery.canContinue()) {
@@ -144,6 +165,11 @@ public class Drone {
     }
 
 	public JSONObject echoLeft(){
+        if (!ready) {
+            logger.error("Calling command turnRight but Drone not ready.");
+            return null;
+        }
+        ready = false;
 		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_LEFT);
 		if (battery.canContinue()) {
@@ -156,6 +182,11 @@ public class Drone {
 	}
 
 	public JSONObject echoRight(){
+        if (!ready) {
+            logger.error("Calling command turnRight but Drone not ready.");
+            return null;
+        }
+        ready = false;
 		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_RIGHT);
 		if (battery.canContinue()) {
@@ -168,6 +199,11 @@ public class Drone {
 	}
 
 	public JSONObject echoForward(){
+        if (!ready) {
+            logger.error("Calling command turnRight but Drone not ready.");
+            return null;
+        }
+        ready = false;
 		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         actions.log(Action.ECHO_FORWARD);
 		if (battery.canContinue()) {
@@ -180,10 +216,19 @@ public class Drone {
 	}
 
     public JSONObject stop() {
+        if (!ready) {
+            logger.error("Calling command turnRight but Drone not ready.");
+            return null;
+        }
+        ready = false;
 		coordHistory.addItem(new Coordinate(currentPos.x(),currentPos.y()));
         logger.info("Stopping");
         logger.info(actions.getSummary());
         return controls.stop();
+    }
+
+    public void ready() {
+        ready = true;
     }
 
 	public Direction getHeading(){
