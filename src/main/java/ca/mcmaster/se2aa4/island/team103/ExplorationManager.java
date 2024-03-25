@@ -77,7 +77,6 @@ public class ExplorationManager {
 				decision = drone.stop();
 			}
 		}
-		drone.ready();
         return decision;
 	}
 

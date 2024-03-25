@@ -98,7 +98,7 @@ class IslandScannerTest {
 		result = scanner.nextAction();
 		addGroundtoHistory(1);
 		result = scanner.nextAction();
-		expected = drone.scan();
+		expected = drone.flyForwards();
 		assertEquals(expected.toString(), result.get().toString());
 	}
 	
@@ -110,10 +110,10 @@ class IslandScannerTest {
 		addOtherBiometoHistory();
 		result = scanner.nextAction();
 		result = scanner.nextAction();
-		expected = drone.scan();
+		expected = drone.flyForwards();
 		assertEquals(expected.toString(), result.get().toString());
 	}
-
+	
 	@Test
 	void SliceStartWithDistance(){
 		result = scanner.nextAction();
@@ -122,7 +122,7 @@ class IslandScannerTest {
 		expected = drone.flyForwards();
 		assertEquals(expected.toString(), result.get().toString());
 	}
-
+    
 	@Test
 	void SliceWithDistance(){ // Case when land is not immediately present after turnaround.
 		result = scanner.nextAction();
@@ -134,6 +134,7 @@ class IslandScannerTest {
 		expected = drone.scan();
 		assertEquals(expected.toString(), result.get().toString());
 	}
+
 	
 	@Test
 	void turnwaitSliceComponent(){
@@ -144,6 +145,7 @@ class IslandScannerTest {
 		result = scanner.nextAction();
 		result = scanner.nextAction();
 		addOceanBiometoHistory();
+		result = scanner.nextAction();
 		result = scanner.nextAction();
 		expected = drone_reference.turnRight();
 		expected = drone_reference.echoLeft();
@@ -160,12 +162,12 @@ class IslandScannerTest {
 		result = scanner.nextAction();
 		addOceanBiometoHistory();
 		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOORtoHistory();
 		result = scanner.nextAction();
 		result = scanner.nextAction();
-		expected = drone_reference.turnLeft();
 		
-		logger.info(history.getLast());
+		expected = drone_reference.turnLeft();
 		assertEquals(expected.toString(), result.get().toString());
 	}
 	
@@ -179,20 +181,19 @@ class IslandScannerTest {
 		result = scanner.nextAction();
 		addOceanBiometoHistory();
 		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOORtoHistory();
 		result = scanner.nextAction();
 		result = scanner.nextAction();
 		result = scanner.nextAction();
-
+		
 		expected = drone_reference.turnLeft();
 		expected = drone_reference.turnLeft();
-
 		assertEquals(expected.toString(), result.get().toString());
 	}
-
+    
 	@Test
 	void SpecialTurn(){
-		logger.info("STARTING"); 
 		//Setup instructions
 		result = scanner.nextAction();
 		addGroundtoHistory(1);
@@ -201,6 +202,7 @@ class IslandScannerTest {
 		result = scanner.nextAction();
 		result = scanner.nextAction();
 		addOceanBiometoHistory();
+		result = scanner.nextAction();
 		result = scanner.nextAction();
 		addOORtoHistory();
 		result = scanner.nextAction();
@@ -243,6 +245,7 @@ class IslandScannerTest {
 		result = scanner.nextAction();
 		addOceanBiometoHistory();
 		result = scanner.nextAction();
+		result = scanner.nextAction();
 		addOORtoHistory();
 		result = scanner.nextAction();
 		result = scanner.nextAction();
@@ -277,6 +280,7 @@ class IslandScannerTest {
 		result = scanner.nextAction();
 		result = scanner.nextAction();
 		addOceanBiometoHistory();
+		result = scanner.nextAction();
 		result = scanner.nextAction();
 		addOORtoHistory();
 		result = scanner.nextAction();
@@ -326,6 +330,7 @@ class IslandScannerTest {
 		result = scanner.nextAction();
 		result = scanner.nextAction();
 		addOceanBiometoHistory();
+		result = scanner.nextAction();
 		result = scanner.nextAction();
 		addOORtoHistory();
 		result = scanner.nextAction();
