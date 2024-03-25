@@ -1,6 +1,5 @@
 package ca.mcmaster.se2aa4.island.team103.drone;
 import org.json.JSONObject;
-
 import ca.mcmaster.se2aa4.island.team103.history.Action;
 import ca.mcmaster.se2aa4.island.team103.history.ActionUsage;
 import ca.mcmaster.se2aa4.island.team103.history.Coordinate;
