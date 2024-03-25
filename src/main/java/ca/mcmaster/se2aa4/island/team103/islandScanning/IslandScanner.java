@@ -99,6 +99,7 @@ public class IslandScanner implements DroneController {
 				phase = ScannerPhase.TURNAROUND2;
 			}else if(response.getString("done").equals("proceed")){
 				phase = ScannerPhase.SLICE;
+				flyNoScan = true;
 			}
 			else if(response.getString("done").equals("proceedToLand")){
 				phase = ScannerPhase.SLICE;
